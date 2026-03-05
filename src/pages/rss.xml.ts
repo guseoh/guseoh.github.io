@@ -9,7 +9,7 @@ export async function GET(context: { site?: URL }) {
   return rss({
     title: "guseo.dev",
     description: "개인 개발 블로그 RSS",
-    site: context.site ?? new URL("https://guseo.github.io"),
+    site: context.site ?? new URL("https://guseoh.github.io"),
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,

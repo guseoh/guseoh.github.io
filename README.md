@@ -67,5 +67,5 @@ site: "https://<github-username>.github.io"
 
 ## 현재 기본값
 
-이 저장소는 `https://guseo.github.io`를 기본 site URL로 설정해두었습니다.
+이 저장소는 `https://guseoh.github.io`를 기본 site URL로 설정해두었습니다.
 필요 시 즉시 변경해서 사용하면 됩니다.

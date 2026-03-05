@@ -2,6 +2,6 @@
 import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: "https://guseo.github.io",
+  site: "https://guseoh.github.io",
   integrations: [sitemap()]
 });
