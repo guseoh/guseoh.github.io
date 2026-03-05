@@ -18,20 +18,34 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem("theme");
+        const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = stored === "light" || stored === "dark" ? stored : systemDark ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
   </head>
   <body>
     <div class="site-shell">
       <header class="site-header">
         <div class="site-header__inner">
           <a class="brand" href="/">guseo.dev</a>
-          <nav class="nav" aria-label="Primary">
-            <a href="/">Home</a>
-            <a href="/blog">Blog</a>
-            <a href="/tags">Tags</a>
-            <a href="/about">About</a>
-            <a href="/rss.xml">RSS</a>
-          </nav>
+          <div class="header-actions">
+            <nav class="nav" aria-label="Primary">
+              <a href="/">Home</a>
+              <a href="/blog">Blog</a>
+              <a href="/tags">Tags</a>
+              <a href="/about">About</a>
+              <a href="/rss.xml">RSS</a>
+            </nav>
+            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="다크모드 전환">
+              🌙 Dark
+            </button>
+          </div>
         </div>
       </header>
       <main class="site-main">
@@ -41,5 +55,28 @@ const {
         <p>© {new Date().getFullYear()} guseo.dev · Built with Astro + GitHub Pages.</p>
       </footer>
     </div>
+
+    <script is:inline>
+      (() => {
+        const button = document.getElementById("theme-toggle");
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        const updateButton = (theme) => {
+          button.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+          button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+        };
+
+        const current = document.documentElement.getAttribute("data-theme") || "light";
+        updateButton(current);
+
+        button.addEventListener("click", () => {
+          const now = document.documentElement.getAttribute("data-theme") || "light";
+          const next = now === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("theme", next);
+          updateButton(next);
+        });
+      })();
+    </script>
   </body>
 </html>
