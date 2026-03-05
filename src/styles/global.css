@@ -1,0 +1,277 @@
+﻿@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap");
+
+:root {
+  --bg: #f3efe6;
+  --bg-deep: #e8dcc8;
+  --surface: #fff9f0;
+  --surface-2: #f7f0e4;
+  --ink: #1f2633;
+  --muted: #5a6475;
+  --accent: #cc3f2f;
+  --accent-soft: #f4d8c9;
+  --border: #d9c8ad;
+  --shadow: rgba(31, 38, 51, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "IBM Plex Serif", Georgia, serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(204, 63, 47, 0.16) 0, rgba(204, 63, 47, 0) 38%),
+    radial-gradient(circle at 85% 2%, rgba(76, 124, 89, 0.2) 0, rgba(76, 124, 89, 0) 30%),
+    linear-gradient(160deg, var(--bg) 0%, var(--bg-deep) 100%);
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+}
+
+.site-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+  background: rgba(247, 240, 228, 0.82);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.site-header__inner,
+.site-main,
+.site-footer {
+  width: min(980px, 92vw);
+  margin: 0 auto;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 72px;
+}
+
+.brand {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+
+.nav {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.nav a {
+  text-decoration: none;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 0.92rem;
+  border: 1px solid transparent;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+}
+
+.nav a:hover,
+.nav a:focus-visible {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.site-main {
+  padding: 2rem 0 3rem;
+  width: min(780px, 92vw);
+  flex: 1;
+}
+
+.hero {
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border-radius: 22px;
+  padding: 1.8rem;
+  box-shadow: 0 20px 40px -28px var(--shadow);
+  animation: fade-up 500ms ease both;
+}
+
+.hero h1,
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", sans-serif;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.8rem);
+}
+
+.hero p {
+  color: var(--muted);
+  margin: 0.8rem 0 0;
+}
+
+.section-title {
+  margin: 2.2rem 0 0.9rem;
+  font-size: 1.2rem;
+}
+
+.post-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255, 249, 240, 0.82);
+  padding: 1rem 1.1rem;
+  box-shadow: 0 16px 34px -28px var(--shadow);
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.card a {
+  text-decoration: none;
+}
+
+.card p {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.tag {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  text-decoration: none;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.78rem;
+  background: var(--surface);
+}
+
+.tag:hover,
+.tag:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.post {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 249, 240, 0.86);
+  padding: 1.4rem;
+}
+
+.post__header {
+  margin-bottom: 1.2rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.95rem;
+}
+
+.post__header h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+}
+
+.post :where(h2, h3) {
+  margin-top: 1.8rem;
+}
+
+.post code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: var(--surface-2);
+  border-radius: 6px;
+  padding: 0.1rem 0.34rem;
+}
+
+.post pre {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 0.8rem;
+}
+
+.note {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+}
+
+.site-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding: 1.1rem 0 2.2rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .site-header__inner {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.75rem 0;
+  }
+
+  .site-main {
+    padding-top: 1.2rem;
+  }
+
+  .hero,
+  .post,
+  .card {
+    border-radius: 14px;
+  }
+}

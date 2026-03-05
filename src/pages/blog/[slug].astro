@@ -1,0 +1,38 @@
+﻿---
+import type { CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props as { post: CollectionEntry<"blog"> };
+const { Content } = await render(post);
+---
+
+<BaseLayout title={`${post.data.title} | guseo.dev`} description={post.data.description}>
+  <article class="post">
+    <header class="post__header">
+      <h1>{post.data.title}</h1>
+      <p class="meta">
+        <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
+        {post.data.updatedDate && (
+          <span>· 업데이트: {post.data.updatedDate.toLocaleDateString("ko-KR")}</span>
+        )}
+      </p>
+      <div class="meta">
+        {post.data.tags.map((tag) => (
+          <a class="tag" href={`/tags/${tag.toLowerCase().replace(/\s+/g, "-")}/`}>#{tag}</a>
+        ))}
+      </div>
+    </header>
+
+    <Content />
+  </article>
+</BaseLayout>

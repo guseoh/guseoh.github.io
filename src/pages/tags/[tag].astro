@@ -1,0 +1,43 @@
+﻿---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { normalizeTag } from "../../utils/tags";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const tagSet = new Set(posts.flatMap((post) => post.data.tags.map((tag) => normalizeTag(tag))));
+
+  return Array.from(tagSet).map((tag) => {
+    const filtered = posts.filter((post) =>
+      post.data.tags.some((entryTag) => normalizeTag(entryTag) === tag)
+    );
+
+    return {
+      params: { tag },
+      props: { tag, posts: filtered }
+    };
+  });
+}
+
+const { tag, posts } = Astro.props as {
+  tag: string;
+  posts: CollectionEntry<"blog">[];
+};
+---
+
+<BaseLayout title={`guseo.dev | #${tag}`} description={`${tag} 태그 게시글 목록`}>
+  <section class="hero">
+    <h1>#{tag}</h1>
+    <p>{posts.length}개의 게시글이 이 태그에 연결되어 있습니다.</p>
+  </section>
+
+  <ul class="post-list" style="margin-top: 1rem;">
+    {posts.map((post) => (
+      <li>
+        <PostCard post={post} />
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

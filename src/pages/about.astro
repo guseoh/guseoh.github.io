@@ -1,0 +1,28 @@
+﻿---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="guseo.dev | About" description="블로그 소개 페이지">
+  <article class="post">
+    <header class="post__header">
+      <h1>About</h1>
+      <p class="meta">이 블로그의 목표와 운영 원칙</p>
+    </header>
+
+    <p>
+      이 블로그는 <strong>작은 단위의 학습 기록을 빠르게 공유</strong>하기 위해 만들었습니다.
+      긴 글보다 실행 가능한 내용을 우선하며, 배운 내용을 재현 가능한 형태로 남깁니다.
+    </p>
+
+    <div class="note">
+      글은 Markdown으로 작성하고, Git 커밋으로 버전 관리하며, `main` 브랜치 푸시 시 자동 배포됩니다.
+    </div>
+
+    <h2>운영 원칙</h2>
+    <ul>
+      <li>한 글에는 하나의 핵심 메시지만 담습니다.</li>
+      <li>코드는 가능한 최소 예제로 제공합니다.</li>
+      <li>틀린 내용은 수정 이력과 함께 빠르게 업데이트합니다.</li>
+    </ul>
+  </article>
+</BaseLayout>

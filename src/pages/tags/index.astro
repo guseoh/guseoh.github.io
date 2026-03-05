@@ -1,0 +1,24 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { buildTagSummary } from "../../utils/tags";
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+const tagSummary = buildTagSummary(posts);
+---
+
+<BaseLayout title="guseo.dev | Tags" description="태그 목록 페이지">
+  <section class="hero">
+    <h1>Tags</h1>
+    <p>관심 있는 주제를 태그 단위로 빠르게 탐색할 수 있습니다.</p>
+  </section>
+
+  <ul class="post-list" style="margin-top: 1rem;">
+    {tagSummary.map(({ tag, count }) => (
+      <li class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <a class="tag" href={`/tags/${tag}/`}>#{tag}</a>
+        <span class="meta">{count} posts</span>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
