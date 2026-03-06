@@ -56,9 +56,22 @@ function isNavActive(href: string) {
       <header class="site-header">
         <div class="site-header__inner">
           <a class="brand" href="/">guseo.dev</a>
-          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="다크모드 전환">
-            🌙 Dark
-          </button>
+
+          <div class="header-controls">
+            <button
+              id="sidebar-toggle"
+              class="sidebar-toggle"
+              type="button"
+              aria-label="사이드바 접기 또는 펼치기"
+              aria-expanded="true"
+            >
+              Hide Menu
+            </button>
+
+            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="다크모드 전환">
+              🌙 Dark
+            </button>
+          </div>
         </div>
       </header>
 
@@ -149,26 +162,61 @@ function isNavActive(href: string) {
 
     <script is:inline>
       (() => {
-        const button = document.getElementById("theme-toggle");
-        if (button instanceof HTMLButtonElement) {
-          const updateButton = (theme) => {
-            button.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
-            button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+        const themeButton = document.getElementById("theme-toggle");
+        if (themeButton instanceof HTMLButtonElement) {
+          const updateThemeButton = (theme) => {
+            themeButton.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+            themeButton.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
           };
 
-          const current = document.documentElement.getAttribute("data-theme") || "light";
-          updateButton(current);
+          const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+          updateThemeButton(currentTheme);
 
-          button.addEventListener("click", () => {
+          themeButton.addEventListener("click", () => {
             const now = document.documentElement.getAttribute("data-theme") || "light";
             const next = now === "dark" ? "light" : "dark";
             document.documentElement.setAttribute("data-theme", next);
             localStorage.setItem("theme", next);
-            updateButton(next);
+            updateThemeButton(next);
           });
         }
 
-        const VISIT_KEY = "guseo:visit-history:v1";
+        const shell = document.querySelector(".site-shell");
+        const sidebarToggleButton = document.getElementById("sidebar-toggle");
+
+        if (shell instanceof HTMLElement && sidebarToggleButton instanceof HTMLButtonElement) {
+          const SIDEBAR_KEY = "guseo:sidebar-collapsed";
+
+          const applySidebarState = (collapsed) => {
+            shell.classList.toggle("sidebar-collapsed", collapsed);
+            sidebarToggleButton.textContent = collapsed ? "Show Menu" : "Hide Menu";
+            sidebarToggleButton.setAttribute("aria-expanded", collapsed ? "false" : "true");
+            sidebarToggleButton.setAttribute("aria-pressed", collapsed ? "true" : "false");
+          };
+
+          const initialCollapsed = localStorage.getItem(SIDEBAR_KEY) === "true";
+          applySidebarState(initialCollapsed);
+
+          sidebarToggleButton.addEventListener("click", () => {
+            const next = !shell.classList.contains("sidebar-collapsed");
+            applySidebarState(next);
+            localStorage.setItem(SIDEBAR_KEY, String(next));
+          });
+        }
+
+        const VISIT_KEY = "guseo:visit-history:v2";
+        const RESET_KEY = "guseo:visit-reset-v2";
+        const LEGACY_VISIT_KEYS = ["guseo:visit-history:v1"];
+        const VISIT_GATE_COOKIE = "guseo_visit_gate";
+        const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
+
+        if (localStorage.getItem(RESET_KEY) !== "done") {
+          for (const key of LEGACY_VISIT_KEYS) {
+            localStorage.removeItem(key);
+          }
+          localStorage.removeItem(VISIT_KEY);
+          localStorage.setItem(RESET_KEY, "done");
+        }
 
         const toKey = (date) => {
           const year = date.getFullYear();
@@ -188,15 +236,43 @@ function isNavActive(href: string) {
           }
         };
 
-        const history = readHistory();
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
+        const readCookie = (name) => {
+          const prefix = `${name}=`;
+          const entries = document.cookie.split(";");
 
-        const todayKey = toKey(today);
+          for (const entry of entries) {
+            const item = entry.trim();
+            if (!item.startsWith(prefix)) continue;
+            return decodeURIComponent(item.slice(prefix.length));
+          }
+
+          return "";
+        };
+
+        const writeCookie = (name, value, maxAgeSeconds) => {
+          document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; samesite=lax`;
+        };
+
+        const history = readHistory();
+        const now = new Date();
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+
+        const todayKey = toKey(now);
         const yesterdayKey = toKey(yesterday);
 
-        history[todayKey] = (Number(history[todayKey]) || 0) + 1;
+        const currentTimestamp = Date.now();
+        const gateRaw = readCookie(VISIT_GATE_COOKIE);
+        const previousTimestamp = Number(gateRaw);
+        const canCountVisit =
+          !Number.isFinite(previousTimestamp) || previousTimestamp <= 0
+            ? true
+            : currentTimestamp - previousTimestamp >= TWELVE_HOURS_MS;
+
+        if (canCountVisit) {
+          history[todayKey] = (Number(history[todayKey]) || 0) + 1;
+          writeCookie(VISIT_GATE_COOKIE, String(currentTimestamp), 60 * 60 * 24 * 365);
+        }
 
         const keys = Object.keys(history).sort();
         while (keys.length > 400) {

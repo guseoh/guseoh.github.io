@@ -623,3 +623,51 @@ h3 {
     border-radius: 14px;
   }
 }
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.sidebar-toggle {
+  text-decoration: none;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 500;
+  font-size: 0.92rem;
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  color: inherit;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover,
+.sidebar-toggle:focus-visible {
+  border-color: var(--border);
+  background: var(--surface-2);
+}
+
+.site-layout {
+  transition: grid-template-columns 220ms ease;
+}
+
+.site-shell.sidebar-collapsed .site-layout {
+  grid-template-columns: 1fr;
+}
+
+.site-shell.sidebar-collapsed .site-sidebar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .header-controls {
+    gap: 0.4rem;
+  }
+
+  .sidebar-toggle {
+    font-size: 0.85rem;
+    padding: 0.32rem 0.62rem;
+  }
+}
