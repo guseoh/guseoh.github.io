@@ -1,7 +1,11 @@
 ﻿---
 import type { CollectionEntry } from "astro:content";
+import { normalizeCategory } from "../utils/categories";
+import { normalizeTag } from "../utils/tags";
 
 const { post } = Astro.props as { post: CollectionEntry<"blog"> };
+const categoryName = post.data.category?.trim() || "미분류";
+const categorySlug = normalizeCategory(categoryName);
 ---
 
 <article class="card">
@@ -9,8 +13,9 @@ const { post } = Astro.props as { post: CollectionEntry<"blog"> };
   <p>{post.data.description}</p>
   <div class="meta">
     <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
+    <a class="tag tag--category" href={`/categories/${categorySlug}/`}>{categoryName}</a>
     {post.data.tags.map((tag) => (
-      <a class="tag" href={`/tags/${tag.toLowerCase().replace(/\s+/g, "-")}/`}>#{tag}</a>
+      <a class="tag" href={`/tags/${normalizeTag(tag)}/`}>#{tag}</a>
     ))}
   </div>
 </article>

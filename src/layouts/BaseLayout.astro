@@ -1,7 +1,7 @@
 ﻿---
 import "../styles/global.css";
 import { getCollection } from "astro:content";
-import { buildTagSummary } from "../utils/tags";
+import { buildCategorySummary } from "../utils/categories";
 
 interface Props {
   title?: string;
@@ -14,16 +14,16 @@ const {
 } = Astro.props;
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
-const tagSummary = buildTagSummary(posts);
+const categorySummary = buildCategorySummary(posts);
 const postCount = posts.length;
 
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
-const currentTag = currentPath.startsWith("/tags/") ? currentPath.split("/")[2] ?? "" : "";
+const currentCategory = currentPath.startsWith("/categories/") ? currentPath.split("/")[2] ?? "" : "";
 
 const sidebarLinks = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Posts" },
-  { href: "/tags", label: "Tags" },
+  { href: "/categories", label: "Categories" },
   { href: "/about", label: "About" }
 ];
 
@@ -74,6 +74,29 @@ function isNavActive(href: string) {
             <p class="profile-card__meta">ROOT ({postCount})</p>
           </section>
 
+          <section class="visit-panel" aria-label="방문 통계">
+            <div class="visit-panel__grid">
+              <div>
+                <p>전체</p>
+                <strong id="visit-total">0</strong>
+              </div>
+              <div>
+                <p>오늘</p>
+                <strong id="visit-today">0</strong>
+              </div>
+              <div>
+                <p>어제</p>
+                <strong id="visit-yesterday">0</strong>
+              </div>
+            </div>
+          </section>
+
+          <form class="sidebar-search" action="/search/" method="get" aria-label="게시글 검색">
+            <label class="sr-only" for="sidebar-search-input">검색</label>
+            <input id="sidebar-search-input" name="q" type="search" placeholder="검색어를 입력하세요" />
+            <button type="submit" aria-label="검색 실행">→</button>
+          </form>
+
           <nav class="sidebar-nav" aria-label="주요 메뉴">
             {
               sidebarLinks.map(({ href, label }) => (
@@ -84,21 +107,24 @@ function isNavActive(href: string) {
             }
           </nav>
 
-          <section class="category-panel" aria-label="카테고리 목록">
+          <section class="category-panel" aria-label="분류 목록">
             <div class="category-panel__header">
-              <h2>Categories</h2>
-              <a href="/tags">All</a>
+              <h2>분류 전체보기 ({postCount})</h2>
+              <a href="/categories/">All</a>
             </div>
 
             {
-              tagSummary.length === 0 ? (
-                <p class="category-empty">아직 카테고리가 없습니다.</p>
+              categorySummary.length === 0 ? (
+                <p class="category-empty">아직 분류가 없습니다.</p>
               ) : (
                 <ul class="category-list">
-                  {tagSummary.map(({ tag, count }) => (
+                  {categorySummary.map(({ slug, name, count }) => (
                     <li>
-                      <a class:list={["category-link", currentTag === tag && "is-active"]} href={`/tags/${tag}/`}>
-                        <span>#{tag}</span>
+                      <a
+                        class:list={["category-link", currentCategory === slug && "is-active"]}
+                        href={`/categories/${slug}/`}
+                      >
+                        <span>{name}</span>
                         <span>{count}</span>
                       </a>
                     </li>
@@ -124,23 +150,81 @@ function isNavActive(href: string) {
     <script is:inline>
       (() => {
         const button = document.getElementById("theme-toggle");
-        if (!(button instanceof HTMLButtonElement)) return;
+        if (button instanceof HTMLButtonElement) {
+          const updateButton = (theme) => {
+            button.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+            button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+          };
 
-        const updateButton = (theme) => {
-          button.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
-          button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+          const current = document.documentElement.getAttribute("data-theme") || "light";
+          updateButton(current);
+
+          button.addEventListener("click", () => {
+            const now = document.documentElement.getAttribute("data-theme") || "light";
+            const next = now === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            updateButton(next);
+          });
+        }
+
+        const VISIT_KEY = "guseo:visit-history:v1";
+
+        const toKey = (date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
         };
 
-        const current = document.documentElement.getAttribute("data-theme") || "light";
-        updateButton(current);
+        const readHistory = () => {
+          try {
+            const raw = localStorage.getItem(VISIT_KEY);
+            if (!raw) return {};
+            const parsed = JSON.parse(raw);
+            return parsed && typeof parsed === "object" ? parsed : {};
+          } catch {
+            return {};
+          }
+        };
 
-        button.addEventListener("click", () => {
-          const now = document.documentElement.getAttribute("data-theme") || "light";
-          const next = now === "dark" ? "light" : "dark";
-          document.documentElement.setAttribute("data-theme", next);
-          localStorage.setItem("theme", next);
-          updateButton(next);
-        });
+        const history = readHistory();
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+
+        const todayKey = toKey(today);
+        const yesterdayKey = toKey(yesterday);
+
+        history[todayKey] = (Number(history[todayKey]) || 0) + 1;
+
+        const keys = Object.keys(history).sort();
+        while (keys.length > 400) {
+          const oldKey = keys.shift();
+          if (!oldKey) break;
+          delete history[oldKey];
+        }
+
+        localStorage.setItem(VISIT_KEY, JSON.stringify(history));
+
+        const total = Object.values(history).reduce((sum, count) => sum + (Number(count) || 0), 0);
+        const todayCount = Number(history[todayKey]) || 0;
+        const yesterdayCount = Number(history[yesterdayKey]) || 0;
+
+        const writeMetric = (id, value) => {
+          const target = document.getElementById(id);
+          if (!target) return;
+          target.textContent = value.toLocaleString("ko-KR");
+        };
+
+        writeMetric("visit-total", total);
+        writeMetric("visit-today", todayCount);
+        writeMetric("visit-yesterday", yesterdayCount);
+
+        const sidebarSearchInput = document.getElementById("sidebar-search-input");
+        if (sidebarSearchInput instanceof HTMLInputElement && window.location.pathname.startsWith("/search")) {
+          sidebarSearchInput.value = new URLSearchParams(window.location.search).get("q") ?? "";
+        }
       })();
     </script>
   </body>

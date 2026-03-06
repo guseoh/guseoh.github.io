@@ -1,22 +1,12 @@
----
-title: "테스트용"
-description: "요약"
+﻿---
+title: "Spring test post"
+description: "Sample post used for feature testing"
 pubDate: 2026-03-06
+category: "Spring"
 tags:
   - spring
 ---
-테스트입니다.
-테스트입니다.
 
-테스트입니다.
+This is a simple test post.
 
-테스트입니다.
-
-테스트입니다.
-테스트입니다.
-
-테스트입니다.
-
-테스트입니다.
-
-
+It exists to validate category, search, and paging behavior.

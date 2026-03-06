@@ -1,0 +1,24 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { buildCategorySummary } from "../../utils/categories";
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+const categorySummary = buildCategorySummary(posts);
+---
+
+<BaseLayout title="guseo.dev | Categories" description="분류 목록 페이지">
+  <section class="hero">
+    <h1>Categories</h1>
+    <p>글을 분류 단위로 탐색할 수 있습니다.</p>
+  </section>
+
+  <ul class="post-list" style="margin-top: 1rem;">
+    {categorySummary.map(({ slug, name, count }) => (
+      <li class="card category-card-row">
+        <a class="tag tag--category" href={`/categories/${slug}/`}>{name}</a>
+        <span class="meta">{count} posts</span>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

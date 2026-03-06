@@ -1,0 +1,57 @@
+﻿---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const searchablePosts = posts.map((post) => ({
+  post,
+  searchText: [post.data.title, post.data.description, post.data.category, ...post.data.tags]
+    .join(" ")
+    .toLowerCase()
+}));
+---
+
+<BaseLayout title="guseo.dev | Search" description="게시글 검색 페이지">
+  <section class="hero">
+    <h1>Search</h1>
+    <p id="search-status">검색어를 입력하면 결과가 표시됩니다.</p>
+  </section>
+
+  <ul class="post-list search-results" data-search-list style="margin-top: 1rem;">
+    {searchablePosts.map(({ post, searchText }) => (
+      <li data-search-item data-search-text={searchText}>
+        <PostCard post={post} />
+      </li>
+    ))}
+  </ul>
+
+  <script is:inline>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const query = (params.get("q") ?? "").trim().toLowerCase();
+      const searchItems = Array.from(document.querySelectorAll("[data-search-item]"));
+      const status = document.getElementById("search-status");
+
+      let visibleCount = 0;
+      for (const item of searchItems) {
+        if (!(item instanceof HTMLElement)) continue;
+        const text = item.dataset.searchText ?? "";
+        const isVisible = query.length === 0 ? true : text.includes(query);
+        item.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      }
+
+      if (status) {
+        if (query.length === 0) {
+          status.textContent = `전체 ${searchItems.length}개의 게시글을 표시합니다.`;
+        } else {
+          status.textContent = `"${query}" 검색 결과 ${visibleCount}건`;
+        }
+      }
+    })();
+  </script>
+</BaseLayout>

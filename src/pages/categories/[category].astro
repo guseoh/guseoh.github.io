@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { buildCategorySummary, filterPostsByCategory } from "../../utils/categories";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const categorySummary = buildCategorySummary(posts);
+
+  return categorySummary.map(({ slug, name }) => ({
+    params: { category: slug },
+    props: {
+      categoryName: name,
+      posts: filterPostsByCategory(posts, slug)
+    }
+  }));
+}
+
+const { categoryName, posts } = Astro.props as {
+  categoryName: string;
+  posts: CollectionEntry<"blog">[];
+};
+---
+
+<BaseLayout title={`guseo.dev | ${categoryName}`} description={`${categoryName} category posts`}>
+  <section class="hero">
+    <h1>{categoryName}</h1>
+    <p>{posts.length} posts belong to this category.</p>
+  </section>
+
+  <ul class="post-list" style="margin-top: 1rem;">
+    {posts.map((post) => (
+      <li>
+        <PostCard post={post} />
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

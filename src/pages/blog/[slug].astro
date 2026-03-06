@@ -1,7 +1,9 @@
-﻿---
+---
 import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { normalizeCategory } from "../../utils/categories";
+import { normalizeTag } from "../../utils/tags";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -14,6 +16,8 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props as { post: CollectionEntry<"blog"> };
 const { Content } = await render(post);
+const categoryName = post.data.category?.trim() || "Uncategorized";
+const categorySlug = normalizeCategory(categoryName);
 ---
 
 <BaseLayout title={`${post.data.title} | guseo.dev`} description={post.data.description}>
@@ -22,13 +26,12 @@ const { Content } = await render(post);
       <h1>{post.data.title}</h1>
       <p class="meta">
         <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
-        {post.data.updatedDate && (
-          <span>· 업데이트: {post.data.updatedDate.toLocaleDateString("ko-KR")}</span>
-        )}
+        {post.data.updatedDate && <span>Updated: {post.data.updatedDate.toLocaleDateString("ko-KR")}</span>}
       </p>
       <div class="meta">
+        <a class="tag tag--category" href={`/categories/${categorySlug}/`}>{categoryName}</a>
         {post.data.tags.map((tag) => (
-          <a class="tag" href={`/tags/${tag.toLowerCase().replace(/\s+/g, "-")}/`}>#{tag}</a>
+          <a class="tag" href={`/tags/${normalizeTag(tag)}/`}>#{tag}</a>
         ))}
       </div>
     </header>

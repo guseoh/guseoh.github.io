@@ -6,7 +6,8 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
-    tags: z.array(z.string()).min(1),
+    category: z.string().default("미분류"),
+    tags: z.array(z.string()).default([]),
     updatedDate: z.coerce.date().optional(),
     draft: z.boolean().default(false),
     heroImage: z.string().optional()

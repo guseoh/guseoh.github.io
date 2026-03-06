@@ -1,33 +1,35 @@
 ﻿---
-title: "로컬 Markdown 워크플로로 글 쓰는 법"
-description: "Git 커밋 기반으로 블로그 글을 안정적으로 운영하는 실전 흐름"
+title: "Local Markdown workflow"
+description: "Practical writing and deploy flow with git commits"
 pubDate: 2026-03-05
 updatedDate: 2026-03-06
+category: "Writing Workflow"
 tags:
   - markdown
   - workflow
   - git
 ---
 
-로컬에서 작성하고 커밋 후 배포하는 흐름은 단순하지만 강력합니다.
+Writing locally and deploying by commit keeps operations simple and reliable.
 
-## 작성 템플릿
+## Template
 
 ```md
 ---
-title: "글 제목"
-description: "짧은 설명"
+title: "Post title"
+description: "Short summary"
 pubDate: 2026-03-06
+category: "Category name"
 tags:
   - topic-a
   - topic-b
 ---
 
-본문
+Body
 ```
 
-## 체크리스트
+## Checklist
 
-- 제목/설명은 검색 결과에서 바로 이해되도록 짧게 유지
-- 태그는 검색 가능한 키워드 위주로 통일
-- 푸시 전에 `npm run build`로 정적 빌드 검증
+- Keep title and description concise.
+- Use consistent tags for discoverability.
+- Run `npm run build` before pushing.

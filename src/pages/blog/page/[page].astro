@@ -1,0 +1,55 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PostCard from "../../../components/PostCard.astro";
+import Pagination from "../../../components/Pagination.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const pageSize = 5;
+  const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  );
+
+  const totalPages = Math.ceil(posts.length / pageSize);
+  if (totalPages <= 1) return [];
+
+  return Array.from({ length: totalPages - 1 }, (_, index) => {
+    const currentPage = index + 2;
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+
+    return {
+      params: { page: String(currentPage) },
+      props: {
+        pagePosts: posts.slice(start, end),
+        currentPage,
+        totalPages
+      }
+    };
+  });
+}
+
+const { pagePosts, currentPage, totalPages } = Astro.props as {
+  pagePosts: CollectionEntry<"blog">[];
+  currentPage: number;
+  totalPages: number;
+};
+---
+
+<BaseLayout title={`guseo.dev | Blog ${currentPage}`} description={`Page ${currentPage} blog posts`}>
+  <section class="hero">
+    <h1>Blog</h1>
+    <p>Page {currentPage} of {totalPages}</p>
+  </section>
+
+  <ul class="post-list" style="margin-top: 1rem;">
+    {pagePosts.map((post) => (
+      <li>
+        <PostCard post={post} />
+      </li>
+    ))}
+  </ul>
+
+  <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/blog" />
+</BaseLayout>

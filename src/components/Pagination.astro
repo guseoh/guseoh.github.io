@@ -1,0 +1,41 @@
+﻿---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath?: string;
+}
+
+const { currentPage, totalPages, basePath = "/blog" } = Astro.props as Props;
+
+const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+
+function createPageHref(page: number) {
+  return page === 1 ? `${basePath}/` : `${basePath}/page/${page}/`;
+}
+---
+
+{totalPages > 1 && (
+  <nav class="pagination" aria-label="게시글 페이지 이동">
+    <a
+      class:list={["pagination__item", "pagination__item--arrow", currentPage === 1 && "is-disabled"]}
+      href={currentPage === 1 ? undefined : createPageHref(currentPage - 1)}
+      aria-disabled={currentPage === 1 ? "true" : "false"}
+    >
+      이전
+    </a>
+
+    {pages.map((page) => (
+      <a class:list={["pagination__item", page === currentPage && "is-active"]} href={createPageHref(page)}>
+        {page}
+      </a>
+    ))}
+
+    <a
+      class:list={["pagination__item", "pagination__item--arrow", currentPage === totalPages && "is-disabled"]}
+      href={currentPage === totalPages ? undefined : createPageHref(currentPage + 1)}
+      aria-disabled={currentPage === totalPages ? "true" : "false"}
+    >
+      다음
+    </a>
+  </nav>
+)}
