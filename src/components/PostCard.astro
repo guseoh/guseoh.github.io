@@ -6,28 +6,17 @@ import { normalizeTag } from "../utils/tags";
 const { post } = Astro.props as { post: CollectionEntry<"blog"> };
 const categoryName = post.data.category?.trim() || "Uncategorized";
 const categorySlug = normalizeCategory(categoryName);
-const thumbnail = post.data.heroImage?.trim() || "";
 ---
 
 <article class="card post-card" data-post-slug={post.slug}>
-  <a class="post-card__thumb" href={`/blog/${post.slug}/`} aria-label={`${post.data.title} thumbnail`}>
-    {thumbnail ? (
-      <img src={thumbnail} alt="" loading="lazy" />
-    ) : (
-      <span class="post-card__thumb-fallback" aria-hidden="true"></span>
-    )}
-  </a>
-
-  <div class="post-card__body">
-    <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
-    <p>{post.data.description}</p>
-    <div class="meta">
-      <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
-      <span data-post-view-count={post.slug}>Views 0</span>
-      <a class="tag tag--category" href={`/categories/${categorySlug}/`}>{categoryName}</a>
-      {post.data.tags.map((tag) => (
-        <a class="tag" href={`/tags/${normalizeTag(tag)}/`}>#{tag}</a>
-      ))}
-    </div>
+  <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
+  <p>{post.data.description}</p>
+  <div class="meta">
+    <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
+    <span data-post-view-count={post.slug}>Views 0</span>
+    <a class="tag tag--category" href={`/categories/${categorySlug}/`}>{categoryName}</a>
+    {post.data.tags.map((tag) => (
+      <a class="tag" href={`/tags/${normalizeTag(tag)}/`}>#{tag}</a>
+    ))}
   </div>
 </article>
