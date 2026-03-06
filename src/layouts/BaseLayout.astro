@@ -1,4 +1,4 @@
-﻿---
+---
 import "../styles/global.css";
 import { getCollection } from "astro:content";
 import { buildCategorySummary } from "../utils/categories";
@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title = "guseo.dev | GitHub Pages Blog",
-  description = "Astro와 GitHub Pages로 운영하는 개인 기술 블로그"
+  description = "Personal tech blog built with Astro and GitHub Pages"
 } = Astro.props;
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -21,14 +21,11 @@ const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const currentCategory = currentPath.startsWith("/categories/") ? currentPath.split("/")[2] ?? "" : "";
 
 const sidebarLinks = [
-  { href: "/", label: "Home" },
   { href: "/blog", label: "Posts" },
-  { href: "/categories", label: "Categories" },
-  { href: "/about", label: "About" }
+  { href: "/categories", label: "Categories" }
 ];
 
 function isNavActive(href: string) {
-  if (href === "/") return currentPath === "/";
   const normalizedHref = href.replace(/\/+$/, "");
   return currentPath === normalizedHref || currentPath.startsWith(`${normalizedHref}/`);
 }
@@ -56,85 +53,86 @@ function isNavActive(href: string) {
       <header class="site-header">
         <div class="site-header__inner">
           <a class="brand" href="/">guseo.dev</a>
-
-          <div class="header-controls">
-            <button
-              id="sidebar-toggle"
-              class="sidebar-toggle"
-              type="button"
-              aria-label="사이드바 접기 또는 펼치기"
-              aria-expanded="true"
-            >
-              Hide Menu
-            </button>
-
-            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="다크모드 전환">
-              🌙 Dark
-            </button>
-          </div>
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">
+            Dark
+          </button>
         </div>
       </header>
 
       <div class="site-layout">
-        <aside class="site-sidebar" aria-label="블로그 사이드바">
+        <button id="sidebar-open" class="sidebar-open" type="button" aria-label="Open sidebar" aria-controls="site-sidebar">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <aside id="site-sidebar" class="site-sidebar" aria-label="Blog sidebar">
+          <button id="sidebar-close" class="sidebar-close" type="button" aria-label="Close sidebar">X</button>
+
           <section class="profile-card">
             <div class="profile-card__cover" aria-hidden="true"></div>
             <div class="profile-card__avatar" aria-hidden="true">G</div>
             <div class="profile-card__body">
               <p class="profile-card__name">guseo.dev</p>
-              <p class="profile-card__bio">작게 만들고, 빠르게 기록합니다.</p>
+              <p class="profile-card__bio">Build small, ship fast, keep notes.</p>
             </div>
             <p class="profile-card__meta">ROOT ({postCount})</p>
           </section>
 
-          <section class="visit-panel" aria-label="방문 통계">
+          <section class="visit-panel" aria-label="Visit statistics">
             <div class="visit-panel__grid">
               <div>
-                <p>전체</p>
+                <p>Total</p>
                 <strong id="visit-total">0</strong>
               </div>
               <div>
-                <p>오늘</p>
+                <p>Today</p>
                 <strong id="visit-today">0</strong>
               </div>
               <div>
-                <p>어제</p>
+                <p>Yesterday</p>
                 <strong id="visit-yesterday">0</strong>
               </div>
             </div>
           </section>
 
-          <form class="sidebar-search" action="/search/" method="get" aria-label="게시글 검색">
-            <label class="sr-only" for="sidebar-search-input">검색</label>
-            <input id="sidebar-search-input" name="q" type="search" placeholder="검색어를 입력하세요" />
-            <button type="submit" aria-label="검색 실행">→</button>
+          <form class="sidebar-search" action="/search/" method="get" aria-label="Search posts">
+            <label class="sr-only" for="sidebar-search-input">Search</label>
+            <input id="sidebar-search-input" name="q" type="search" placeholder="Search posts" />
+            <button type="submit" aria-label="Run search">Go</button>
           </form>
 
-          <nav class="sidebar-nav" aria-label="주요 메뉴">
+          <nav class="sidebar-nav" aria-label="Primary links">
             {
               sidebarLinks.map(({ href, label }) => (
-                <a class:list={["sidebar-nav__item", isNavActive(href) && "is-active"]} href={href}>
+                <a class:list={[
+                  "sidebar-nav__item",
+                  isNavActive(href) && "is-active"
+                ]} href={href}>
                   {label}
                 </a>
               ))
             }
           </nav>
 
-          <section class="category-panel" aria-label="분류 목록">
+          <section class="category-panel" aria-label="Category list">
             <div class="category-panel__header">
-              <h2>분류 전체보기 ({postCount})</h2>
+              <h2>Categories ({postCount})</h2>
               <a href="/categories/">All</a>
             </div>
 
             {
               categorySummary.length === 0 ? (
-                <p class="category-empty">아직 분류가 없습니다.</p>
+                <p class="category-empty">No categories yet.</p>
               ) : (
                 <ul class="category-list">
                   {categorySummary.map(({ slug, name, count }) => (
                     <li>
                       <a
-                        class:list={["category-link", currentCategory === slug && "is-active"]}
+                        class:list={[
+                          "category-link",
+                          currentCategory === slug && "is-active"
+                        ]}
                         href={`/categories/${slug}/`}
                       >
                         <span>{name}</span>
@@ -154,7 +152,7 @@ function isNavActive(href: string) {
           </main>
 
           <footer class="site-footer">
-            <p>© {new Date().getFullYear()} guseo.dev · Built with Astro + GitHub Pages.</p>
+            <p>(c) {new Date().getFullYear()} guseo.dev - Built with Astro + GitHub Pages.</p>
           </footer>
         </div>
       </div>
@@ -165,7 +163,7 @@ function isNavActive(href: string) {
         const themeButton = document.getElementById("theme-toggle");
         if (themeButton instanceof HTMLButtonElement) {
           const updateThemeButton = (theme) => {
-            themeButton.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+            themeButton.textContent = theme === "dark" ? "Light" : "Dark";
             themeButton.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
           };
 
@@ -182,25 +180,33 @@ function isNavActive(href: string) {
         }
 
         const shell = document.querySelector(".site-shell");
-        const sidebarToggleButton = document.getElementById("sidebar-toggle");
+        const sidebarOpenButton = document.getElementById("sidebar-open");
+        const sidebarCloseButton = document.getElementById("sidebar-close");
 
-        if (shell instanceof HTMLElement && sidebarToggleButton instanceof HTMLButtonElement) {
+        if (
+          shell instanceof HTMLElement &&
+          sidebarOpenButton instanceof HTMLButtonElement &&
+          sidebarCloseButton instanceof HTMLButtonElement
+        ) {
           const SIDEBAR_KEY = "guseo:sidebar-collapsed";
 
           const applySidebarState = (collapsed) => {
             shell.classList.toggle("sidebar-collapsed", collapsed);
-            sidebarToggleButton.textContent = collapsed ? "Show Menu" : "Hide Menu";
-            sidebarToggleButton.setAttribute("aria-expanded", collapsed ? "false" : "true");
-            sidebarToggleButton.setAttribute("aria-pressed", collapsed ? "true" : "false");
+            sidebarOpenButton.setAttribute("aria-hidden", collapsed ? "false" : "true");
+            sidebarCloseButton.setAttribute("aria-hidden", collapsed ? "true" : "false");
           };
 
           const initialCollapsed = localStorage.getItem(SIDEBAR_KEY) === "true";
           applySidebarState(initialCollapsed);
 
-          sidebarToggleButton.addEventListener("click", () => {
-            const next = !shell.classList.contains("sidebar-collapsed");
-            applySidebarState(next);
-            localStorage.setItem(SIDEBAR_KEY, String(next));
+          sidebarOpenButton.addEventListener("click", () => {
+            applySidebarState(false);
+            localStorage.setItem(SIDEBAR_KEY, "false");
+          });
+
+          sidebarCloseButton.addEventListener("click", () => {
+            applySidebarState(true);
+            localStorage.setItem(SIDEBAR_KEY, "true");
           });
         }
 

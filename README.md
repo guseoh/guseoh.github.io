@@ -1,4 +1,4 @@
-﻿# GitHub Pages Personal Blog (Astro)
+# GitHub Pages Personal Blog (Astro)
 
 Astro 기반 개인 블로그를 GitHub Pages에 자동 배포하는 프로젝트입니다.
 
@@ -75,3 +75,16 @@ site: "https://<github-username>.github.io"
 
 이 저장소는 `https://guseoh.github.io`를 기본 site URL로 설정해두었습니다.
 필요 시 즉시 변경해서 사용하면 됩니다.
+
+## 댓글 시스템
+
+- 공개 댓글: `utterances` 기반으로 GitHub 로그인 사용자만 작성 가능
+- 비공개 댓글: 게시글의 "비공개 댓글" 폼에서 브라우저 암호화 후 GitHub 이슈로 전달
+
+비공개 댓글 복호화:
+
+```bash
+node scripts/decrypt-private-comment.mjs <payload.json> private-comment.private.pem
+```
+
+`private-comment.private.pem` 파일은 로컬 전용이며 git에 커밋되지 않습니다.

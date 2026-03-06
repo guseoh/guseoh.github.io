@@ -1,0 +1,176 @@
+---
+import { PRIVATE_COMMENT_PUBLIC_KEY } from "../utils/privateCommentPublicKey";
+
+interface Props {
+  postSlug: string;
+  postTitle: string;
+}
+
+const { postSlug, postTitle } = Astro.props as Props;
+const privateIssueRepo = "guseoh/guseoh.github.io";
+---
+
+<section class="comments-wrap" aria-label="Comment section">
+  <h2 class="comments-wrap__title">Comments</h2>
+  <p class="comments-wrap__description">Public comments require GitHub sign-in.</p>
+
+  <div class="comments-wrap__public">
+    <script
+      src="https://utteranc.es/client.js"
+      repo="guseoh/guseoh.github.io"
+      issue-term="pathname"
+      label="comment"
+      theme="github-light"
+      crossorigin="anonymous"
+      async
+    ></script>
+  </div>
+
+  <section class="private-comment" aria-label="Private comment">
+    <h3>Private Comment (GitHub)</h3>
+    <p>
+      The message is encrypted in-browser first. Then a GitHub issue draft opens with the encrypted payload.
+      Submit that issue to send a private comment.
+    </p>
+
+    <form id="private-comment-form" class="private-comment__form">
+      <label for="private-comment-user">GitHub username</label>
+      <input id="private-comment-user" name="githubId" type="text" placeholder="guseoh" required maxlength="39" />
+
+      <label for="private-comment-message">Message</label>
+      <textarea
+        id="private-comment-message"
+        name="message"
+        placeholder="Write your private message"
+        required
+        maxlength="1200"
+      ></textarea>
+
+      <button type="submit">Create encrypted private comment</button>
+      <p id="private-comment-status" class="private-comment__status" aria-live="polite"></p>
+    </form>
+  </section>
+</section>
+
+<script define:vars={{ postSlug, postTitle, publicKeyPem: PRIVATE_COMMENT_PUBLIC_KEY, privateIssueRepo }} is:inline>
+  (() => {
+    const form = document.getElementById("private-comment-form");
+    const status = document.getElementById("private-comment-status");
+
+    if (!(form instanceof HTMLFormElement)) return;
+
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) return;
+      status.textContent = message;
+      status.dataset.state = isError ? "error" : "ok";
+    };
+
+    const toBase64 = (input) => {
+      const bytes = input instanceof ArrayBuffer
+        ? new Uint8Array(input)
+        : new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+
+      const chunkSize = 0x8000;
+      let binary = "";
+
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+      }
+
+      return btoa(binary);
+    };
+
+    const pemToArrayBuffer = (pem) => {
+      const clean = pem.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\s+/g, "");
+      const binary = atob(clean);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes.buffer;
+    };
+
+    const importPublicKey = async (pem) => {
+      return crypto.subtle.importKey(
+        "spki",
+        pemToArrayBuffer(pem),
+        { name: "RSA-OAEP", hash: "SHA-256" },
+        false,
+        ["encrypt"]
+      );
+    };
+
+    const encryptEnvelope = async (rawMessage) => {
+      const rsaKey = await importPublicKey(publicKeyPem);
+      const aesKey = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt"]);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const plaintext = new TextEncoder().encode(rawMessage);
+      const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, aesKey, plaintext);
+      const exportedAesKey = await crypto.subtle.exportKey("raw", aesKey);
+      const wrappedKey = await crypto.subtle.encrypt({ name: "RSA-OAEP" }, rsaKey, exportedAesKey);
+
+      return {
+        algorithm: "AES-GCM + RSA-OAEP-256",
+        wrappedKey: toBase64(wrappedKey),
+        iv: toBase64(iv),
+        ciphertext: toBase64(ciphertext)
+      };
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (!window.crypto?.subtle) {
+        setStatus("Browser crypto is unavailable.", true);
+        return;
+      }
+
+      const formData = new FormData(form);
+      const githubId = String(formData.get("githubId") ?? "").trim().replace(/^@+/, "");
+      const message = String(formData.get("message") ?? "").trim();
+
+      if (!githubId || !message) {
+        setStatus("Fill in both GitHub username and message.", true);
+        return;
+      }
+
+      try {
+        setStatus("Encrypting...");
+
+        const payload = {
+          post: {
+            slug: postSlug,
+            title: postTitle,
+            path: `/blog/${postSlug}/`
+          },
+          sender: {
+            githubId
+          },
+          message,
+          createdAt: new Date().toISOString(),
+          version: "private-comment-v1"
+        };
+
+        const encrypted = await encryptEnvelope(JSON.stringify(payload));
+
+        const issueTitle = `[private] ${postTitle} - ${githubId}`;
+        const issueBody = [
+          "## Private Comment (Encrypted)",
+          "",
+          "The content below is encrypted in-browser.",
+          "",
+          "```json",
+          JSON.stringify(encrypted, null, 2),
+          "```"
+        ].join("\n");
+
+        const url = `https://github.com/${privateIssueRepo}/issues/new?labels=private-comment&title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+
+        setStatus("GitHub issue draft opened. Submit it to deliver your private comment.");
+      } catch (error) {
+        setStatus("Failed to encrypt or generate the issue link.", true);
+      }
+    });
+  })();
+</script>
