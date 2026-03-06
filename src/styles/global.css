@@ -105,6 +105,9 @@ a {
 }
 
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
@@ -119,6 +122,33 @@ a {
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
   border-color: var(--accent);
+}
+
+.theme-toggle__icon {
+  width: 1rem;
+  height: 1rem;
+  display: inline-grid;
+  place-items: center;
+}
+
+.theme-toggle__label {
+  line-height: 1;
+}
+
+.theme-icon {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: none;
+}
+
+.theme-toggle[data-theme="light"] .theme-icon--moon,
+.theme-toggle[data-theme="dark"] .theme-icon--sun {
+  display: block;
 }
 
 .site-layout {
@@ -194,6 +224,15 @@ a {
   visibility: hidden;
   pointer-events: none;
   transform: translateX(-30px);
+}
+
+.sidebar-close-section {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  padding: 0.55rem;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar-close {
@@ -431,6 +470,58 @@ a {
   font-size: 0.88rem;
 }
 
+.sidebar-group {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-bg);
+  box-shadow: 0 14px 24px -22px var(--shadow);
+  padding: 0.85rem;
+}
+
+.sidebar-group__title {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.95rem;
+}
+
+.sidebar-post-list {
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sidebar-post-list__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.sidebar-post-list__item a {
+  text-decoration: none;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.sidebar-post-list__item a:hover,
+.sidebar-post-list__item a:focus-visible {
+  color: var(--accent);
+}
+
+.sidebar-post-list__count,
+.sidebar-post-list__item time {
+  color: var(--muted);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.74rem;
+}
+
+.sidebar-post-list__item--latest {
+  grid-template-columns: 1fr;
+  gap: 0.18rem;
+}
+
 .site-content {
   min-width: 0;
   display: flex;
@@ -581,8 +672,8 @@ h3 {
 
 .post {
   width: 100%;
-  max-width: 780px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 1.35rem;
 }
 
@@ -625,9 +716,9 @@ h3 {
 
 .post-view {
   display: grid;
-  grid-template-columns: minmax(0, 780px) 260px;
+  grid-template-columns: minmax(0, 980px) minmax(280px, 340px);
   justify-content: center;
-  column-gap: clamp(2.2rem, 3.6vw, 4.4rem);
+  column-gap: clamp(4rem, 7vw, 8rem);
   align-items: start;
 }
 
@@ -638,7 +729,7 @@ h3 {
   border-radius: 14px;
   background: var(--card-bg);
   padding: 0.84rem;
-  margin-left: 0.2rem;
+  margin-left: clamp(0.75rem, 2vw, 1.9rem);
   box-shadow: 0 16px 24px -26px var(--shadow);
 }
 
@@ -697,6 +788,138 @@ h3 {
   padding: 0.65rem;
 }
 
+.blog-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.blog-list-head__title {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+  letter-spacing: -0.02em;
+}
+
+.view-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+}
+
+.view-switch__button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.view-switch__button svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  margin: 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.view-switch__button rect {
+  fill: currentColor;
+  stroke: none;
+}
+
+.view-switch__button:hover,
+.view-switch__button:focus-visible,
+.view-switch__button.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.post-list--switch {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.post-list--switch .post-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.post-card__thumb {
+  order: 2;
+  width: 240px;
+  height: 148px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: block;
+  background: var(--surface-2);
+}
+
+.post-card__thumb img,
+.post-card__thumb-fallback {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.post-card__thumb img {
+  object-fit: cover;
+}
+
+.post-card__thumb-fallback {
+  background:
+    linear-gradient(130deg, color-mix(in srgb, var(--accent) 22%, transparent), transparent 56%),
+    linear-gradient(150deg, var(--surface-2), var(--surface));
+}
+
+.post-card__body {
+  min-width: 0;
+}
+
+.post-card__body .meta {
+  margin-top: 0.65rem;
+}
+
+.post-list--switch[data-view="grid"] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.post-list--switch[data-view="grid"] .post-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+}
+
+.post-list--switch[data-view="grid"] .post-card__thumb {
+  order: 0;
+  width: 100%;
+  height: 170px;
+}
+
+.post-list--switch[data-view="grid"] .post-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.post-list--switch[data-view="list"] {
+  grid-template-columns: 1fr;
+}
+
 .site-footer {
   border-top: 1px solid var(--border);
   padding: 1.1rem 0 2.2rem;
@@ -712,6 +935,12 @@ h3 {
 
   .post-toc {
     display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .post-list--switch[data-view="grid"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -760,6 +989,25 @@ h3 {
 
   .category-list {
     max-height: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .blog-list-head {
+    align-items: flex-end;
+  }
+
+  .post-list--switch .post-card,
+  .post-list--switch[data-view="grid"] .post-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-card__thumb,
+  .post-list--switch[data-view="grid"] .post-card__thumb {
+    width: 100%;
+    height: 180px;
+    order: 0;
   }
 }
 

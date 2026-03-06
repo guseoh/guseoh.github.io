@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
 import Pagination from "../../components/Pagination.astro";
@@ -14,13 +14,28 @@ const pagePosts = posts.slice(0, PAGE_SIZE);
 const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
 ---
 
-<BaseLayout title="guseo.dev | Blog" description="전체 게시글 목록">
-  <section class="hero">
-    <h1>Blog</h1>
-    <p>기술 메모, 삽질 기록, 실무 적용 노트를 모아둔 아카이브입니다.</p>
-  </section>
+<BaseLayout title="guseo.dev | Blog" description="All blog posts">
+  <div class="blog-list-head">
+    <h1 class="blog-list-head__title">All Posts ({posts.length})</h1>
 
-  <ul class="post-list" style="margin-top: 1rem;">
+    <div class="view-switch" role="group" aria-label="Toggle post list view">
+      <button type="button" class="view-switch__button" data-view-button="grid" aria-label="Grid view">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="4" width="6" height="6"></rect>
+          <rect x="14" y="4" width="6" height="6"></rect>
+          <rect x="4" y="14" width="6" height="6"></rect>
+          <rect x="14" y="14" width="6" height="6"></rect>
+        </svg>
+      </button>
+      <button type="button" class="view-switch__button" data-view-button="list" aria-label="List view">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 7h14M5 12h14M5 17h14"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <ul class="post-list post-list--switch" data-post-list style="margin-top: 1rem;">
     {pagePosts.map((post) => (
       <li>
         <PostCard post={post} />
@@ -29,4 +44,38 @@ const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
   </ul>
 
   <Pagination currentPage={1} totalPages={totalPages} basePath="/blog" />
+
+  <script is:inline>
+    (() => {
+      const list = document.querySelector("[data-post-list]");
+      const buttons = Array.from(document.querySelectorAll("[data-view-button]"));
+      if (!(list instanceof HTMLElement) || buttons.length === 0) return;
+
+      const KEY = "guseo:blog-list-view";
+
+      const apply = (mode) => {
+        const nextMode = mode === "grid" ? "grid" : "list";
+        list.dataset.view = nextMode;
+
+        for (const button of buttons) {
+          if (!(button instanceof HTMLButtonElement)) continue;
+          const isActive = button.dataset.viewButton === nextMode;
+          button.classList.toggle("is-active", isActive);
+          button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        }
+      };
+
+      const stored = localStorage.getItem(KEY);
+      apply(stored === "grid" || stored === "list" ? stored : "list");
+
+      for (const button of buttons) {
+        if (!(button instanceof HTMLButtonElement)) continue;
+        button.addEventListener("click", () => {
+          const mode = button.dataset.viewButton === "grid" ? "grid" : "list";
+          localStorage.setItem(KEY, mode);
+          apply(mode);
+        });
+      }
+    })();
+  </script>
 </BaseLayout>

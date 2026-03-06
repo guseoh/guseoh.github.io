@@ -14,8 +14,22 @@ const {
 } = Astro.props;
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
+const sortedPosts = [...posts].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const latestPosts = sortedPosts.slice(0, 5).map((post) => ({
+  slug: post.slug,
+  title: post.data.title,
+  pubDateIso: post.data.pubDate.toISOString(),
+  pubDateLabel: post.data.pubDate.toLocaleDateString("ko-KR")
+}));
+
+const allPostPayload = sortedPosts.map((post) => ({
+  slug: post.slug,
+  title: post.data.title,
+  pubDateIso: post.data.pubDate.toISOString()
+}));
+
 const categorySummary = buildCategorySummary(posts);
-const postCount = posts.length;
 
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const currentCategory = currentPath.startsWith("/categories/") ? currentPath.split("/")[2] ?? "" : "";
@@ -53,8 +67,24 @@ function isNavActive(href: string) {
       <header class="site-header">
         <div class="site-header__inner">
           <a class="brand" href="/">guseo.dev</a>
-          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">
-            Dark
+
+          <button
+            id="theme-toggle"
+            class="theme-toggle"
+            type="button"
+            aria-label="Toggle dark mode"
+            data-theme="light"
+          >
+            <span class="theme-toggle__icon" aria-hidden="true">
+              <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" role="img" aria-hidden="true">
+                <path d="M20 14.25A8.25 8.25 0 0 1 9.75 4a8.26 8.26 0 1 0 10.25 10.25Z"></path>
+              </svg>
+              <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" role="img" aria-hidden="true">
+                <circle cx="12" cy="12" r="3.6"></circle>
+                <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"></path>
+              </svg>
+            </span>
+            <span class="theme-toggle__label">Dark</span>
           </button>
         </div>
       </header>
@@ -67,7 +97,9 @@ function isNavActive(href: string) {
         </button>
 
         <aside id="site-sidebar" class="site-sidebar" aria-label="Blog sidebar">
-          <button id="sidebar-close" class="sidebar-close" type="button" aria-label="Close sidebar">X</button>
+          <section class="sidebar-close-section" aria-label="Close menu section">
+            <button id="sidebar-close" class="sidebar-close" type="button" aria-label="Close sidebar">X</button>
+          </section>
 
           <section class="profile-card">
             <div class="profile-card__cover" aria-hidden="true"></div>
@@ -76,7 +108,6 @@ function isNavActive(href: string) {
               <p class="profile-card__name">guseo.dev</p>
               <p class="profile-card__bio">Build small, ship fast, keep notes.</p>
             </div>
-            <p class="profile-card__meta">ROOT ({postCount})</p>
           </section>
 
           <section class="visit-panel" aria-label="Visit statistics">
@@ -103,46 +134,57 @@ function isNavActive(href: string) {
           </form>
 
           <nav class="sidebar-nav" aria-label="Primary links">
-            {
-              sidebarLinks.map(({ href, label }) => (
-                <a class:list={[
-                  "sidebar-nav__item",
-                  isNavActive(href) && "is-active"
-                ]} href={href}>
-                  {label}
-                </a>
-              ))
-            }
+            {sidebarLinks.map(({ href, label }) => (
+              <a class:list={["sidebar-nav__item", isNavActive(href) && "is-active"]} href={href}>
+                {label}
+              </a>
+            ))}
           </nav>
 
           <section class="category-panel" aria-label="Category list">
             <div class="category-panel__header">
-              <h2>Categories ({postCount})</h2>
+              <h2>Categories ({posts.length})</h2>
               <a href="/categories/">All</a>
             </div>
 
-            {
-              categorySummary.length === 0 ? (
-                <p class="category-empty">No categories yet.</p>
-              ) : (
-                <ul class="category-list">
-                  {categorySummary.map(({ slug, name, count }) => (
-                    <li>
-                      <a
-                        class:list={[
-                          "category-link",
-                          currentCategory === slug && "is-active"
-                        ]}
-                        href={`/categories/${slug}/`}
-                      >
-                        <span>{name}</span>
-                        <span>{count}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )
-            }
+            {categorySummary.length === 0 ? (
+              <p class="category-empty">No categories yet.</p>
+            ) : (
+              <ul class="category-list">
+                {categorySummary.map(({ slug, name, count }) => (
+                  <li>
+                    <a class:list={["category-link", currentCategory === slug && "is-active"]} href={`/categories/${slug}/`}>
+                      <span>{name}</span>
+                      <span>{count}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section class="sidebar-group" aria-label="Popular posts">
+            <h3 class="sidebar-group__title">Popular Posts</h3>
+            <ul class="sidebar-post-list" data-sidebar-popular>
+              {latestPosts.map((post) => (
+                <li class="sidebar-post-list__item">
+                  <a href={`/blog/${post.slug}/`}>{post.title}</a>
+                  <span class="sidebar-post-list__count" data-post-view-count-value={post.slug}>0</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section class="sidebar-group" aria-label="Latest posts">
+            <h3 class="sidebar-group__title">Latest Posts</h3>
+            <ul class="sidebar-post-list">
+              {latestPosts.map((post) => (
+                <li class="sidebar-post-list__item sidebar-post-list__item--latest">
+                  <a href={`/blog/${post.slug}/`}>{post.title}</a>
+                  <time datetime={post.pubDateIso}>{post.pubDateLabel}</time>
+                </li>
+              ))}
+            </ul>
           </section>
         </aside>
 
@@ -152,18 +194,53 @@ function isNavActive(href: string) {
           </main>
 
           <footer class="site-footer">
-            <p>(c) {new Date().getFullYear()} guseo.dev - Built with Astro + GitHub Pages.</p>
+            <p>&copy; {new Date().getFullYear()} guseo.dev. Built with Astro + GitHub Pages.</p>
           </footer>
         </div>
       </div>
     </div>
 
-    <script is:inline>
-      (() => {
+    <script define:vars={{ allPostPayload }} is:inline>
+      (async () => {
+        const readCookie = (name) => {
+          const prefix = `${name}=`;
+          const entries = document.cookie.split(";");
+
+          for (const entry of entries) {
+            const item = entry.trim();
+            if (!item.startsWith(prefix)) continue;
+            return decodeURIComponent(item.slice(prefix.length));
+          }
+
+          return "";
+        };
+
+        const writeCookie = (name, value, maxAgeSeconds) => {
+          document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; samesite=lax`;
+        };
+
+        const readJson = (key, fallback) => {
+          try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return fallback;
+            const parsed = JSON.parse(raw);
+            return parsed && typeof parsed === "object" ? parsed : fallback;
+          } catch {
+            return fallback;
+          }
+        };
+
         const themeButton = document.getElementById("theme-toggle");
         if (themeButton instanceof HTMLButtonElement) {
+          const label = themeButton.querySelector(".theme-toggle__label");
+
           const updateThemeButton = (theme) => {
-            themeButton.textContent = theme === "dark" ? "Light" : "Dark";
+            themeButton.dataset.theme = theme;
+
+            if (label instanceof HTMLElement) {
+              label.textContent = theme === "dark" ? "Light" : "Dark";
+            }
+
             themeButton.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
           };
 
@@ -194,6 +271,7 @@ function isNavActive(href: string) {
             shell.classList.toggle("sidebar-collapsed", collapsed);
             sidebarOpenButton.setAttribute("aria-hidden", collapsed ? "false" : "true");
             sidebarCloseButton.setAttribute("aria-hidden", collapsed ? "true" : "false");
+            sidebarOpenButton.setAttribute("aria-expanded", collapsed ? "false" : "true");
           };
 
           const initialCollapsed = localStorage.getItem(SIDEBAR_KEY) === "true";
@@ -214,6 +292,11 @@ function isNavActive(href: string) {
         const RESET_KEY = "guseo:visit-reset-v2";
         const LEGACY_VISIT_KEYS = ["guseo:visit-history:v1"];
         const VISIT_GATE_COOKIE = "guseo_visit_gate";
+
+        const VIEW_COUNTS_KEY = "guseo:post-view-counts:v1";
+        const VIEW_GATES_KEY = "guseo:post-view-gates:v1";
+        const VIEW_LOCK_KEY = "guseo:post-view-lock:v1";
+        const VIEW_TOKEN_COOKIE = "guseo_view_token";
         const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
         if (localStorage.getItem(RESET_KEY) !== "done") {
@@ -224,74 +307,43 @@ function isNavActive(href: string) {
           localStorage.setItem(RESET_KEY, "done");
         }
 
-        const toKey = (date) => {
+        const toDateKey = (date) => {
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const day = String(date.getDate()).padStart(2, "0");
           return `${year}-${month}-${day}`;
         };
 
-        const readHistory = () => {
-          try {
-            const raw = localStorage.getItem(VISIT_KEY);
-            if (!raw) return {};
-            const parsed = JSON.parse(raw);
-            return parsed && typeof parsed === "object" ? parsed : {};
-          } catch {
-            return {};
-          }
-        };
-
-        const readCookie = (name) => {
-          const prefix = `${name}=`;
-          const entries = document.cookie.split(";");
-
-          for (const entry of entries) {
-            const item = entry.trim();
-            if (!item.startsWith(prefix)) continue;
-            return decodeURIComponent(item.slice(prefix.length));
-          }
-
-          return "";
-        };
-
-        const writeCookie = (name, value, maxAgeSeconds) => {
-          document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; samesite=lax`;
-        };
-
-        const history = readHistory();
+        const history = readJson(VISIT_KEY, {});
         const now = new Date();
         const yesterday = new Date(now);
         yesterday.setDate(now.getDate() - 1);
 
-        const todayKey = toKey(now);
-        const yesterdayKey = toKey(yesterday);
+        const todayKey = toDateKey(now);
+        const yesterdayKey = toDateKey(yesterday);
 
-        const currentTimestamp = Date.now();
+        const nowTimestamp = Date.now();
         const gateRaw = readCookie(VISIT_GATE_COOKIE);
         const previousTimestamp = Number(gateRaw);
+
         const canCountVisit =
           !Number.isFinite(previousTimestamp) || previousTimestamp <= 0
             ? true
-            : currentTimestamp - previousTimestamp >= TWELVE_HOURS_MS;
+            : nowTimestamp - previousTimestamp >= TWELVE_HOURS_MS;
 
         if (canCountVisit) {
           history[todayKey] = (Number(history[todayKey]) || 0) + 1;
-          writeCookie(VISIT_GATE_COOKIE, String(currentTimestamp), 60 * 60 * 24 * 365);
+          writeCookie(VISIT_GATE_COOKIE, String(nowTimestamp), 60 * 60 * 24 * 365);
         }
 
-        const keys = Object.keys(history).sort();
-        while (keys.length > 400) {
-          const oldKey = keys.shift();
+        const visitKeys = Object.keys(history).sort();
+        while (visitKeys.length > 400) {
+          const oldKey = visitKeys.shift();
           if (!oldKey) break;
           delete history[oldKey];
         }
 
         localStorage.setItem(VISIT_KEY, JSON.stringify(history));
-
-        const total = Object.values(history).reduce((sum, count) => sum + (Number(count) || 0), 0);
-        const todayCount = Number(history[todayKey]) || 0;
-        const yesterdayCount = Number(history[yesterdayKey]) || 0;
 
         const writeMetric = (id, value) => {
           const target = document.getElementById(id);
@@ -299,9 +351,164 @@ function isNavActive(href: string) {
           target.textContent = value.toLocaleString("ko-KR");
         };
 
-        writeMetric("visit-total", total);
-        writeMetric("visit-today", todayCount);
-        writeMetric("visit-yesterday", yesterdayCount);
+        writeMetric("visit-total", Object.values(history).reduce((sum, value) => sum + (Number(value) || 0), 0));
+        writeMetric("visit-today", Number(history[todayKey]) || 0);
+        writeMetric("visit-yesterday", Number(history[yesterdayKey]) || 0);
+
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        const randomToken = () => {
+          if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+          return `${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+        };
+
+        const getViewerToken = () => {
+          const raw = readCookie(VIEW_TOKEN_COOKIE);
+          const nowMs = Date.now();
+
+          if (raw) {
+            const [token, issuedRaw] = raw.split(".");
+            const issuedAt = Number(issuedRaw);
+            if (token && Number.isFinite(issuedAt) && nowMs - issuedAt < TWELVE_HOURS_MS) {
+              return token;
+            }
+          }
+
+          const nextToken = randomToken();
+          writeCookie(VIEW_TOKEN_COOKIE, `${nextToken}.${nowMs}`, 60 * 60 * 24 * 365);
+          return nextToken;
+        };
+
+        const withFallbackLock = async (work) => {
+          const token = randomToken();
+          const lockTTL = 2200;
+          let acquired = false;
+
+          for (let attempt = 0; attempt < 70; attempt += 1) {
+            const timestamp = Date.now();
+            const lock = readJson(VIEW_LOCK_KEY, {});
+            const expiresAt = Number(lock.expiresAt) || 0;
+
+            if (!lock.token || expiresAt < timestamp) {
+              localStorage.setItem(VIEW_LOCK_KEY, JSON.stringify({ token, expiresAt: timestamp + lockTTL }));
+              const verify = readJson(VIEW_LOCK_KEY, {});
+              if (verify.token === token) {
+                acquired = true;
+                break;
+              }
+            }
+
+            await sleep(35 + Math.floor(Math.random() * 30));
+          }
+
+          if (!acquired) {
+            return work();
+          }
+
+          try {
+            return await work();
+          } finally {
+            const verify = readJson(VIEW_LOCK_KEY, {});
+            if (verify.token === token) {
+              localStorage.removeItem(VIEW_LOCK_KEY);
+            }
+          }
+        };
+
+        const withViewLock = async (work) => {
+          if (navigator.locks?.request) {
+            return navigator.locks.request("guseo-post-view-lock", async () => work());
+          }
+
+          return withFallbackLock(work);
+        };
+
+        const detectPostSlug = () => {
+          const segments = window.location.pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+          if (segments.length === 2 && segments[0] === "blog" && segments[1] !== "page") {
+            return decodeURIComponent(segments[1]);
+          }
+          return "";
+        };
+
+        const incrementCurrentPostView = async () => {
+          const slug = detectPostSlug();
+          if (!slug) return;
+
+          await withViewLock(async () => {
+            const viewerToken = getViewerToken();
+            const gateKey = `${viewerToken}:${slug}`;
+            const current = Date.now();
+
+            const counts = readJson(VIEW_COUNTS_KEY, {});
+            const gates = readJson(VIEW_GATES_KEY, {});
+            const lastSeen = Number(gates[gateKey]) || 0;
+
+            if (current - lastSeen < TWELVE_HOURS_MS) {
+              return;
+            }
+
+            counts[slug] = (Number(counts[slug]) || 0) + 1;
+            gates[gateKey] = current;
+
+            for (const [key, timestamp] of Object.entries(gates)) {
+              if (current - Number(timestamp) > 45 * 24 * 60 * 60 * 1000) {
+                delete gates[key];
+              }
+            }
+
+            localStorage.setItem(VIEW_COUNTS_KEY, JSON.stringify(counts));
+            localStorage.setItem(VIEW_GATES_KEY, JSON.stringify(gates));
+          });
+        };
+
+        await incrementCurrentPostView();
+
+        const postViewCounts = readJson(VIEW_COUNTS_KEY, {});
+
+        document.querySelectorAll("[data-post-view-count]").forEach((element) => {
+          if (!(element instanceof HTMLElement)) return;
+          const slug = element.dataset.postViewCount || "";
+          const count = Number(postViewCounts[slug]) || 0;
+          element.textContent = `Views ${count.toLocaleString("ko-KR")}`;
+        });
+
+        document.querySelectorAll("[data-post-view-count-value]").forEach((element) => {
+          if (!(element instanceof HTMLElement)) return;
+          const slug = element.dataset.postViewCountValue || "";
+          const count = Number(postViewCounts[slug]) || 0;
+          element.textContent = count.toLocaleString("ko-KR");
+        });
+
+        const popularList = document.querySelector("[data-sidebar-popular]");
+        if (popularList instanceof HTMLElement) {
+          const ranked = [...allPostPayload]
+            .sort((a, b) => {
+              const countA = Number(postViewCounts[a.slug]) || 0;
+              const countB = Number(postViewCounts[b.slug]) || 0;
+              if (countA !== countB) return countB - countA;
+              return new Date(b.pubDateIso).valueOf() - new Date(a.pubDateIso).valueOf();
+            })
+            .slice(0, 5);
+
+          popularList.textContent = "";
+
+          for (const post of ranked) {
+            const item = document.createElement("li");
+            item.className = "sidebar-post-list__item";
+
+            const link = document.createElement("a");
+            link.href = `/blog/${post.slug}/`;
+            link.textContent = post.title;
+
+            const count = document.createElement("span");
+            count.className = "sidebar-post-list__count";
+            count.textContent = (Number(postViewCounts[post.slug]) || 0).toLocaleString("ko-KR");
+
+            item.append(link, count);
+            popularList.append(item);
+          }
+        }
 
         const sidebarSearchInput = document.getElementById("sidebar-search-input");
         if (sidebarSearchInput instanceof HTMLInputElement && window.location.pathname.startsWith("/search")) {
@@ -311,3 +518,4 @@ function isNavActive(href: string) {
     </script>
   </body>
 </html>
+

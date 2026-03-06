@@ -24,26 +24,43 @@ export async function getStaticPaths() {
       props: {
         pagePosts: posts.slice(start, end),
         currentPage,
-        totalPages
+        totalPages,
+        postCount: posts.length
       }
     };
   });
 }
 
-const { pagePosts, currentPage, totalPages } = Astro.props as {
+const { pagePosts, currentPage, totalPages, postCount } = Astro.props as {
   pagePosts: CollectionEntry<"blog">[];
   currentPage: number;
   totalPages: number;
+  postCount: number;
 };
 ---
 
-<BaseLayout title={`guseo.dev | Blog ${currentPage}`} description={`Page ${currentPage} blog posts`}>
-  <section class="hero">
-    <h1>Blog</h1>
-    <p>Page {currentPage} of {totalPages}</p>
-  </section>
+<BaseLayout title={`guseo.dev | Blog ${currentPage}`} description={`Blog page ${currentPage}`}>
+  <div class="blog-list-head">
+    <h1 class="blog-list-head__title">All Posts ({postCount})</h1>
 
-  <ul class="post-list" style="margin-top: 1rem;">
+    <div class="view-switch" role="group" aria-label="Toggle post list view">
+      <button type="button" class="view-switch__button" data-view-button="grid" aria-label="Grid view">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="4" width="6" height="6"></rect>
+          <rect x="14" y="4" width="6" height="6"></rect>
+          <rect x="4" y="14" width="6" height="6"></rect>
+          <rect x="14" y="14" width="6" height="6"></rect>
+        </svg>
+      </button>
+      <button type="button" class="view-switch__button" data-view-button="list" aria-label="List view">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 7h14M5 12h14M5 17h14"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <ul class="post-list post-list--switch" data-post-list style="margin-top: 1rem;">
     {pagePosts.map((post) => (
       <li>
         <PostCard post={post} />
@@ -52,4 +69,38 @@ const { pagePosts, currentPage, totalPages } = Astro.props as {
   </ul>
 
   <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/blog" />
+
+  <script is:inline>
+    (() => {
+      const list = document.querySelector("[data-post-list]");
+      const buttons = Array.from(document.querySelectorAll("[data-view-button]"));
+      if (!(list instanceof HTMLElement) || buttons.length === 0) return;
+
+      const KEY = "guseo:blog-list-view";
+
+      const apply = (mode) => {
+        const nextMode = mode === "grid" ? "grid" : "list";
+        list.dataset.view = nextMode;
+
+        for (const button of buttons) {
+          if (!(button instanceof HTMLButtonElement)) continue;
+          const isActive = button.dataset.viewButton === nextMode;
+          button.classList.toggle("is-active", isActive);
+          button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        }
+      };
+
+      const stored = localStorage.getItem(KEY);
+      apply(stored === "grid" || stored === "list" ? stored : "list");
+
+      for (const button of buttons) {
+        if (!(button instanceof HTMLButtonElement)) continue;
+        button.addEventListener("click", () => {
+          const mode = button.dataset.viewButton === "grid" ? "grid" : "list";
+          localStorage.setItem(KEY, mode);
+          apply(mode);
+        });
+      }
+    })();
+  </script>
 </BaseLayout>

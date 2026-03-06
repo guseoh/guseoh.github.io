@@ -29,6 +29,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
         <h1>{post.data.title}</h1>
         <p class="meta">
           <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
+          <span data-post-view-count={post.slug}>Views 0</span>
           {post.data.updatedDate && <span>Updated: {post.data.updatedDate.toLocaleDateString("ko-KR")}</span>}
         </p>
         <div class="meta">
@@ -41,7 +42,7 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 
       <Content />
 
-      <PostComments postSlug={post.slug} postTitle={post.data.title} />
+      <PostComments />
     </article>
 
     {
