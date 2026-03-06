@@ -1,5 +1,7 @@
 ﻿---
 import "../styles/global.css";
+import { getCollection } from "astro:content";
+import { buildTagSummary } from "../utils/tags";
 
 interface Props {
   title?: string;
@@ -10,6 +12,26 @@ const {
   title = "guseo.dev | GitHub Pages Blog",
   description = "Astro와 GitHub Pages로 운영하는 개인 기술 블로그"
 } = Astro.props;
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+const tagSummary = buildTagSummary(posts);
+const postCount = posts.length;
+
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const currentTag = currentPath.startsWith("/tags/") ? currentPath.split("/")[2] ?? "" : "";
+
+const sidebarLinks = [
+  { href: "/", label: "Home" },
+  { href: "/blog", label: "Posts" },
+  { href: "/tags", label: "Tags" },
+  { href: "/about", label: "About" }
+];
+
+function isNavActive(href: string) {
+  if (href === "/") return currentPath === "/";
+  const normalizedHref = href.replace(/\/+$/, "");
+  return currentPath === normalizedHref || currentPath.startsWith(`${normalizedHref}/`);
+}
 ---
 
 <!doctype html>
@@ -34,26 +56,69 @@ const {
       <header class="site-header">
         <div class="site-header__inner">
           <a class="brand" href="/">guseo.dev</a>
-          <div class="header-actions">
-            <nav class="nav" aria-label="Primary">
-              <a href="/">Home</a>
-              <a href="/blog">Blog</a>
-              <a href="/tags">Tags</a>
-              <a href="/about">About</a>
-              <a href="/rss.xml">RSS</a>
-            </nav>
-            <button id="theme-toggle" class="theme-toggle" type="button" aria-label="다크모드 전환">
-              🌙 Dark
-            </button>
-          </div>
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="다크모드 전환">
+            🌙 Dark
+          </button>
         </div>
       </header>
-      <main class="site-main">
-        <slot />
-      </main>
-      <footer class="site-footer">
-        <p>© {new Date().getFullYear()} guseo.dev · Built with Astro + GitHub Pages.</p>
-      </footer>
+
+      <div class="site-layout">
+        <aside class="site-sidebar" aria-label="블로그 사이드바">
+          <section class="profile-card">
+            <div class="profile-card__cover" aria-hidden="true"></div>
+            <div class="profile-card__avatar" aria-hidden="true">G</div>
+            <div class="profile-card__body">
+              <p class="profile-card__name">guseo.dev</p>
+              <p class="profile-card__bio">작게 만들고, 빠르게 기록합니다.</p>
+            </div>
+            <p class="profile-card__meta">ROOT ({postCount})</p>
+          </section>
+
+          <nav class="sidebar-nav" aria-label="주요 메뉴">
+            {
+              sidebarLinks.map(({ href, label }) => (
+                <a class:list={["sidebar-nav__item", isNavActive(href) && "is-active"]} href={href}>
+                  {label}
+                </a>
+              ))
+            }
+          </nav>
+
+          <section class="category-panel" aria-label="카테고리 목록">
+            <div class="category-panel__header">
+              <h2>Categories</h2>
+              <a href="/tags">All</a>
+            </div>
+
+            {
+              tagSummary.length === 0 ? (
+                <p class="category-empty">아직 카테고리가 없습니다.</p>
+              ) : (
+                <ul class="category-list">
+                  {tagSummary.map(({ tag, count }) => (
+                    <li>
+                      <a class:list={["category-link", currentTag === tag && "is-active"]} href={`/tags/${tag}/`}>
+                        <span>#{tag}</span>
+                        <span>{count}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )
+            }
+          </section>
+        </aside>
+
+        <div class="site-content">
+          <main class="site-main">
+            <slot />
+          </main>
+
+          <footer class="site-footer">
+            <p>© {new Date().getFullYear()} guseo.dev · Built with Astro + GitHub Pages.</p>
+          </footer>
+        </div>
+      </div>
     </div>
 
     <script is:inline>
