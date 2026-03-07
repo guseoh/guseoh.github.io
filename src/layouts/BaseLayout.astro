@@ -38,7 +38,7 @@ const currentCategory = currentPath.startsWith("/categories/") ? currentPath.spl
 const currentTag = currentPath.startsWith("/tags/") ? currentPath.split("/")[2] ?? "" : "";
 
 const sidebarLinks = [
-  { href: "/blog", label: "Archive" },
+  { href: "/blog", label: "Post" },
   { href: "/categories", label: "Categories" },
   { href: "/tags", label: "Tags" }
 ];
@@ -111,8 +111,8 @@ function isNavActive(href: string) {
             <div class="profile-card__cover" aria-hidden="true"></div>
             <div class="profile-card__avatar" aria-hidden="true">G</div>
             <div class="profile-card__body">
-              <p class="profile-card__name">guseo.dev</p>
-              <p class="profile-card__bio">Java, Spring, and backend engineering archive.</p>
+              <p class="profile-card__name">guseoh</p>
+              <p class="profile-card__bio">Java / Spring / Backend 학습 기록을 정리하는 개인 기술 아카이브입니다.</p>
             </div>
           </section>
 
