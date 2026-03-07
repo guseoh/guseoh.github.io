@@ -1,0 +1,23 @@
+---
+import { normalizeCategory } from "../utils/categories";
+import { normalizeTag } from "../utils/tags";
+
+interface Props {
+  category?: string;
+  tags?: string[];
+  maxTags?: number;
+}
+
+const { category = "Uncategorized", tags = [], maxTags = tags.length } = Astro.props as Props;
+const categoryName = category.trim() || "Uncategorized";
+const visibleTags = tags.slice(0, maxTags);
+const hiddenTagCount = Math.max(0, tags.length - visibleTags.length);
+---
+
+<div class="badge-group">
+  <a class="badge badge--category" href={`/categories/${normalizeCategory(categoryName)}/`}>{categoryName}</a>
+  {visibleTags.map((tag) => (
+    <a class="badge badge--tag" href={`/tags/${normalizeTag(tag)}/`}>#{tag}</a>
+  ))}
+  {hiddenTagCount > 0 && <span class="badge badge--muted">+{hiddenTagCount}</span>}
+</div>

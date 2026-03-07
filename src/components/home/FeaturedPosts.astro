@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PostMetaBadges from "../PostMetaBadges.astro";
+
+interface Props {
+  posts: CollectionEntry<"blog">[];
+}
+
+const { posts } = Astro.props as Props;
+---
+
+<section class="home-section" aria-label="Featured posts">
+  <div class="home-section__head">
+    <h2 class="home-section__title">Featured Posts</h2>
+    <p class="home-section__description">Core notes to revisit frequently while building Java and Spring backend projects.</p>
+  </div>
+
+  {posts.length === 0 ? (
+    <p class="section-empty">No featured post yet.</p>
+  ) : (
+    <div class="featured-grid">
+      {posts.map((post, index) => (
+        <article class:list={["card", "featured-card", index === 0 && "featured-card--lead"]} data-post-slug={post.slug}>
+          <p class="featured-card__label">{index === 0 ? "Core Note" : "Featured"}</p>
+          <h3><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h3>
+          <p>{post.data.description}</p>
+
+          <div class="featured-card__meta">
+            <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString("ko-KR")}</time>
+            <span data-post-view-count={post.slug}>Views 0</span>
+          </div>
+
+          <PostMetaBadges category={post.data.category} tags={post.data.tags} maxTags={3} />
+        </article>
+      ))}
+    </div>
+  )}
+</section>

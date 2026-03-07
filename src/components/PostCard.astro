@@ -1,22 +1,29 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { normalizeCategory } from "../utils/categories";
-import { normalizeTag } from "../utils/tags";
+import PostMetaBadges from "./PostMetaBadges.astro";
 
-const { post } = Astro.props as { post: CollectionEntry<"blog"> };
-const categoryName = post.data.category?.trim() || "Uncategorized";
-const categorySlug = normalizeCategory(categoryName);
+interface Props {
+  post: CollectionEntry<"blog">;
+  variant?: "default" | "latest";
+}
+
+const { post, variant = "default" } = Astro.props as Props;
+const isLatest = variant === "latest";
 ---
 
-<article class="card post-card" data-post-slug={post.slug}>
-  <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
-  <p>{post.data.description}</p>
-  <div class="meta">
-    <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
-    <span data-post-view-count={post.slug}>Views 0</span>
-    <a class="tag tag--category" href={`/categories/${categorySlug}/`}>{categoryName}</a>
-    {post.data.tags.map((tag) => (
-      <a class="tag" href={`/tags/${normalizeTag(tag)}/`}>#{tag}</a>
-    ))}
+<article class:list={["card", "post-card", isLatest && "post-card--latest"]} data-post-slug={post.slug}>
+  <header class="post-card__header">
+    <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
+  </header>
+
+  <p class="post-card__description">{post.data.description}</p>
+
+  <div class="post-card__footer">
+    <div class="post-card__meta">
+      <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString("ko-KR")}</time>
+      <span data-post-view-count={post.slug}>Views 0</span>
+    </div>
+
+    <PostMetaBadges category={post.data.category} tags={post.data.tags} maxTags={isLatest ? 3 : 4} />
   </div>
 </article>

@@ -1,0 +1,68 @@
+---
+import type { CategorySummary } from "../../utils/categories";
+
+type TagSummary = {
+  tag: string;
+  count: number;
+};
+
+interface Props {
+  categories: CategorySummary[];
+  tags: TagSummary[];
+}
+
+const { categories, tags } = Astro.props as Props;
+const topCategories = categories.slice(0, 10);
+const topTags = tags.slice(0, 16);
+---
+
+<section class="home-section" aria-label="Category and tag index">
+  <div class="home-section__head home-section__head--inline">
+    <div>
+      <h2 class="home-section__title">Category and Tag Index</h2>
+      <p class="home-section__description">Jump to topics through badge UI instead of flat text lists.</p>
+    </div>
+  </div>
+
+  <div class="topic-panel-grid">
+    <article class="card topic-panel" aria-label="Category badges">
+      <div class="topic-panel__head">
+        <h3>Categories</h3>
+        <a href="/categories/">All</a>
+      </div>
+
+      {topCategories.length === 0 ? (
+        <p class="section-empty">No category yet.</p>
+      ) : (
+        <div class="badge-cloud">
+          {topCategories.map(({ slug, name, count }) => (
+            <a class="badge badge--topic" href={`/categories/${slug}/`}>
+              <span>{name}</span>
+              <strong>{count}</strong>
+            </a>
+          ))}
+        </div>
+      )}
+    </article>
+
+    <article class="card topic-panel" aria-label="Tag badges">
+      <div class="topic-panel__head">
+        <h3>Tags</h3>
+        <a href="/tags/">All</a>
+      </div>
+
+      {topTags.length === 0 ? (
+        <p class="section-empty">No tag yet.</p>
+      ) : (
+        <div class="badge-cloud">
+          {topTags.map(({ tag, count }) => (
+            <a class="badge badge--topic badge--topic-tag" href={`/tags/${tag}/`}>
+              <span>#{tag}</span>
+              <strong>{count}</strong>
+            </a>
+          ))}
+        </div>
+      )}
+    </article>
+  </div>
+</section>

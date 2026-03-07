@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { getCollection } from "astro:content";
 import { buildCategorySummary } from "../utils/categories";
+import { buildTagSummary } from "../utils/tags";
 
 interface Props {
   title?: string;
@@ -16,11 +17,9 @@ const {
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 const sortedPosts = [...posts].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-const latestPosts = sortedPosts.slice(0, 5).map((post) => ({
+const sidebarPopularSeed = sortedPosts.slice(0, 5).map((post) => ({
   slug: post.slug,
-  title: post.data.title,
-  pubDateIso: post.data.pubDate.toISOString(),
-  pubDateLabel: post.data.pubDate.toLocaleDateString("ko-KR")
+  title: post.data.title
 }));
 
 const allPostPayload = sortedPosts.map((post) => ({
@@ -30,13 +29,16 @@ const allPostPayload = sortedPosts.map((post) => ({
 }));
 
 const categorySummary = buildCategorySummary(posts);
+const tagSummary = buildTagSummary(posts).slice(0, 18);
 
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const currentCategory = currentPath.startsWith("/categories/") ? currentPath.split("/")[2] ?? "" : "";
+const currentTag = currentPath.startsWith("/tags/") ? currentPath.split("/")[2] ?? "" : "";
 
 const sidebarLinks = [
-  { href: "/blog", label: "Posts" },
-  { href: "/categories", label: "Categories" }
+  { href: "/blog", label: "Archive" },
+  { href: "/categories", label: "Categories" },
+  { href: "/tags", label: "Tags" }
 ];
 
 function isNavActive(href: string) {
@@ -106,24 +108,7 @@ function isNavActive(href: string) {
             <div class="profile-card__avatar" aria-hidden="true">G</div>
             <div class="profile-card__body">
               <p class="profile-card__name">guseo.dev</p>
-              <p class="profile-card__bio">Build small, ship fast, keep notes.</p>
-            </div>
-          </section>
-
-          <section class="visit-panel" aria-label="Visit statistics">
-            <div class="visit-panel__grid">
-              <div>
-                <p>Total</p>
-                <strong id="visit-total">0</strong>
-              </div>
-              <div>
-                <p>Today</p>
-                <strong id="visit-today">0</strong>
-              </div>
-              <div>
-                <p>Yesterday</p>
-                <strong id="visit-yesterday">0</strong>
-              </div>
+              <p class="profile-card__bio">Java, Spring, and backend engineering archive.</p>
             </div>
           </section>
 
@@ -141,32 +126,44 @@ function isNavActive(href: string) {
             ))}
           </nav>
 
-          <section class="category-panel" aria-label="Category list">
+          <section class="category-panel" aria-label="Topic index">
             <div class="category-panel__header">
-              <h2>Categories ({posts.length})</h2>
+              <h2>Topic Index</h2>
               <a href="/categories/">All</a>
             </div>
 
             {categorySummary.length === 0 ? (
               <p class="category-empty">No categories yet.</p>
             ) : (
-              <ul class="category-list">
+              <div class="topic-cloud" role="list">
                 {categorySummary.map(({ slug, name, count }) => (
-                  <li>
-                    <a class:list={["category-link", currentCategory === slug && "is-active"]} href={`/categories/${slug}/`}>
-                      <span>{name}</span>
-                      <span>{count}</span>
-                    </a>
-                  </li>
+                  <a class:list={["topic-pill", "topic-pill--category", currentCategory === slug && "is-active"]} href={`/categories/${slug}/`}>
+                    <span>{name}</span>
+                    <strong>{count}</strong>
+                  </a>
                 ))}
-              </ul>
+              </div>
+            )}
+
+            {tagSummary.length > 0 && (
+              <>
+                <p class="category-panel__subhead">Tags</p>
+                <div class="topic-cloud topic-cloud--tags" role="list">
+                  {tagSummary.map(({ tag, count }) => (
+                    <a class:list={["topic-pill", "topic-pill--tag", currentTag === tag && "is-active"]} href={`/tags/${tag}/`}>
+                      <span>#{tag}</span>
+                      <strong>{count}</strong>
+                    </a>
+                  ))}
+                </div>
+              </>
             )}
           </section>
 
           <section class="sidebar-group" aria-label="Popular posts">
-            <h3 class="sidebar-group__title">Popular Posts</h3>
+            <h3 class="sidebar-group__title">Popular Notes</h3>
             <ul class="sidebar-post-list" data-sidebar-popular>
-              {latestPosts.map((post) => (
+              {sidebarPopularSeed.map((post) => (
                 <li class="sidebar-post-list__item">
                   <a href={`/blog/${post.slug}/`}>{post.title}</a>
                   <span class="sidebar-post-list__count" data-post-view-count-value={post.slug}>0</span>
@@ -175,16 +172,22 @@ function isNavActive(href: string) {
             </ul>
           </section>
 
-          <section class="sidebar-group" aria-label="Latest posts">
-            <h3 class="sidebar-group__title">Latest Posts</h3>
-            <ul class="sidebar-post-list">
-              {latestPosts.map((post) => (
-                <li class="sidebar-post-list__item sidebar-post-list__item--latest">
-                  <a href={`/blog/${post.slug}/`}>{post.title}</a>
-                  <time datetime={post.pubDateIso}>{post.pubDateLabel}</time>
-                </li>
-              ))}
-            </ul>
+          <section class="visit-panel visit-panel--compact" aria-label="Visit statistics">
+            <p class="visit-panel__title">Archive Traffic</p>
+            <div class="visit-panel__grid">
+              <div>
+                <p>Total</p>
+                <strong id="visit-total">0</strong>
+              </div>
+              <div>
+                <p>Today</p>
+                <strong id="visit-today">0</strong>
+              </div>
+              <div>
+                <p>Yesterday</p>
+                <strong id="visit-yesterday">0</strong>
+              </div>
+            </div>
           </section>
         </aside>
 
@@ -518,4 +521,3 @@ function isNavActive(href: string) {
     </script>
   </body>
 </html>
-
