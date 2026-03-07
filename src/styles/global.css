@@ -2364,3 +2364,137 @@ html[data-theme="light"] .page-home-simple .home-section__link {
 .post-toc {
   margin-left: clamp(1rem, 3.2vw, 3.5rem);
 }
+
+/* Control stability + home latest list refinement */
+.theme-toggle,
+.theme-toggle:hover,
+.theme-toggle:focus-visible,
+.theme-toggle:active {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.36rem;
+  height: 36px;
+  min-width: 92px;
+  padding: 0 0.74rem;
+  border-width: 1px;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.theme-toggle__icon {
+  flex: 0 0 1rem;
+}
+
+.theme-toggle__label {
+  display: inline-block;
+  min-width: 4.5ch;
+  line-height: 1;
+  text-align: center;
+}
+
+.view-switch__button,
+.view-switch__button:hover,
+.view-switch__button:focus-visible,
+.view-switch__button:active,
+.view-switch__button.is-active {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-width: 1px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.sidebar-nav__item,
+.sidebar-nav__item:hover,
+.sidebar-nav__item:focus-visible,
+.sidebar-nav__item:active,
+.sidebar-nav__item.is-active {
+  min-height: 34px;
+  padding: 0.46rem 0.5rem;
+  border-width: 1px;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.topic-pill,
+.topic-pill:hover,
+.topic-pill:focus-visible,
+.topic-pill:active,
+.topic-pill.is-active,
+.category-chip,
+.category-chip:hover,
+.category-chip:focus-visible {
+  border-width: 1px;
+}
+
+.topic-pill:hover,
+.topic-pill:focus-visible,
+.topic-pill:active,
+.topic-pill.is-active {
+  transform: none;
+}
+
+.page-home-simple .latest-list {
+  border-radius: 9px;
+  border-color: color-mix(in srgb, var(--border) 94%, transparent);
+  background: color-mix(in srgb, var(--surface) 84%, var(--bg));
+  overflow: hidden;
+}
+
+.page-home-simple .latest-item {
+  padding: 0.98rem 1.02rem 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+}
+
+.page-home-simple .latest-item:last-child {
+  border-bottom: none;
+}
+
+.page-home-simple .latest-item:hover,
+.page-home-simple .latest-item:focus-within {
+  background: color-mix(in srgb, var(--surface) 88%, var(--bg));
+}
+
+.page-home-simple .latest-item__title {
+  display: inline-block;
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.36;
+}
+
+.page-home-simple .latest-item__title:hover,
+.page-home-simple .latest-item__title:focus-visible {
+  color: color-mix(in srgb, var(--accent) 84%, var(--ink));
+}
+
+.page-home-simple .latest-item__meta {
+  margin-top: 0.28rem;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: color-mix(in srgb, var(--ink) 50%, var(--muted));
+}
+
+.page-home-simple .latest-item__meta a {
+  color: inherit;
+}
+
+.page-home-simple .latest-item__summary {
+  margin-top: 0.34rem;
+  font-size: 0.85rem;
+  line-height: 1.52;
+  color: color-mix(in srgb, var(--ink) 68%, var(--muted));
+}
+
+/* Micro fixes for toggle width + subtle meta hover */
+.theme-toggle__label {
+  width: 5ch;
+  min-width: 5ch;
+}
+
+.page-home-simple .latest-item__meta a:hover,
+.page-home-simple .latest-item__meta a:focus-visible {
+  color: color-mix(in srgb, var(--ink) 62%, var(--muted));
+}
