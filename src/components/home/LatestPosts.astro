@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import PostCard from "../PostCard.astro";
+import { normalizeCategory } from "../../utils/categories";
 
 interface Props {
   posts: CollectionEntry<"blog">[];
@@ -11,22 +11,28 @@ const { posts } = Astro.props as Props;
 
 <section class="home-section" aria-label="Latest posts">
   <div class="home-section__head home-section__head--inline">
-    <div>
-      <h2 class="home-section__title">Latest Posts</h2>
-      <p class="home-section__description">Recent updates in card layout for faster scanning.</p>
-    </div>
-    <a class="home-section__link" href="/blog/">View all</a>
+    <h2 class="home-section__title">Latest Posts</h2>
+    <a class="home-section__link" href="/blog/">All posts</a>
   </div>
 
   {posts.length === 0 ? (
-    <p class="section-empty">No post yet.</p>
+    <p class="section-empty">아직 게시글이 없습니다.</p>
   ) : (
-    <ul class="post-grid post-grid--latest">
-      {posts.map((post) => (
-        <li>
-          <PostCard post={post} variant="latest" />
-        </li>
-      ))}
+    <ul class="latest-list">
+      {posts.map((post) => {
+        const categoryName = post.data.category?.trim() || "미분류";
+        return (
+          <li class="latest-item">
+            <a class="latest-item__title" href={`/blog/${post.slug}/`}>{post.data.title}</a>
+            <p class="latest-item__meta">
+              <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString("ko-KR")}</time>
+              <span aria-hidden="true">·</span>
+              <a href={`/categories/${normalizeCategory(categoryName)}/`}>{categoryName}</a>
+            </p>
+            <p class="latest-item__summary">{post.data.description}</p>
+          </li>
+        );
+      })}
     </ul>
   )}
 </section>

@@ -1,39 +1,16 @@
 ---
 interface Props {
-  postCount: number;
-  categoryCount: number;
-  tagCount: number;
-  latestDateLabel: string;
+  title?: string;
+  description?: string;
 }
 
-const { postCount, categoryCount, tagCount, latestDateLabel } = Astro.props as Props;
-
-const metrics = [
-  { label: "Docs", value: postCount.toLocaleString("ko-KR") },
-  { label: "Categories", value: categoryCount.toLocaleString("ko-KR") },
-  { label: "Tags", value: tagCount.toLocaleString("ko-KR") },
-  { label: "Latest Update", value: latestDateLabel }
-];
+const {
+  title = "guseo.dev",
+  description = "Java / Spring / Backend 학습 기록을 정리하는 개인 기술 아카이브입니다."
+} = Astro.props as Props;
 ---
 
-<section class="archive-hero" aria-label="Archive overview">
-  <p class="archive-hero__eyebrow">Backend Knowledge Archive</p>
-  <h1>Java / Spring / Backend learning notes organized like technical docs</h1>
-  <p class="archive-hero__lead">
-    Problem solving notes, setup checklists, and implementation records are structured for quick retrieval and steady review.
-  </p>
-
-  <div class="archive-hero__actions">
-    <a class="archive-hero__button" href="/blog/">Open Archive</a>
-    <a class="archive-hero__button archive-hero__button--ghost" href="/search/">Search Notes</a>
-  </div>
-
-  <dl class="archive-hero__stats">
-    {metrics.map((metric) => (
-      <div>
-        <dt>{metric.label}</dt>
-        <dd>{metric.value}</dd>
-      </div>
-    ))}
-  </dl>
+<section class="archive-hero archive-hero--simple" aria-label="Blog intro">
+  <h1>{title}</h1>
+  <p>{description}</p>
 </section>

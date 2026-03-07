@@ -7,11 +7,13 @@ import { buildTagSummary } from "../utils/tags";
 interface Props {
   title?: string;
   description?: string;
+  minimalHome?: boolean;
 }
 
 const {
   title = "guseo.dev | GitHub Pages Blog",
-  description = "Personal tech blog built with Astro and GitHub Pages"
+  description = "Personal tech blog built with Astro and GitHub Pages",
+  minimalHome = false
 } = Astro.props;
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -64,7 +66,7 @@ function isNavActive(href: string) {
       })();
     </script>
   </head>
-  <body>
+  <body class:list={[minimalHome && "page-home-simple"]}>
     <div class="site-shell">
       <header class="site-header">
         <div class="site-header__inner">
@@ -91,14 +93,16 @@ function isNavActive(href: string) {
         </div>
       </header>
 
-      <div class="site-layout">
-        <button id="sidebar-open" class="sidebar-open" type="button" aria-label="Open sidebar" aria-controls="site-sidebar">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+      <div class:list={["site-layout", minimalHome && "site-layout--minimal"]}>
+        {!minimalHome && (
+          <>
+            <button id="sidebar-open" class="sidebar-open" type="button" aria-label="Open sidebar" aria-controls="site-sidebar">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
 
-        <aside id="site-sidebar" class="site-sidebar" aria-label="Blog sidebar">
+            <aside id="site-sidebar" class="site-sidebar" aria-label="Blog sidebar">
           <section class="sidebar-close-section" aria-label="Close menu section">
             <button id="sidebar-close" class="sidebar-close" type="button" aria-label="Close sidebar">X</button>
           </section>
@@ -189,7 +193,9 @@ function isNavActive(href: string) {
               </div>
             </div>
           </section>
-        </aside>
+            </aside>
+          </>
+        )}
 
         <div class="site-content">
           <main class="site-main">

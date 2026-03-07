@@ -2,58 +2,24 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { buildCategorySummary } from "../utils/categories";
-import { buildTagSummary } from "../utils/tags";
 import ArchiveHero from "../components/home/ArchiveHero.astro";
-import FeaturedPosts from "../components/home/FeaturedPosts.astro";
-import TopicIndex from "../components/home/TopicIndex.astro";
 import LatestPosts from "../components/home/LatestPosts.astro";
+import TopicIndex from "../components/home/TopicIndex.astro";
 
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
+const latestPosts = posts.slice(0, 12);
 const categorySummary = buildCategorySummary(posts);
-const tagSummary = buildTagSummary(posts);
-
-const backendKeywords = ["java", "spring", "backend", "api", "jpa", "database", "db", "security"];
-
-const scorePost = (text: string) =>
-  backendKeywords.reduce((score, keyword) => score + (text.includes(keyword) ? 1 : 0), 0);
-
-const rankedForFeature = posts
-  .map((post) => {
-    const text = [post.data.title, post.data.description, post.data.category ?? "", ...post.data.tags]
-      .join(" ")
-      .toLowerCase();
-
-    return {
-      post,
-      score: scorePost(text)
-    };
-  })
-  .sort((a, b) => {
-    if (a.score !== b.score) return b.score - a.score;
-    return b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf();
-  });
-
-const featuredPool = rankedForFeature.filter(({ score }) => score > 0).map(({ post }) => post);
-const featuredPosts = (featuredPool.length > 0 ? featuredPool : posts).slice(0, 3);
-
-const featuredSlugs = new Set(featuredPosts.map((post) => post.slug));
-const latestPosts = posts.filter((post) => !featuredSlugs.has(post.slug)).slice(0, 6);
-const latestFeed = latestPosts.length > 0 ? latestPosts : posts.slice(0, 6);
-const latestDateLabel = posts[0]?.data.pubDate.toLocaleDateString("ko-KR") ?? "-";
 ---
 
-<BaseLayout title="guseo.dev | Backend Archive" description="Java, Spring, and backend engineering archive">
-  <ArchiveHero
-    postCount={posts.length}
-    categoryCount={categorySummary.length}
-    tagCount={tagSummary.length}
-    latestDateLabel={latestDateLabel}
-  />
-
-  <FeaturedPosts posts={featuredPosts} />
-  <TopicIndex categories={categorySummary} tags={tagSummary} />
-  <LatestPosts posts={latestFeed} />
+<BaseLayout
+  title="guseo.dev | Tech Notes Archive"
+  description="Java, Spring, Backend 기술 기록 아카이브"
+  minimalHome={true}
+>
+  <ArchiveHero />
+  <LatestPosts posts={latestPosts} />
+  <TopicIndex categories={categorySummary} />
 </BaseLayout>
