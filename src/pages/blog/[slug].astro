@@ -47,16 +47,63 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
 
     {
       tocHeadings.length > 0 && (
-        <aside class="post-toc" aria-label="Document table of contents">
-          <p class="post-toc__title">On This Page</p>
-          <ul class="post-toc__list">
-            {tocHeadings.map((heading) => (
-              <li class:list={["post-toc__item", `depth-${heading.depth}`]}>
-                <a href={`#${heading.slug}`}>{heading.text}</a>
-              </li>
-            ))}
-          </ul>
-        </aside>
+        <>
+          <aside class="post-toc" aria-label="Document table of contents">
+            <p class="post-toc__title">On This Page</p>
+            <ul class="post-toc__list">
+              {tocHeadings.map((heading) => (
+                <li class:list={["post-toc__item", `depth-${heading.depth}`]}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+
+          <script is:inline>
+            (() => {
+              const links = Array.from(document.querySelectorAll(".post-toc__item a"));
+              if (links.length === 0) return;
+
+              const entries = links
+                .map((link) => {
+                  if (!(link instanceof HTMLAnchorElement)) return null;
+
+                  const href = link.getAttribute("href") || "";
+                  if (!href.startsWith("#")) return null;
+
+                  const id = decodeURIComponent(href.slice(1));
+                  const section = document.getElementById(id);
+                  if (!(section instanceof HTMLElement)) return null;
+
+                  return { link, section };
+                })
+                .filter((entry) => entry !== null);
+
+              if (entries.length === 0) return;
+
+              const applyActive = () => {
+                const currentY = window.scrollY + 150;
+                let active = entries[0];
+
+                for (const entry of entries) {
+                  if (entry.section.offsetTop <= currentY) {
+                    active = entry;
+                  } else {
+                    break;
+                  }
+                }
+
+                for (const entry of entries) {
+                  entry.link.classList.toggle("is-active", entry === active);
+                }
+              };
+
+              applyActive();
+              window.addEventListener("scroll", applyActive, { passive: true });
+              window.addEventListener("resize", applyActive);
+            })();
+          </script>
+        </>
       )
     }
   </div>
