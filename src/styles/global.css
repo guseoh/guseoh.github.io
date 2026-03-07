@@ -2271,3 +2271,96 @@ body {
     padding: 0.45rem 0.52rem;
   }
 }
+
+/* Home brightness + wider post body */
+html[data-theme="light"] .page-home-simple {
+  background:
+    radial-gradient(circle at 88% 8%, rgba(99, 123, 164, 0.07) 0, transparent 46%),
+    radial-gradient(circle at 14% 12%, rgba(117, 138, 174, 0.05) 0, transparent 38%),
+    linear-gradient(160deg, #eef3fa, #e8edf5);
+}
+
+html[data-theme="dark"] .page-home-simple {
+  background:
+    radial-gradient(circle at 88% 8%, rgba(127, 159, 200, 0.1) 0, transparent 45%),
+    radial-gradient(circle at 12% 14%, rgba(127, 159, 200, 0.08) 0, transparent 36%),
+    linear-gradient(160deg, #162235, #1c2b42);
+}
+
+.page-home-simple .site-header {
+  backdrop-filter: blur(6px);
+}
+
+html[data-theme="light"] .page-home-simple .site-header {
+  background: rgba(242, 247, 255, 0.88);
+}
+
+html[data-theme="dark"] .page-home-simple .site-header {
+  background: rgba(22, 33, 50, 0.84);
+}
+
+.page-home-simple .archive-hero--simple,
+.page-home-simple .latest-list,
+.page-home-simple .category-chip {
+  border-color: color-mix(in srgb, var(--border) 96%, transparent);
+}
+
+.page-home-simple .archive-hero--simple {
+  background: color-mix(in srgb, var(--surface) 86%, var(--bg));
+}
+
+.page-home-simple .latest-list {
+  background: color-mix(in srgb, var(--surface) 82%, var(--bg));
+}
+
+.page-home-simple .latest-item {
+  border-bottom-color: color-mix(in srgb, var(--border) 94%, transparent);
+}
+
+.page-home-simple .latest-item__meta {
+  color: color-mix(in srgb, var(--ink) 66%, var(--muted));
+}
+
+.page-home-simple .latest-item__summary {
+  color: color-mix(in srgb, var(--ink) 70%, var(--muted));
+}
+
+.page-home-simple .category-chip {
+  background: color-mix(in srgb, var(--surface) 78%, var(--bg));
+}
+
+html[data-theme="light"] .page-home-simple .latest-item__meta,
+html[data-theme="light"] .page-home-simple .latest-item__summary,
+html[data-theme="light"] .page-home-simple .home-section__link {
+  color: #5a677d;
+}
+
+.post-view {
+  grid-template-columns: minmax(0, 1060px) minmax(190px, 226px);
+  column-gap: clamp(0.9rem, 1.8vw, 1.4rem);
+  margin-left: clamp(2.8rem, 7.8vw, 8.9rem);
+}
+
+.post-view--single {
+  grid-template-columns: minmax(0, 1100px);
+  margin-left: clamp(2.8rem, 7.8vw, 8.9rem);
+}
+
+.site-shell.sidebar-collapsed .post-view {
+  grid-template-columns: minmax(0, 1120px) minmax(190px, 226px);
+  column-gap: clamp(0.95rem, 1.9vw, 1.5rem);
+  margin-left: clamp(3.6rem, 8.6vw, 9.8rem);
+}
+
+.site-shell.sidebar-collapsed .post-view--single {
+  grid-template-columns: minmax(0, 1140px);
+  margin-left: clamp(3.6rem, 8.6vw, 9.8rem);
+}
+
+.post {
+  padding: clamp(1.3rem, 2.2vw, 1.75rem);
+}
+
+.post-toc {
+  margin-left: clamp(1rem, 3.2vw, 3.5rem);
+}
