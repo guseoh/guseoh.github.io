@@ -2,7 +2,6 @@
 import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PostComments from "../../components/PostComments.astro";
 import { normalizeCategory } from "../../utils/categories";
 import { normalizeTag } from "../../utils/tags";
 
@@ -41,8 +40,6 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
       </header>
 
       <Content />
-
-      <PostComments />
     </article>
 
     {
