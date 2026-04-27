@@ -173,7 +173,7 @@ function isNavActive(href: string) {
             themeButton.dataset.theme = theme;
 
             if (label instanceof HTMLElement) {
-              label.textContent = theme === "dark" ? "Light" : "Dark";
+              label.textContent = theme === "dark" ? "Dark" : "Light";
             }
 
             themeButton.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
@@ -209,7 +209,10 @@ function isNavActive(href: string) {
             sidebarOpenButton.setAttribute("aria-expanded", collapsed ? "false" : "true");
           };
 
-          const initialCollapsed = localStorage.getItem(SIDEBAR_KEY) === "true";
+          const storedSidebarState = localStorage.getItem(SIDEBAR_KEY);
+          const prefersCollapsedSidebar = window.matchMedia("(max-width: 980px)").matches;
+          const initialCollapsed =
+            storedSidebarState === "true" || (storedSidebarState === null && prefersCollapsedSidebar);
           applySidebarState(initialCollapsed);
 
           sidebarOpenButton.addEventListener("click", () => {
