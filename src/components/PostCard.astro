@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import PostMetaBadges from "./PostMetaBadges.astro";
+import { formatPostDate, getReadingTime } from "../utils/posts";
 
 interface Props {
   post: CollectionEntry<"blog">;
@@ -9,6 +10,7 @@ interface Props {
 
 const { post, variant = "default" } = Astro.props as Props;
 const isLatest = variant === "latest";
+const readingTime = getReadingTime(post);
 ---
 
 <article class:list={["card", "post-card", isLatest && "post-card--latest"]} data-post-slug={post.slug}>
@@ -20,8 +22,10 @@ const isLatest = variant === "latest";
 
   <div class="post-card__footer">
     <div class="post-card__meta">
-      <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString("ko-KR")}</time>
-      <span data-post-view-count={post.slug}>Views 0</span>
+      <span>작성일</span>
+      <time datetime={post.data.date.toISOString()}>{formatPostDate(post.data.date)}</time>
+      <span aria-hidden="true">·</span>
+      <span>{readingTime}</span>
     </div>
 
     <PostMetaBadges category={post.data.category} tags={post.data.tags} maxTags={isLatest ? 3 : 4} />

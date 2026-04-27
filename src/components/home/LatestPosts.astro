@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { normalizeCategory } from "../../utils/categories";
+import { formatPostDate, getReadingTime } from "../../utils/posts";
 
 interface Props {
   posts: CollectionEntry<"blog">[];
@@ -21,13 +22,16 @@ const { posts } = Astro.props as Props;
     <ul class="latest-list">
       {posts.map((post) => {
         const categoryName = post.data.category?.trim() || "미분류";
+        const readingTime = getReadingTime(post);
         return (
           <li class="latest-item">
             <a class="latest-item__title" href={`/blog/${post.slug}/`}>{post.data.title}</a>
             <p class="latest-item__meta">
-              <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString("ko-KR")}</time>
+              <time datetime={post.data.date.toISOString()}>{formatPostDate(post.data.date)}</time>
               <span aria-hidden="true">·</span>
               <a href={`/categories/${normalizeCategory(categoryName)}/`}>{categoryName}</a>
+              <span aria-hidden="true">·</span>
+              <span>{readingTime}</span>
             </p>
             <p class="latest-item__summary">{post.data.description}</p>
           </li>

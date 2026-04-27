@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
 import { normalizeTag } from "../../utils/tags";
+import { sortPostsByDate } from "../../utils/posts";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -16,7 +17,7 @@ export async function getStaticPaths() {
 
     return {
       params: { tag },
-      props: { tag, posts: filtered }
+      props: { tag, posts: sortPostsByDate(filtered) }
     };
   });
 }

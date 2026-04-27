@@ -4,12 +4,11 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import PostCard from "../../../components/PostCard.astro";
 import Pagination from "../../../components/Pagination.astro";
 import { getCollection } from "astro:content";
+import { SITE_DESCRIPTION, sortPostsByDate } from "../../../utils/posts";
 
 export async function getStaticPaths() {
   const pageSize = 5;
-  const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
+  const posts = sortPostsByDate(await getCollection("blog", ({ data }) => !data.draft));
 
   const totalPages = Math.ceil(posts.length / pageSize);
   if (totalPages <= 1) return [];
@@ -39,9 +38,12 @@ const { pagePosts, currentPage, totalPages, postCount } = Astro.props as {
 };
 ---
 
-<BaseLayout title={`guseoh ${currentPage}`} description={`Blog page ${currentPage}`}>
+<BaseLayout title={`guseo.dev | Blog ${currentPage}`} description={SITE_DESCRIPTION}>
   <div class="blog-list-head">
-    <h1 class="blog-list-head__title">All Posts ({postCount})</h1>
+    <div>
+      <h1 class="blog-list-head__title">All Posts ({postCount})</h1>
+      <p class="blog-list-head__description">Java/Spring 백엔드 개발자 오지훈의 학습과 프로젝트 개선 기록</p>
+    </div>
 
     <div class="view-switch" role="group" aria-label="Toggle post list view">
       <button type="button" class="view-switch__button" data-view-button="grid" aria-label="Grid view">

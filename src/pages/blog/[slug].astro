@@ -4,6 +4,7 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { normalizeCategory } from "../../utils/categories";
 import { normalizeTag } from "../../utils/tags";
+import { formatPostDate, getReadingTime } from "../../utils/posts";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -19,6 +20,7 @@ const { Content, headings } = await render(post);
 const categoryName = post.data.category?.trim() || "Uncategorized";
 const categorySlug = normalizeCategory(categoryName);
 const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+const readingTime = getReadingTime(post);
 ---
 
 <BaseLayout title={`${post.data.title} | guseo.dev`} description={post.data.description}>
@@ -26,13 +28,30 @@ const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.d
     <article class="post">
       <header class="post__header">
         <h1>{post.data.title}</h1>
-        <p class="meta">
-          <span>{post.data.pubDate.toLocaleDateString("ko-KR")}</span>
-          <span data-post-view-count={post.slug}>Views 0</span>
-          {post.data.updatedDate && <span>Updated: {post.data.updatedDate.toLocaleDateString("ko-KR")}</span>}
-        </p>
-        <div class="meta">
-          <a class="tag tag--category" href={`/categories/${categorySlug}/`}>{categoryName}</a>
+        <p class="post__description">{post.data.description}</p>
+
+        <dl class="post-meta-grid">
+          <div class="post-meta-item">
+            <dt>작성일</dt>
+            <dd><time datetime={post.data.date.toISOString()}>{formatPostDate(post.data.date)}</time></dd>
+          </div>
+          {post.data.updated && (
+            <div class="post-meta-item">
+              <dt>수정일</dt>
+              <dd><time datetime={post.data.updated.toISOString()}>{formatPostDate(post.data.updated)}</time></dd>
+            </div>
+          )}
+          <div class="post-meta-item">
+            <dt>카테고리</dt>
+            <dd><a class="tag tag--category" href={`/categories/${categorySlug}/`}>{categoryName}</a></dd>
+          </div>
+          <div class="post-meta-item">
+            <dt>읽는 시간</dt>
+            <dd>{readingTime}</dd>
+          </div>
+        </dl>
+
+        <div class="post-meta-tags" aria-label="Post tags">
           {post.data.tags.map((tag) => (
             <a class="tag" href={`/tags/${normalizeTag(tag)}/`}>#{tag}</a>
           ))}

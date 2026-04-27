@@ -4,6 +4,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
 import { buildCategorySummary, filterPostsByCategory } from "../../utils/categories";
+import { sortPostsByDate } from "../../utils/posts";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
@@ -13,7 +14,7 @@ export async function getStaticPaths() {
     params: { category: slug },
     props: {
       categoryName: name,
-      posts: filterPostsByCategory(posts, slug)
+      posts: sortPostsByDate(filterPostsByCategory(posts, slug))
     }
   }));
 }
@@ -27,7 +28,7 @@ const { categoryName, posts } = Astro.props as {
 <BaseLayout title={`guseo.dev | ${categoryName}`} description={`${categoryName} category posts`}>
   <section class="hero">
     <h1>{categoryName}</h1>
-    <p>{posts.length} posts belong to this category.</p>
+    <p>{posts.length}개의 게시글이 이 카테고리에 연결되어 있습니다.</p>
   </section>
 
   <ul class="post-list" style="margin-top: 1rem;">

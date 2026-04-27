@@ -2,10 +2,9 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostCard from "../components/PostCard.astro";
 import { getCollection } from "astro:content";
+import { sortPostsByDate } from "../utils/posts";
 
-const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const posts = sortPostsByDate(await getCollection("blog", ({ data }) => !data.draft));
 
 const searchablePosts = posts.map((post) => ({
   post,

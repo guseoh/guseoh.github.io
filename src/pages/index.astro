@@ -2,24 +2,26 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { buildCategorySummary } from "../utils/categories";
+import { SITE_DESCRIPTION, SITE_TITLE, sortPostsByDate } from "../utils/posts";
 import ArchiveHero from "../components/home/ArchiveHero.astro";
+import FeaturedPosts from "../components/home/FeaturedPosts.astro";
 import LatestPosts from "../components/home/LatestPosts.astro";
 import TopicIndex from "../components/home/TopicIndex.astro";
 
-const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const posts = sortPostsByDate(await getCollection("blog", ({ data }) => !data.draft));
 
-const latestPosts = posts.slice(0, 12);
+const featuredPosts = posts.filter((post) => post.data.featured).slice(0, 4);
+const latestPosts = posts.slice(0, 5);
 const categorySummary = buildCategorySummary(posts);
 ---
 
 <BaseLayout
-  title="guseoh"
-  description="Java, Spring, Backend 기술 기록 아카이브"
+  title={SITE_TITLE}
+  description={SITE_DESCRIPTION}
   minimalHome={true}
 >
   <ArchiveHero />
+  <FeaturedPosts posts={featuredPosts} />
   <LatestPosts posts={latestPosts} />
   <TopicIndex categories={categorySummary} />
 </BaseLayout>
