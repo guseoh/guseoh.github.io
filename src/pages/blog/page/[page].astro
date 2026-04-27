@@ -38,11 +38,11 @@ const { pagePosts, currentPage, totalPages, postCount } = Astro.props as {
 };
 ---
 
-<BaseLayout title={`guseo.dev | Blog ${currentPage}`} description={SITE_DESCRIPTION}>
+<BaseLayout title={`devjune.dev | Blog ${currentPage}`} description={SITE_DESCRIPTION}>
   <div class="blog-list-head">
     <div>
       <h1 class="blog-list-head__title">All Posts ({postCount})</h1>
-      <p class="blog-list-head__description">Java/Spring 백엔드 개발자 오지훈의 학습과 프로젝트 개선 기록</p>
+      <p class="blog-list-head__description">Java/Spring 학습과 프로젝트 개선 기록</p>
     </div>
 
     <div class="view-switch" role="group" aria-label="Toggle post list view">

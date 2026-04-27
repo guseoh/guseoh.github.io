@@ -1,7 +1,7 @@
 import type { CollectionEntry } from "astro:content";
 
-export const SITE_TITLE = "guseo.dev";
-export const SITE_DESCRIPTION = "Java/Spring 백엔드 개발자 오지훈의 학습과 프로젝트 개선 기록";
+export const SITE_TITLE = "devjune.dev";
+export const SITE_DESCRIPTION = "Java/Spring 학습과 프로젝트 개선 기록";
 
 export function sortPostsByDate(posts: CollectionEntry<"blog">[]) {
   return [...posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
