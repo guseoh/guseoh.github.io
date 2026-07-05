@@ -4,10 +4,8 @@ description: "객체의 상태와 규칙을 내부에 모으고, 공개된 행�
 date: 2026-06-24
 updated: 2026-06-27
 category: "Java"
-slug: "java/캡슐화/Encapsulation"
-commentKey: "/blog/java/캡슐화/Encapsulation/"
-aliases:
-    - "/blog/java/캡슐화/encapsulation/"
+slug: "java/캡슐화/encapsulation"
+commentKey: "/blog/java/캡슐화/encapsulation/"
 tags:
     - Java
     - OOP
@@ -24,7 +22,7 @@ draft: false
 
 그렇다고 객체의 상태가 자동으로 보호되는 것은 아니다.
 
-```java
+```java.
 public class BankAccount {
 
     private long balance;
