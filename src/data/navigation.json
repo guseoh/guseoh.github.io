@@ -152,5 +152,18 @@
         "planned": true
       }
     ]
+  },
+  {
+    "title": "Notes",
+    "slug": "notes",
+    "description": "매일 학습한 내용과 짧은 개발 기록을 모아봅니다.",
+    "items": [
+      {
+        "title": "Daily",
+        "slug": "daily",
+        "type": "category",
+        "description": "매일 학습한 Java와 Spring 주제를 기록합니다."
+      }
+    ]
   }
 ]
