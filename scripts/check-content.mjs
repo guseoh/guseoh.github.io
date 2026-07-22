@@ -147,11 +147,25 @@ function checkFrontmatterIndentation(relativePath, lines) {
   const endIndex = lines.findIndex((line, index) => index > 0 && line.trim() === "---");
   if (endIndex === -1) return;
 
+  let nestedMapping = null;
+
   for (let index = 1; index < endIndex; index += 1) {
     const line = lines[index];
+    const topLevelMatch = line.match(/^([A-Za-z][\w-]*):\s*(.*)$/);
+
+    if (topLevelMatch) {
+      nestedMapping = topLevelMatch[2].trim() === "" ? topLevelMatch[1] : null;
+      continue;
+    }
 
     if (/^\s+[A-Za-z][\w-]*:\s*/.test(line)) {
+      if (nestedMapping === "testedWith") continue;
       fail(relativePath, index + 1, "frontmatter의 top-level key가 들여쓰기되어 있습니다.");
+      continue;
+    }
+
+    if (line.trim().length > 0 && !/^\s*-\s+/.test(line)) {
+      nestedMapping = null;
     }
   }
 }
