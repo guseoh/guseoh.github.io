@@ -88,7 +88,7 @@ function readFrontmatterScalar(lines, frontmatterEnd, key) {
   const pattern = new RegExp(`^${key}:\\s*(.*)$`);
   for (let index = 1; index < frontmatterEnd; index += 1) {
     const match = lines[index].match(pattern);
-    if (match) return match[1].trim().replace(/^(\["'])(.*)\1$/, "$2");
+    if (match) return match[1].trim().replace(/^(['"])(.*)\1$/, "$2");
   }
   return "";
 }
