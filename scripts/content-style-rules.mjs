@@ -53,7 +53,7 @@ export function findContentStyleIssues(source) {
       const titleWithoutNumber = stripHeadingNumber(rawTitle);
       const isAllowedReferenceSubheading = depth === 3 && referenceSubheadings.has(titleWithoutNumber);
 
-      headings.push({ depth, line: lineNumber, rawTitle, title: titleWithoutNumber });
+      headings.push({ depth, index, line: lineNumber, rawTitle, title: titleWithoutNumber });
 
       if (!headingNumberPattern.test(rawTitle) && !isAllowedReferenceSubheading) {
         issues.push(issue(lineNumber, "heading-number", "`##`와 `###` 제목에는 계층 번호가 필요합니다."));
@@ -72,7 +72,7 @@ export function findContentStyleIssues(source) {
   }
 
   if (!isDraft) {
-    checkFinalSections(headings, contentStart + 1, issues);
+    checkFinalSections(lines, headings, contentStart + 1, issues);
   }
 
   return issues;
@@ -88,7 +88,7 @@ function readFrontmatterScalar(lines, frontmatterEnd, key) {
   const pattern = new RegExp(`^${key}:\\s*(.*)$`);
   for (let index = 1; index < frontmatterEnd; index += 1) {
     const match = lines[index].match(pattern);
-    if (match) return match[1].trim().replace(/^(["'])(.*)\1$/, "$2");
+    if (match) return match[1].trim().replace(/^(\["'])(.*)\1$/, "$2");
   }
   return "";
 }
@@ -132,7 +132,7 @@ function checkLinks(line, lineNumber, issues) {
   }
 }
 
-function checkFinalSections(headings, fallbackLine, issues) {
+function checkFinalSections(lines, headings, fallbackLine, issues) {
   const h2 = headings.filter((heading) => heading.depth === 2);
   const last = h2.at(-1);
   const previous = h2.at(-2);
@@ -144,6 +144,35 @@ function checkFinalSections(headings, fallbackLine, issues) {
 
   if (!previous || previous.title !== "정리") {
     issues.push(issue(last.line, "final-summary", "`참고 자료` 바로 앞의 `##` 장은 `정리`여야 합니다."));
+    return;
+  }
+
+  checkSummaryBullets(lines, previous, last, issues);
+}
+
+function checkSummaryBullets(lines, summaryHeading, referenceHeading, issues) {
+  let fence = null;
+  let bulletCount = 0;
+
+  for (let index = summaryHeading.index + 1; index < referenceHeading.index; index += 1) {
+    const line = lines[index];
+    const fenceMatch = line.match(/^\s*(`{3,}|~{3,})/);
+
+    if (fenceMatch) {
+      fence = fence ? null : fenceMatch[1][0];
+      continue;
+    }
+
+    if (fence) continue;
+    if (/^[*-]\s+\S/.test(line)) bulletCount += 1;
+  }
+
+  if (bulletCount < 3 || bulletCount > 6) {
+    issues.push(issue(
+      summaryHeading.line,
+      "summary-bullets",
+      "`정리` 장은 핵심 결론을 3~6개의 최상위 글머리 기호로 요약합니다."
+    ));
   }
 }
 
