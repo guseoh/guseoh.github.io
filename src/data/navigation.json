@@ -2,7 +2,7 @@
   {
     "title": "Project",
     "slug": "project",
-    "description": "포트폴리오 프로젝트와 개선 과정을 모아봅니다.",
+    "description": "개인 프로젝트의 구현과 개선 과정을 모아봅니다.",
     "items": [
       {
         "title": "Board",

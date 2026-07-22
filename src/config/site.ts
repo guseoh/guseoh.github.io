@@ -1,6 +1,6 @@
 export const SITE = {
   title: "devjune.dev",
-  description: "Java/Spring 백엔드 개발자 오지훈의 학습과 프로젝트 개선 기록",
+  description: "Java, Spring, JPA, HTTP와 인프라를 공부하고 검증한 내용을 축적하는 개인 기술 블로그",
   author: "오지훈",
   siteUrl: "https://guseoh.github.io",
   githubUrl: "https://github.com/guseoh",
