@@ -125,12 +125,6 @@
         "description": "Git 사용법과 협업 흐름"
       },
       {
-        "title": "Infra",
-        "slug": "infra",
-        "type": "category",
-        "description": "서버 구성과 확장, 운영 인프라 학습"
-      },
-      {
         "title": "Branch Strategy",
         "slug": "branch-strategy",
         "type": "tag",
