@@ -87,7 +87,15 @@ export function getPostOgImagePath(post: CollectionEntry<"blog">) {
 }
 
 export function sortPostsByDate(posts: CollectionEntry<"blog">[]) {
-  return [...posts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  return [...posts].sort((a, b) => {
+    const aDate = (a.data.updated ?? a.data.date).valueOf();
+    const bDate = (b.data.updated ?? b.data.date).valueOf();
+    const dateDifference = bDate - aDate;
+
+    if (dateDifference !== 0) return dateDifference;
+
+    return getPostSourcePath(a).localeCompare(getPostSourcePath(b));
+  });
 }
 
 export function formatPostDate(date: Date) {
@@ -137,4 +145,3 @@ export function getReadingTime(post: CollectionEntry<"blog">) {
 function startOfUtcDay(date: Date) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
-
