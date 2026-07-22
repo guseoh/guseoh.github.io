@@ -11,8 +11,7 @@ tags:
     - Java
     - static
     - final
-testedWith:
-    java: "17"
+testedWith: { java: "17" }
 book: ""
 chapter: 1
 heroImage: "/og-image.svg"
