@@ -23,7 +23,9 @@ class Example {}
 
 ## 2. 정리
 
-핵심을 정리한다.
+* 첫 번째 핵심 결론을 완결된 문장으로 정리한다.
+* 두 번째 핵심 결론을 완결된 문장으로 정리한다.
+* 세 번째 핵심 결론을 완결된 문장으로 정리한다.
 
 ## 3. 참고 자료
 
@@ -58,6 +60,10 @@ draft: false
 class Example {}
 \`\`\`
 
+## 2. 정리
+
+핵심을 문단 하나로만 정리한다.
+
 ## 참고 자료
 
 * https://example.com
@@ -71,7 +77,7 @@ assert(rules.includes("forward-looking"));
 assert(rules.includes("code-fence-meta"));
 assert(rules.includes("raw-url"));
 assert(rules.includes("forbidden-source"));
-assert(rules.includes("final-summary"));
+assert(rules.includes("summary-bullets"));
 
 const draftPost = `---
 title: "작성 중"
@@ -87,5 +93,6 @@ draft: true
 ## 1. 메모
 `;
 assert.equal(findContentStyleIssues(draftPost).some((entry) => entry.rule.startsWith("final-")), false);
+assert.equal(findContentStyleIssues(draftPost).some((entry) => entry.rule === "summary-bullets"), false);
 
 console.log("Content style rule tests passed.");
