@@ -1,8 +1,9 @@
 ---
-title: "[Java]자바의 추상화는 무엇일까?"
-description: "객체지향의 추상화가 필요한 이유를 알아보고, 추상 클래스로 공통 흐름과 구현마다 달라지는 동작을 분리하는 방법을 살펴보자."
+title: "[Java] 자바의 추상화는 무엇일까?"
+description: "객체지향의 추상화가 필요한 이유와 추상 클래스로 공통 흐름과 구현마다 달라지는 동작을 분리하는 방법을 정리한다."
 date: 2026-06-26
-updated: 2026-06-29
+updated: 2026-07-23
+lastVerified: 2026-07-23
 category: "Java"
 slug: "java/추상화/abstraction"
 commentKey: "/blog/java/추상화/abstraction/"
@@ -11,6 +12,8 @@ tags:
     - OOP
     - Abstraction
     - Abstract Class
+testedWith:
+    java: "17"
 book: ""
 chapter: 1
 heroImage: "/og-image.svg"
@@ -25,7 +28,7 @@ draft: false
 
 프로그램은 현실의 대상을 그대로 옮기지 않는다. 현재 해결하려는 문제에 필요한 속성과 행동을 선택하고, 나머지는 모델에서 제외한다. 로그인 기능에서는 회원의 인증 정보가 필요하지만 배송지와 포인트는 필요하지 않은 것처럼, 같은 대상도 문제에 따라 다르게 표현된다.
 
-이 글에서는 추상화의 의미를 먼저 살펴보고, 여러 배송비 정책의 공통 흐름과 서로 다른 계산식을 추상 클래스로 분리해 본다.
+이 글에서는 추상화의 의미를 먼저 살펴보고, 여러 배송비 정책의 공통 흐름과 서로 다른 계산식을 추상 클래스로 분리한다.
 
 ## 2. 문제에 필요한 특징과 역할을 선택한다
 
@@ -33,11 +36,11 @@ draft: false
 
 <!-- table-caption: 기능에 따라 달라지는 회원의 정보와 행동 -->
 
-| 문제     | 필요한 정보와 행동             |
-| ------ | ---------------------- |
-| 로그인    | 인증 정보, 계정 상태, 인증 가능 여부 |
-| 상품 배송  | 수령인, 배송지, 연락처          |
-| 포인트 관리 | 포인트 잔액, 적립과 사용 규칙      |
+| 문제 | 필요한 정보와 행동 |
+| --- | --- |
+| 로그인 | 인증 정보, 계정 상태, 인증 가능 여부 |
+| 상품 배송 | 수령인, 배송지, 연락처 |
+| 포인트 관리 | 포인트 잔액, 적립과 사용 규칙 |
 
 로그인 기능에서 회원의 배송지를 관리할 필요는 없다. 반대로 상품을 배송하는 과정에서는 인증 비밀번호를 알 필요가 없다.
 
@@ -68,7 +71,7 @@ draft: false
 
 공통된 실행 순서와 검증은 상위 클래스에 두고, 실제 계산식은 하위 클래스에 맡길 수 있다.
 
-```java title="DeliveryFeePolicy.java" showLineNumbers
+```java
 public abstract class DeliveryFeePolicy {
 
     public final long calculate(long orderAmount) {
@@ -110,7 +113,7 @@ public abstract class DeliveryFeePolicy {
 
 일반 배송 정책은 주문 금액이 50,000원 이상이면 0원을, 그보다 작으면 3,000원을 반환한다.
 
-```java title="StandardDeliveryFeePolicy.java" showLineNumbers
+```java
 public final class StandardDeliveryFeePolicy
         extends DeliveryFeePolicy {
 
@@ -130,7 +133,7 @@ public final class StandardDeliveryFeePolicy
 
 무료 배송 정책은 주문 금액과 관계없이 0원을 반환한다.
 
-```java title="FreeDeliveryFeePolicy.java" showLineNumbers
+```java
 public final class FreeDeliveryFeePolicy
         extends DeliveryFeePolicy {
 
@@ -143,7 +146,7 @@ public final class FreeDeliveryFeePolicy
 
 두 클래스는 계산식이 다르지만 외부에 제공하는 사용 방법은 같다.
 
-```java title="DeliveryFeeExample.java" showLineNumbers
+```java
 public class DeliveryFeeExample {
 
     public static void main(String[] args) {
@@ -168,7 +171,7 @@ public class DeliveryFeeExample {
 
 `standardPolicy.calculate(40_000)`을 호출하면 상위 클래스의 `calculate()`가 주문 금액을 먼저 검증한다. 이후 실제 객체인 `StandardDeliveryFeePolicy`의 `calculateFee()`가 3,000원을 반환하고, 상위 클래스가 그 결과를 다시 검증한다.
 
-`freePolicy`도 같은 `calculate()`를 사용하지만 실제 객체가 다르므로 `FreeDeliveryFeePolicy`의 계산식이 실행된다. 같은 호출이 객체에 따라 다른 메서드 구현을 선택하는 원리는 다음 글의 주제인 다형성에서 자세히 다룬다.
+`freePolicy`도 같은 `calculate()`를 사용하지만 실제 객체가 다르므로 `FreeDeliveryFeePolicy`의 계산식이 실행된다. 호출 코드는 구체적인 계산식을 알지 않아도 `calculate()`라는 공통 동작만 사용한다.
 
 ### 3.2 상위 클래스가 공통 조건을 지킨다
 
@@ -185,7 +188,7 @@ policy.calculate(-1_000);
 
 하위 클래스가 실수로 음수 배송비를 반환하는 경우에는 `IllegalStateException`이 발생한다.
 
-```java title="InvalidDeliveryFeePolicy.java"
+```java
 public final class InvalidDeliveryFeePolicy
         extends DeliveryFeePolicy {
 
@@ -250,13 +253,25 @@ public abstract class AdditionalDeliveryFeePolicy
 }
 ```
 
-현재 예제에서 필요한 핵심은 상위 클래스가 공통 흐름을 구현하고, 하위 클래스가 추상 메서드에 정책별 계산식을 채운다는 점이다. 추상 클래스와 인터페이스의 선택 기준이나 세부 문법 차이는 이후 글에서 별도로 살펴본다.
+현재 예제에서 상위 클래스는 공통 실행 순서와 검증을 책임지고, 하위 클래스는 정책별 계산식을 구현한다. `abstract`는 이 역할 분리를 코드로 강제한다.
 
-## 5. 참고 자료
+## 5. 정리
+
+추상화에서는 현실의 모든 정보를 옮기기보다 현재 문제에 필요한 역할과 행동을 선택한다. 여러 객체가 같은 행동을 제공한다면 하나의 상위 타입으로 묶을 수 있다.
+
+추상 클래스는 공통 상태와 구현을 보관하면서 일부 동작을 하위 클래스에 맡길 때 사용할 수 있다. 현재 예제에서는 `calculate()`가 공통 흐름을 고정하고, `calculateFee()`가 정책별 차이를 표현한다.
+
+`abstract` 키워드를 사용했다고 설계가 자동으로 좋아지는 것은 아니다. 먼저 어떤 역할을 공통으로 제공하고 어떤 부분이 구현마다 달라지는지 정한 뒤, 그 결과를 표현하는 문법으로 사용해야 한다.
+
+## 6. 참고 자료
+
+### 공식 자료
 
 * [The Java Language Specification, Java SE 17 Edition - Chapter 8. Classes](https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html)
 * [Abstract Methods and Classes - Dev.java](https://dev.java/learn/inheritance/abstract-classes/)
-* [생각하라, 객체지향처럼](https://techblog.woowahan.com/2502/)
-* [Java Abstract Class](https://johngrib.github.io/wiki/java/abstract-class/)
-* [템플릿 메소드 패턴](https://johngrib.github.io/wiki/pattern/template-method/)
-* [추상 클래스(Abstract) 용도 완벽 이해하기](https://inpa.tistory.com/entry/JAVA-%E2%98%95-%EC%B6%94%EC%83%81-%ED%81%B4%EB%9E%98%EC%8A%A4Abstract-%EC%9A%A9%EB%8F%84-%EC%99%84%EB%B2%BD-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0)
+
+### 한글 참고 링크
+
+* [우아한형제들 기술블로그 - 생각하라, 객체지향처럼](https://techblog.woowahan.com/2502/)
+* [기계인간 John Grib - Java Abstract Class](https://johngrib.github.io/wiki/java/abstract-class/)
+* [기계인간 John Grib - 템플릿 메소드 패턴](https://johngrib.github.io/wiki/pattern/template-method/)
