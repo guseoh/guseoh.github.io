@@ -11,9 +11,10 @@
     "deploy:meta": "node scripts/write-deploy-meta.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "content:check": "node scripts/check-content.mjs",
+    "content:check": "node scripts/check-content.mjs && node scripts/check-content-style.mjs",
+    "content:style": "node scripts/check-content-style.mjs",
     "links:check": "node scripts/check-links.mjs",
-    "test": "node scripts/check-korea-date.mjs && node scripts/check-blog-contracts.mjs",
+    "test": "node scripts/check-korea-date.mjs && node scripts/check-blog-contracts.mjs && node scripts/content-style-rules.test.mjs",
     "smoke": "node scripts/smoke-test.mjs"
   },
   "dependencies": {
