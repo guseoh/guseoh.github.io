@@ -30,7 +30,13 @@ const deployCheck = expectedDeploySha || String(Math.floor(Date.now() / 1000));
 const failures = [];
 
 const localPosts = await readLocalPostContracts();
-const publishedPosts = localPosts.filter((post) => !post.draft).sort((a, b) => b.date.valueOf() - a.date.valueOf());
+const publishedPosts = localPosts
+  .filter((post) => !post.draft)
+  .sort((a, b) => {
+    const dateDifference = b.date.valueOf() - a.date.valueOf();
+    if (dateDifference !== 0) return dateDifference;
+    return a.sourcePath.localeCompare(b.sourcePath);
+  });
 const draftPosts = localPosts.filter((post) => post.draft);
 
 for (const checkPath of paths) {
@@ -140,7 +146,6 @@ async function checkUrlWithRetry(url, retryCount, delayMs) {
 
   for (let attempt = 0; attempt <= retryCount; attempt += 1) {
     lastResult = await checkUrl(url);
-
     if (lastResult.ok) return lastResult;
     if (attempt < retryCount) await delay(delayMs);
   }
@@ -206,7 +211,6 @@ async function checkDeployMetaWithRetry(base, expectedSha, retryCount, delayMs) 
 
   for (let attempt = 0; attempt <= retryCount; attempt += 1) {
     lastResult = await checkDeployMeta(base, expectedSha);
-
     if (lastResult.ok) return lastResult;
     if (attempt < retryCount) await delay(delayMs);
   }
@@ -261,7 +265,6 @@ async function checkDeployMeta(base, expectedSha) {
 function formatDeployMetaFailure(result) {
   const actual = result.actualSha || "none";
   const error = result.error ? ` ${result.error}` : "";
-
   return `FAIL ${result.status ?? "ERR"} ${result.url} deploy-meta expected ${result.expectedSha} got ${actual}${error}`;
 }
 
@@ -279,7 +282,8 @@ async function readLocalPostContracts() {
       date: parseDate(frontmatter.updated || frontmatter.date),
       draft: frontmatter.draft === "true",
       path: `/blog/${slug.replace(/^\/+|\/+$/g, "")}/`,
-      slug
+      slug,
+      sourcePath: path.relative(rootDir, file).split(path.sep).join("/")
     });
   }
 
@@ -418,7 +422,6 @@ function normalizeBaseUrl(value) {
   if (!url.pathname.endsWith("/")) {
     url.pathname = `${url.pathname}/`;
   }
-
   return url;
 }
 
