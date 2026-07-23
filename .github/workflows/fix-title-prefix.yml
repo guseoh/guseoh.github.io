@@ -1,0 +1,59 @@
+name: Fix title prefix normalization
+
+on:
+  push:
+    branches:
+      - agent/hide-project-posts-metadata
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: agent/hide-project-posts-metadata
+          fetch-depth: 0
+
+      - name: Remove remaining title prefixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          prefix = re.compile(r"^\[[^\]]+\]\s*")
+          for file in Path("src/content/blog").rglob("*.md"):
+              if file.name.startswith("_"):
+                  continue
+              source = file.read_text(encoding="utf-8")
+              match = re.search(r'^title:\s*(["\'])(.*?)\1\s*$', source, re.MULTILINE)
+              if not match:
+                  continue
+              title = prefix.sub("", match.group(2)).strip()
+              replacement = "title: " + json.dumps(title, ensure_ascii=False)
+              source = source[:match.start()] + replacement + source[match.end():]
+              file.write_text(source, encoding="utf-8")
+
+          style_path = Path("scripts/content-style-rules.mjs")
+          style = style_path.read_text(encoding="utf-8")
+          style = re.sub(
+              r'const titlePrefixPattern = /\^.*?;\n',
+              'const titlePrefixPattern = /^\\[[^\\]]+\\]\\s*/;\n',
+              style,
+              count=1,
+          )
+          style_path.write_text(style, encoding="utf-8")
+          Path(".github/workflows/fix-title-prefix.yml").unlink()
+          PY
+
+      - name: Commit title prefix fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "test: 제목 접두사 규칙 일반화"
+          git push origin HEAD:agent/hide-project-posts-metadata
