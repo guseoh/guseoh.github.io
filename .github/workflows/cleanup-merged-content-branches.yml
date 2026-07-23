@@ -1,0 +1,22 @@
+name: Cleanup merged content branches
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - synchronize
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete merged content branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/agent/java-servlet-cleanup-1" || true
+          gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/agent/remove-empty-paging-post" || true
