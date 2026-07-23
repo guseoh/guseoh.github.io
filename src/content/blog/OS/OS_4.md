@@ -1,12 +1,13 @@
 ---
-title: "[OS] 제한적 직접 실행은 어떻게 CPU를 가상화할까?"
+title: "제한적 직접 실행은 어떻게 CPU를 가상화할까?"
 description: "프로그램을 CPU에서 직접 실행하면서도 운영체제가 제어권을 유지하는 제한적 직접 실행 원리를 정리한다."
 date: 2026-05-25
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "OS"
 slug: "os/os_4"
+aliases: []
 commentKey: "/blog/os/os_4/"
+category: "OS"
 tags:
     - OS
     - CPU Virtualization

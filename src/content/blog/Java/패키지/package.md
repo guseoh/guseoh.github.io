@@ -4,9 +4,10 @@ description: "자바 패키지가 타입 이름을 구분하고 코드의 접근
 date: 2026-07-23
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/패키지/package"
+aliases: []
 commentKey: "/blog/java/패키지/package/"
+category: "Java"
 tags:
     - Java
     - Package

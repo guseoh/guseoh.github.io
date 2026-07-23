@@ -1,12 +1,13 @@
 ---
-title: "[Java] 자바 컬렉션 프레임워크는 무엇일까?"
+title: "자바 컬렉션 프레임워크는 무엇일까?"
 description: "자바 컬렉션 프레임워크의 공통 인터페이스와 주요 구현체가 순서, 중복, 키 조회와 처리 방향을 어떻게 표현하는지 알아본다."
 date: 2026-05-28
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/collectionframework"
+aliases: []
 commentKey: "/blog/java/collectionframework/"
+category: "Java"
 tags:
     - Java
     - Collection

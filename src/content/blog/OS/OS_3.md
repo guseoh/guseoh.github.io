@@ -1,12 +1,13 @@
 ---
-title: "[OS] fork, exec와 wait는 어떻게 프로세스를 실행할까?"
+title: "fork, exec와 wait는 어떻게 프로세스를 실행할까?"
 description: "Unix 계열 운영체제에서 fork, exec 계열과 waitpid가 프로세스를 생성하고 실행 결과를 회수하는 흐름을 설명한다."
 date: 2026-05-25
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "OS"
 slug: "os/os_3"
+aliases: []
 commentKey: "/blog/os/os_3/"
+category: "OS"
 tags:
     - OS
     - Process API

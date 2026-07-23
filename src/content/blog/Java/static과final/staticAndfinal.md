@@ -1,12 +1,13 @@
 ---
-title: "[Java] 자바의 static과 final은 무엇일까?"
+title: "자바의 static과 final은 무엇일까?"
 description: "static 멤버가 클래스에 속하는 방식과 final이 변수 재할당, 메서드 오버라이딩과 클래스 상속을 제한하는 범위를 알아본다."
 date: 2026-06-24
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/static과final/staticandfinal"
+aliases: []
 commentKey: "/blog/java/static과final/staticandfinal/"
+category: "Java"
 tags:
     - Java
     - static

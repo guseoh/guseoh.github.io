@@ -1,12 +1,13 @@
 ---
-title: "[Spring] 서블릿이란 무엇일까?"
+title: "서블릿이란 무엇일까?"
 description: "Jakarta Servlet이 HTTP 요청과 응답을 처리하는 방식, 서블릿 컨테이너의 생명주기와 동시 요청 처리, Spring MVC와의 관계를 알아본다."
 date: 2026-06-11
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Spring"
 slug: "spring/servlet"
+aliases: []
 commentKey: "/blog/spring/servlet/"
+category: "Spring"
 tags:
     - Java
     - Servlet

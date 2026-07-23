@@ -4,24 +4,24 @@
     "title": "Board 프로젝트 개선 기록",
     "description": "Board 프로젝트의 도메인 정책, 서비스 책임, 구현 구조를 정리하는 시리즈입니다.",
     "order": 10,
-    "status": "ongoing",
-    "featured": true
+    "status": "planned",
+    "featured": false
   },
   {
     "id": "board-프로젝트-성능-개선",
     "title": "Board 프로젝트 성능 개선",
     "description": "측정, 모니터링, 쿼리 확인을 바탕으로 Board 프로젝트 성능을 개선하는 기록입니다.",
     "order": 20,
-    "status": "ongoing",
-    "featured": true
+    "status": "planned",
+    "featured": false
   },
   {
     "id": "thymeleaf-게시판을-react로-전환",
     "title": "Thymeleaf 게시판을 React로 전환",
     "description": "서버 렌더링 중심 게시판 화면을 React 기반 프론트엔드로 옮기는 과정을 기록합니다.",
     "order": 30,
-    "status": "ongoing",
-    "featured": true
+    "status": "planned",
+    "featured": false
   },
   {
     "id": "data-structure",

@@ -4,9 +4,10 @@ description: "Flyway의 마이그레이션 실행 방식, 파일 규칙, 체크�
 date: 2026-06-17
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "DB"
 slug: "db/flyway/flyway"
+aliases: []
 commentKey: "/blog/db/flyway/flyway/"
+category: "DB"
 tags:
     - Spring Boot
     - Flyway

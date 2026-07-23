@@ -8,25 +8,29 @@
         "title": "Board",
         "slug": "board",
         "type": "category",
-        "description": "Spring Boot 게시판 프로젝트 구현과 개선 기록"
+        "description": "Spring Boot 게시판 프로젝트 구현과 개선 기록",
+        "planned": true
       },
       {
         "title": "Performance",
         "slug": "performance",
         "type": "tag",
-        "description": "성능 측정과 쿼리 최적화"
+        "description": "성능 측정과 쿼리 최적화",
+        "planned": true
       },
       {
         "title": "Monitoring",
         "slug": "monitoring",
         "type": "tag",
-        "description": "Actuator와 P6Spy를 활용한 관측성 개선"
+        "description": "Actuator와 P6Spy를 활용한 관측성 개선",
+        "planned": true
       },
       {
         "title": "Board 개선 시리즈",
         "slug": "board-프로젝트-개선-기록",
         "type": "series",
-        "description": "Board 프로젝트 개선 과정을 순서대로 읽기"
+        "description": "Board 프로젝트 개선 과정을 순서대로 읽기",
+        "planned": true
       },
       {
         "title": "Deployment",
