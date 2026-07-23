@@ -55,6 +55,10 @@ public class HelloServlet extends HttpServlet {
 Spring Boot에서 `@WebServlet`을 직접 탐색해 등록하려면 애플리케이션에 `@ServletComponentScan`을 선언할 수 있다.
 
 ```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.server.servlet.context.ServletComponentScan;
+
 @ServletComponentScan
 @SpringBootApplication
 public class ServletApplication {
@@ -270,7 +274,7 @@ Spring MVC가 서블릿 API를 없애는 것은 아니다. 컨트롤러 메서�
 * [Jakarta Servlet 6.1 API - HttpServletResponse](https://jakarta.ee/specifications/servlet/6.1/apidocs/jakarta.servlet/jakarta/servlet/http/httpservletresponse)
 * [Jakarta EE Tutorial - Jakarta Servlet](https://jakarta.ee/learn/docs/jakartaee-tutorial/current/web/servlets/servlets.html)
 * [Spring Framework - DispatcherServlet](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-servlet.html)
-* [Spring Boot API - ServletComponentScan](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/web/servlet/ServletComponentScan.html)
+* [Spring Boot API - ServletComponentScan](https://docs.spring.io/spring-boot/4.0/api/java/org/springframework/boot/web/server/servlet/context/ServletComponentScan.html)
 
 ### 한글 참고 링크
 
