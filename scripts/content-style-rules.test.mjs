@@ -79,6 +79,15 @@ assert(rules.includes("raw-url"));
 assert(rules.includes("forbidden-source"));
 assert(rules.includes("summary-bullets"));
 
+const prefixedTitlePost = validPost.replace(
+  'title: "예시"',
+  'title: "[Board 프로젝트] 예시"'
+);
+assert.equal(
+  findContentStyleIssues(prefixedTitlePost).some((entry) => entry.rule === "title-prefix"),
+  true
+);
+
 const draftPost = `---
 title: "작성 중"
 description: "작성 중"
