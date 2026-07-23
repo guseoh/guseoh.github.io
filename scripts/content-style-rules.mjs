@@ -2,7 +2,7 @@ const headingPattern = /^(#{2,3})\s+(.+?)\s*#*\s*$/;
 const headingNumberPattern = /^\d+(?:\.\d+)*[.)]?\s+/;
 const referenceSubheadings = new Set(["공식 자료", "한글 참고 링크"]);
 const forwardLookingPattern = /(다음 글에서|다음 글로|다음번에|뒤의 글에서|이후 글에서|후속 글에서)/;
-const titlePrefixPattern = /^\[(Java|Spring|OS|Board|DB|Network|Infra|Git)\]\s*/;
+const titlePrefixPattern = /^\[[^\]]+\]\s*/;
 const markdownLinkPattern = /!?\[[^\]]*\]\(\s*(https?:\/\/[^)\s]+)[^)]*\)/g;
 const forbiddenReferenceHosts = [
   "wikipedia.org",

@@ -1,5 +1,5 @@
 ---
-title: "[Board 프로젝트] 게시글 상세 조회 성능 측정 - 개선 전 분석"
+title: "게시글 상세 조회 성능 측정 - 개선 전 분석"
 description: "Actuator의 http.server.requests와 P6Spy 로그로 게시글 상세 조회의 응답 시간과 SQL 흐름을 확인하고, 측정 결과로 말할 수 있는 범위를 정리한다."
 date: 2026-04-27
 updated: 2026-07-23
