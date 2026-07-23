@@ -1,90 +1,159 @@
 ---
 title: "[Board] Thymeleaf 게시판을 React로 전환하려는 이유"
-description: "Thymeleaf 게시판을 React로 전환에 대한 과정"
+description: "SSR 게시판에 React와 JSON API를 점진적으로 도입하려는 목적, 기대 효과와 인증·보안 조건을 정리한다."
 date: 2026-06-04
-updated: 2026-06-04
-category: Board
+updated: 2026-07-23
+lastVerified: 2026-07-23
+category: "Board"
 slug: "board/react01"
 commentKey: "/blog/board/react01/"
-tags: ["Spring", "Project"]
+tags:
+    - Spring
+    - Spring MVC
+    - Thymeleaf
+    - React
+    - REST API
 series: "thymeleaf-게시판을-react로-전환"
 chapter: 2
+heroImage: "/og-image.svg"
 draft: false
 ---
 
+## 1. Thymeleaf를 사용한 이유
 
-## 들어가기 전
+Board 프로젝트는 Spring Boot와 Thymeleaf를 사용한 서버 사이드 렌더링 방식으로 시작했다. 목록, 상세, 작성과 수정 화면을 서버에서 렌더링하면 별도의 프론트엔드 프로젝트 없이 Spring MVC의 요청 처리 흐름을 끝까지 확인할 수 있다.
 
-현재 진행중인 Board 프로젝트는 Spring Boot와 Thymeleaf를 기반으로 한 서버 사이드 렌더링(SSR) 방식의 게시판이다.
-
-처음 이 프로젝트를 시작했을 때는 단순 '백엔드 프레임워크 학습' 이었다. Spring Boot 환경 안에서 `Controller - Service - Repository - Entity - DTO`로 이어지는 데이터의 흐름을 익히고, 이를 직접 눈으로 확인하기 위해서는
-화면까지 구성할 수 있는 Thymeleaf가 최적의 선택이었다. ~~(김영한님 강의가 가장 컸다.)~~
-
-별도의 프론트엔드 프로젝트를 세팅할 필요 없이, 서버에서 데이터를 조회해 Model에 담고 HTML을 만들어 브라우저에 내려주는 방식은 게시판의 필수 기능(목록, 상세, 작성, 수정, 삭제)을 빠르게 구현하는 데 큰 도움이 되었다. 그 결과 회원가입/로그인, OAuth2, 게시글/댓글 CRUD, 페이징, 검색, 관리자 페이지까지 꽤 규모 있는 기능을 갖추게 되었다. ~~(기능은 계속 추가될 것이다.)~~
-
-하지만 점점 프로젝트가 고도화가 되고, 새로운 기능을 적용시키다보니 자연스럽게 아키텍처에 대한 본질적인 물음표가 생겼다. 그래서 Thymeleaf 기반의 프로젝트를 React와 REST API 기반 구조로 전환하려는 첫 출발점이 되었다.
-
-> [!note]
-> SSR(Server Side Rendering)은 화면에 보여줄 **HTML을 서버에서 미리 만들어서 브라우저에 전달**하는 방식이다.
->
-> 즉, 사용자가 어떤 페이지에 접속하면 서버가 DB 조회, 비즈니스 로직 처리, HTML 생성까지 한 뒤 완성된 HTML을 클라이언트에게 보내준다.
-
-## 현재 구조의 한계
-
-![MVC 패턴](<스크린샷 2026-06-04 232329.png>)
-
-현재 Board 프로젝트의 흐름은 전형적인 **Spring MVC**의 형태를 띄고 있다.
-
-```
-1. 브라우저 요청
-2. Spring Controller
-3. Service & Repository(DB 조회)
-4. Model에 데이터 추가
-5. Thymeleaf HTML 렌더링
-6. 완성된 HTML 응답
+```text
+브라우저 요청
+→ Controller
+→ Service와 Repository
+→ Model에 화면 데이터 추가
+→ Thymeleaf가 HTML 렌더링
+→ 완성된 HTML 응답
 ```
 
-이 방식은 `@ModelAttribute`, `BindingResult`, `redirect` 등 Spring MVC의 핵심 개념을 화면과 연결해 이해하기에 좋았다.
+이 구조는 잘못된 선택이 아니다. 서버가 HTML을 만드는 방식은 화면과 백엔드를 빠르게 연결하기에 적합하고, `@ModelAttribute`, 검증 오류, 리다이렉트와 세션 인증의 흐름을 학습하는 데도 유용했다.
 
-그러나 백엔드와 프론트엔드의 '책임'이라는 관점에서 보면 아쉬움이 남았다. Spring Boot가 데이터베이스와 통신하는 비즈니스 로직뿐만 아니라, 회면을 그리는(렌더링) 역할까지 모두 떠안고 있기 때문이다.
+전환을 검토한 이유는 Thymeleaf가 부족해서가 아니라 프로젝트에서 확인하려는 문제가 달라졌기 때문이다. 이제는 화면 렌더링보다 **HTTP API의 계약, 클라이언트 상태와 서버 책임의 경계**를 더 구체적으로 학습하려 한다.
 
-만약 이 상태에서 화면만 React로 바꾸려고 한다면 벽에 부딪히게 된다. 현재 서버는 클라이언트가 필요로 하는 순수한 '데이터(JSON)'를 제공하는 것이 아니라, 완성된 '화면(HTML)'을 반환하고 있기 때문이다.
+## 2. Spring MVC는 HTML과 JSON을 모두 반환할 수 있다
 
-> [!note] 책임
-> Spring Boot
-> -> API 제공, 인증/인가, 비즈니스 로직, DB 처리
->
-> React
-> -> 화면 렌더링, 사용자 인터랙션, 상태 관리
+Thymeleaf에서 React로 화면 기술을 바꾼다고 Spring MVC 자체를 버리는 것은 아니다. Spring MVC의 컨트롤러는 반환값에 따라 뷰를 선택할 수도 있고 응답 본문에 데이터를 직렬화할 수도 있다. 다음 코드는 두 구조를 비교하기 위해 import와 DTO 선언을 생략했다.
 
-## 전환의 핵심
+```java
+@Controller
+@RequiredArgsConstructor
+public class PostViewController {
 
-이번 React 전환의 목적은 단순 "프론트엔드 기술을 적용해보고 싶다"가 아니라 프로젝트를 **HTML 렌더링 중심 구조에서 REST API 중심 구조로 탈바꿈**하는 것이 핵심이다. 
-- 프론트 엔드(React): 화면 구성, 라우팅 등
-- 백엔드(Spring Boot): 데이터 제공(JSON 응답), 비즈니스 로직 등
+    private final PostQueryService postQueryService;
 
-### 1. Controller의 분리 (View -> API)
+    @GetMapping("/posts/{postId}")
+    public String detail(
+            @PathVariable Long postId,
+            Model model
+    ) {
+        model.addAttribute(
+                "post",
+                postQueryService.findDetail(postId)
+        );
+        return "post/detail";
+    }
+}
+```
 
-기존에는 `/post/1` 요청이 들어오면 게시글 데이터를 조회한 뒤 post/detail이라는 Thymeleaf 화면을 반환했다. 이제는 @RestController를 활용해 `/api/posts/1` 요청을 받고, 화면이 아닌 게시글 상세 데이터를 JSON 형태로 반환하는 API Controller를 별도로 분리해야 한다.
+위 컨트롤러는 조회 결과를 `Model`에 담고 뷰 이름을 반환한다. 같은 서비스 결과를 JSON 응답으로 제공할 수도 있다.
 
-### 2. 데이터 전송 방식의 변화 (Form Submit ➔ JSON Payload)
+```java
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/posts")
+public class PostApiController {
 
-Thymeleaf에서는 폼(Form)을 Submit 하면 서버가 데이터를 받고 성공 시 Redirect 처리를 했다. 하지만 React 환경에서는 사용자의 입력을 State로 관리하다가 `fetch`나 `axios`를 통해 JSON 형태로 서버에 요청을 보낸다. 백엔드는 이를 @RequestBody로 받아 처리하게 된다. 화면 이동의 주도권이 서버(Redirect)에서 클라이언트(React Router 등)로 넘어가는 것이다.
+    private final PostQueryService postQueryService;
 
-### 3. 검증(Validation)과 공통 응답 처리
+    @GetMapping("/{postId}")
+    public PostDetailResponse detail(
+            @PathVariable Long postId
+    ) {
+        return postQueryService.findDetail(postId);
+    }
+}
+```
 
-기존에는 입력값 검증 실패 시 서버가 다시 폼 화면을 그려서 반환했지만, 이제는 에러의 원인을 JSON으로 명확하게 내려준다. 이를 위해 성공 시에는 ApiResponse, 실패 시에는 ErrorResponse와 같이 일관된 형태의 공통 응답 객체를 설계하여 프론트엔드 개발자가 예측 가능하게 API를 사용할 수 있도록 구성할 예정이다.
+`@RestController`는 반환값을 뷰 이름으로 해석하지 않고 `HttpMessageConverter`를 통해 응답 본문으로 직렬화한다. 두 컨트롤러는 표현 방식이 다르지만 같은 애플리케이션 서비스와 도메인 로직을 사용할 수 있다.
 
-## 점진적 전환을 택한 이유
+## 3. 전환에서 얻고 싶은 것
 
-React와 API 구조로 넘어간다고 해서, 하루아침에 기존 Thymeleaf 코드를 다 지우고 새로 작성할 생각은 없다. 작동 중인 시스템을 한 번에 뒤엎는 것은 기존 기능(특히 로그인, OAuth2, 권한 관리 등)을 망가뜨릴 위험이 크기 때문이다.
+### 3.1 화면과 API 계약을 분리한다
 
-그래서 기존 화면은 그대로 살려둔 채, 새로운 API를 하나씩 덧붙이는 방식을 선택했다.
+SSR 컨트롤러는 화면 이름, `Model` 속성, 리다이렉트 경로를 함께 다룬다. JSON API는 상태 코드, 헤더, 응답 본문과 오류 형식으로 클라이언트와 계약을 맺는다.
 
-인증 방식 또한 당분간은 기존의 Spring Security '세션(Session)' 방식을 유지할 계획이다.
+API를 별도 경계로 두면 화면 템플릿의 변수명이 아니라 클라이언트가 관찰할 수 있는 HTTP 동작을 기준으로 테스트할 수 있다. 다만 공통 응답 래퍼를 사용한다고 자동으로 좋은 API가 되는 것은 아니다. 각 엔드포인트의 상태 코드, 본문 구조와 오류 의미가 먼저 명확해야 한다.
 
-## 마무리
+### 3.2 사용자 상호작용을 클라이언트에서 관리한다
 
-결론적으로 이번 작업은 단순한 '프론트엔드 스택 교체'가 아니다. Spring Boot + Thymeleaf 기반의 모놀리식(Monolithic) SSR 게시판을, 클라이언트와 서버가 완벽히 분리된 REST API 아키텍처로 진화시키는 과정이다.
+React를 사용하면 화면 상태, 입력 상태, 로딩과 오류 표시, 일부 데이터 갱신을 클라이언트에서 관리할 수 있다. 사용자가 댓글을 등록할 때 전체 HTML 페이지를 다시 받는 대신 필요한 API를 호출하고 변경된 부분만 갱신하는 방식도 선택할 수 있다.
 
-이 전환 과정을 시리즈로 작성할 것이다.
+이 변화는 무조건 더 빠르다는 뜻이 아니다. 초기 JavaScript 로딩, API 호출 횟수, 상태 관리 복잡도와 캐시 정책에 따라 결과가 달라진다. 전환의 목적은 성능을 단정하는 것이 아니라 클라이언트 상태와 서버 API의 책임을 직접 설계해 보는 데 있다.
+
+### 3.3 다른 클라이언트에서도 사용할 수 있는 경계를 만든다
+
+HTML 응답은 특정 화면 구조와 강하게 연결된다. JSON API는 웹 화면 외의 클라이언트도 같은 기능을 호출할 수 있는 경계가 될 수 있다.
+
+그러나 컨트롤러에 `@RestController`를 붙였다고 REST 제약을 자동으로 충족하거나 프론트엔드와 백엔드가 완전히 분리되는 것은 아니다. URL, HTTP 메서드, 상태 코드, 캐시와 오류 계약을 함께 설계해야 하며, 배포와 저장소를 실제로 분리할지도 별도의 선택이다.
+
+## 4. 세션 인증을 유지할 때 확인할 조건
+
+React를 도입하기 위해 인증 방식을 반드시 JWT로 바꿀 필요는 없다. 브라우저 기반 애플리케이션은 기존 세션 인증을 유지하면서 JSON API를 사용할 수 있다.
+
+같은 출처에서 화면과 API를 제공하면 브라우저가 세션 쿠키를 자연스럽게 전송한다. React 개발 서버와 Spring 서버처럼 출처가 달라지면 다음 조건을 함께 검토해야 한다.
+
+* 허용할 출처, HTTP 메서드와 헤더를 CORS 정책에 명시한다.
+* 쿠키를 포함한 요청이 필요하면 클라이언트와 서버 양쪽에서 자격 증명 전송 조건을 맞춘다.
+* CORS 사전 요청에는 세션 쿠키가 없으므로 Spring Security보다 CORS 처리가 먼저 이루어져야 한다.
+* 세션 쿠키로 인증하는 브라우저 요청은 상태 변경 요청에 대한 CSRF 보호를 계속 고려해야 한다.
+* 쿠키의 `SameSite`, `Secure`, `HttpOnly`와 도메인·경로 설정을 실제 배포 구조에 맞춘다.
+
+CORS는 인증 방식이 아니고 CSRF를 대신하지도 않는다. 세션, CORS와 CSRF는 해결하는 문제가 서로 다르므로 각각의 조건을 확인해야 한다.
+
+## 5. 한 번에 교체하지 않는 이유
+
+기존 SSR 화면과 새 API는 Spring MVC 안에서 함께 운영할 수 있다. 따라서 모든 화면을 한 번에 제거하기보다 기능 단위로 다음 순서를 적용한다.
+
+1. 기존 화면의 입력, 출력과 권한 조건을 확인한다.
+2. 같은 유스케이스를 제공하는 API 계약을 정의한다.
+3. API 컨트롤러 테스트와 서비스 테스트로 동작을 검증한다.
+4. React 화면에서 API를 연결하고 기존 화면과 기능 차이를 확인한다.
+5. 인증, 오류 처리와 사용자 흐름이 같아진 뒤 기존 화면의 제거 여부를 결정한다.
+
+점진적 전환은 코드를 일시적으로 중복시킬 수 있다. 이를 줄이려면 View Controller와 API Controller에 비즈니스 규칙을 복사하지 않고 같은 서비스와 도메인 객체를 사용해야 한다. 두 컨트롤러는 입력 변환과 표현 형식의 차이를 담당한다.
+
+## 6. 현재 선택한 방향
+
+현재 목표는 SSR 구조를 잘못된 구조로 규정하거나 처음부터 완전히 분리된 시스템을 만드는 것이 아니다.
+
+* 동작 중인 Thymeleaf 화면은 API가 검증될 때까지 유지한다.
+* 조회와 변경 유스케이스를 JSON API로 점진적으로 노출한다.
+* 인증은 세션 방식을 유지하고 브라우저 보안 조건을 함께 검증한다.
+* View Controller와 API Controller는 분리하되 서비스와 도메인 규칙은 공유한다.
+* 최종 구조는 구현과 테스트 결과를 기준으로 조정한다.
+
+이 선택을 통해 기존 Spring MVC 학습 결과를 버리지 않으면서 API 계약과 클라이언트 상태 관리라는 새로운 문제를 단계적으로 확인할 수 있다.
+
+## 7. 정리
+
+* Thymeleaf SSR은 Spring MVC의 요청, 검증과 화면 렌더링 흐름을 학습하기에 적합한 구조다.
+* React 전환의 핵심은 단순한 화면 기술 교체가 아니라 HTML 뷰와 JSON API 계약의 경계를 설계하는 데 있다.
+* `@RestController`를 사용한다고 자동으로 RESTful하거나 완전히 분리된 아키텍처가 되지는 않는다.
+* 세션 인증을 유지한 채 React를 사용할 수 있지만 CORS, 쿠키와 CSRF 조건을 배포 구조에 맞게 검토해야 한다.
+* 기존 SSR 화면과 API를 함께 운영하면서 기능 단위로 검증하는 점진적 전환이 위험을 줄인다.
+
+## 8. 참고 자료
+
+### 공식 자료
+
+* [Spring Framework — @ResponseBody](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/responsebody.html)
+* [Spring Framework — CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html)
+* [Spring Security — CORS](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html)
+* [Spring Security — Cross Site Request Forgery](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)
+* [Spring Security — Authentication Persistence and Session Management](https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html)
