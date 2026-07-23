@@ -18,7 +18,7 @@ testedWith:
 book: ""
 chapter: 1
 heroImage: "/og-image.svg"
-draft: true
+draft: false
 ---
 
 ## 1. 상속은 어떤 관계를 만들까?
