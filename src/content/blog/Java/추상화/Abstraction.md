@@ -1,12 +1,13 @@
 ---
-title: "[Java] 자바의 추상화는 무엇일까?"
+title: "자바의 추상화는 무엇일까?"
 description: "객체지향의 추상화가 필요한 이유와 추상 클래스로 공통 흐름과 구현마다 달라지는 동작을 분리하는 방법을 알아본다."
 date: 2026-06-26
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/추상화/abstraction"
+aliases: []
 commentKey: "/blog/java/추상화/abstraction/"
+category: "Java"
 tags:
     - Java
     - OOP

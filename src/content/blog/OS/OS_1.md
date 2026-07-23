@@ -1,18 +1,20 @@
 ---
-title: "[OS] 운영체제는 어떤 일을 할까?"
+title: "운영체제는 어떤 일을 할까?"
 description: "운영체제가 CPU와 메모리를 가상화하고, 여러 실행 흐름과 영속 저장 장치를 관리하는 이유를 Java 예제로 살펴본다."
 date: 2026-05-20
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: OS
 slug: "os/os_1"
+aliases: []
 commentKey: "/blog/os/os_1/"
+category: "OS"
 tags:
     - OS
     - Process
     - Concurrency
 series: "아주-쉬운-세가지-이야기"
 chapter: 1
+heroImage: "/og-image.svg"
 draft: false
 ---
 

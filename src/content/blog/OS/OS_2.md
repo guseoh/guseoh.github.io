@@ -1,12 +1,13 @@
 ---
-title: "[OS] 프로세스는 무엇일까?"
+title: "프로세스는 무엇일까?"
 description: "프로그램과 프로세스의 차이, 주소 공간, CPU 문맥, PCB와 상태 전이를 정리한다."
 date: 2026-05-25
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "OS"
 slug: "os/os_2"
+aliases: []
 commentKey: "/blog/os/os_2/"
+category: "OS"
 tags:
     - OS
     - Process

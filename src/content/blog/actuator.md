@@ -4,9 +4,10 @@ description: "Actuator의 http.server.requests와 P6Spy 로그로 게시글 상�
 date: 2026-04-27
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Board"
 slug: "actuator"
+aliases: []
 commentKey: "/blog/actuator/"
+category: "Board"
 tags:
     - Board
     - Spring Boot
@@ -20,7 +21,7 @@ testedWith:
 series: "board-프로젝트-성능-개선"
 chapter: 4
 heroImage: "/og-image.svg"
-draft: false
+draft: true
 ---
 
 ## 1. 무엇을 측정했을까?

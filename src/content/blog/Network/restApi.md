@@ -4,9 +4,10 @@ description: "HTTP API와 REST 아키텍처 스타일의 차이를 구분하고,
 date: 2026-06-10
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Network"
 slug: "network/restapi"
+aliases: []
 commentKey: "/blog/network/restapi/"
+category: "Network"
 tags:
     - REST
     - REST API
@@ -14,7 +15,7 @@ tags:
 book: ""
 chapter: 1
 heroImage: "/og-image.svg"
-draft: false
+draft: true
 ---
 
 ## 1. HTTP를 사용한다고 모두 REST API는 아니다

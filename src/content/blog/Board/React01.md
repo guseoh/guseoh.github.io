@@ -1,12 +1,13 @@
 ---
-title: "[Board] Thymeleaf 게시판을 React로 전환하려는 이유"
+title: "Thymeleaf 게시판을 React로 전환하려는 이유"
 description: "SSR 게시판에 React와 JSON API를 점진적으로 도입하려는 목적, 기대 효과와 인증·보안 조건을 정리한다."
 date: 2026-06-04
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Board"
 slug: "board/react01"
+aliases: []
 commentKey: "/blog/board/react01/"
+category: "Board"
 tags:
     - Spring
     - Spring MVC
@@ -16,7 +17,7 @@ tags:
 series: "thymeleaf-게시판을-react로-전환"
 chapter: 2
 heroImage: "/og-image.svg"
-draft: false
+draft: true
 ---
 
 ## 1. Thymeleaf를 사용한 이유

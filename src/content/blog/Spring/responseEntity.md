@@ -1,12 +1,13 @@
 ---
-title: "[Spring] ResponseEntity란 무엇일까?"
+title: "ResponseEntity란 무엇일까?"
 description: "Spring MVC에서 ResponseEntity가 HTTP 상태 코드, 헤더와 본문을 함께 표현하는 방식과 사용 기준을 정리한다."
 date: 2026-06-09
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Spring"
 slug: "spring/responseentity"
+aliases: []
 commentKey: "/blog/spring/responseentity/"
+category: "Spring"
 tags:
     - Spring
     - Spring MVC

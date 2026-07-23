@@ -1,12 +1,13 @@
 ---
-title: "[Infra] 웹 애플리케이션을 한 서버와 3계층 구조로 배포하면 무엇이 다를까?"
+title: "웹 애플리케이션을 한 서버와 3계층 구조로 배포하면 무엇이 다를까?"
 description: "웹 애플리케이션의 논리 계층과 실제 배포 단위를 구분하고, 한 서버 구성과 3계층 인프라의 장단점과 선택 조건을 알아본다."
 date: 2026-06-09
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Infra"
 slug: "network/vertical-partitioning"
+aliases: []
 commentKey: "/blog/network/vertical-partitioning/"
+category: "Infra"
 tags:
     - Infra
     - Architecture
