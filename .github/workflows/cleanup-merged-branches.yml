@@ -1,0 +1,61 @@
+name: Cleanup merged branches
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.head_ref == 'agent/legacy-content-cleanup-1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Delete merged branches
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          branches=(
+            "agent/hide-sensitive-network-posts"
+            "agent/java-post-consistency"
+            "agent/content-rule-checks"
+            "agent/p1-evidence-taxonomy"
+            "agent/p1-content-consistency"
+            "agent/p0-blog-maintenance"
+            "codex/post-readability"
+          )
+
+          for branch in "${branches[@]}"; do
+            status=$(curl --silent --show-error \
+              --output response.json \
+              --write-out "%{http_code}" \
+              --request DELETE \
+              --header "Accept: application/vnd.github+json" \
+              --header "Authorization: Bearer ${GITHUB_TOKEN}" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/${branch}")
+
+            case "${status}" in
+              204)
+                echo "삭제 완료: ${branch}"
+                ;;
+              404)
+                echo "이미 삭제됨: ${branch}"
+                ;;
+              *)
+                echo "삭제 실패: ${branch} (HTTP ${status})"
+                cat response.json
+                exit 1
+                ;;
+            esac
+          done
