@@ -1,12 +1,13 @@
 ---
-title: "[Java] 자바의 상속은 무엇일까?"
+title: "자바의 상속은 무엇일까?"
 description: "자바 상속이 타입 관계를 만드는 방식과 extends, 생성자 연결, 메서드 오버라이딩, 설계 시 확인할 조건을 알아본다."
 date: 2026-06-25
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/상속/extends"
+aliases: []
 commentKey: "/blog/java/상속/extends/"
+category: "Java"
 tags:
     - Java
     - OOP

@@ -1,12 +1,13 @@
 ---
-title: "[Git] Git Flow와 GitHub Flow는 무엇이 다를까?"
+title: "Git Flow와 GitHub Flow는 무엇이 다를까?"
 description: "Git Flow와 GitHub Flow의 브랜치 구조, 작업 흐름과 선택 기준을 비교한다."
 date: 2026-03-27
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Git"
 slug: "git_branch"
+aliases: []
 commentKey: "/blog/git_branch/"
+category: "Git"
 tags:
     - Git
     - Branch Strategy

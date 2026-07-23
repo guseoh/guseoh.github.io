@@ -4,9 +4,10 @@ description: "자바 변수에 저장되는 기본형 값과 참조값의 차이
 date: 2026-06-15
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/기본형과참조형/java_type"
+aliases: []
 commentKey: "/blog/java/기본형과참조형/java_type/"
+category: "Java"
 tags:
     - Java
     - Primitive Type

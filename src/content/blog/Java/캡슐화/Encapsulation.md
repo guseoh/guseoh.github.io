@@ -1,12 +1,13 @@
 ---
-title: "[Java] 자바의 캡슐화는 무엇일까?"
+title: "자바의 캡슐화는 무엇일까?"
 description: "객체의 상태와 규칙을 내부에 모으고 공개된 행동으로 상태를 변경하는 캡슐화의 의미를 알아본다."
 date: 2026-06-24
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/캡슐화/encapsulation"
+aliases: []
 commentKey: "/blog/java/캡슐화/encapsulation/"
+category: "Java"
 tags:
     - Java
     - OOP

@@ -1,12 +1,13 @@
 ---
-title: "[Java] 자바의 클래스와 객체는 무엇일까?"
+title: "자바의 클래스와 객체는 무엇일까?"
 description: "자바에서 클래스가 새로운 타입과 객체의 공통 구조를 정의하고, new 표현식으로 객체가 생성되는 과정을 알아본다."
 date: 2026-06-16
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/클래스와-객체/classandobject"
+aliases: []
 commentKey: "/blog/java/클래스와-객체/classandobject/"
+category: "Java"
 tags:
     - Java
     - Class

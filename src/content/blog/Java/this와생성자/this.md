@@ -4,9 +4,10 @@ description: "자바 생성자가 객체의 초기 상태를 만드는 방식과
 date: 2026-06-18
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/this와생성자/this"
+aliases: []
 commentKey: "/blog/java/this와생성자/this/"
+category: "Java"
 tags:
     - Java
     - Constructor

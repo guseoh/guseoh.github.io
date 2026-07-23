@@ -1,19 +1,21 @@
 ---
-title: "[Spring] 회원 삭제 시 연관 게시글과 댓글은 어떻게 처리할까?"
+title: "회원 삭제 시 연관 게시글과 댓글은 어떻게 처리할까?"
 description: "회원 삭제가 게시글과 댓글에 미치는 영향을 정리하고, 현재 Board 프로젝트에서 명시 삭제를 선택한 이유와 트랜잭션 경계를 살펴본다."
 date: 2026-05-26
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: Board
 slug: "board/spring-delete-policy"
+aliases: []
 commentKey: "/blog/board/spring-delete-policy/"
+category: "Board"
 tags:
     - Spring
     - JPA
     - Transaction
 series: "board-프로젝트-개선-기록"
 chapter: 3
-draft: false
+heroImage: "/og-image.svg"
+draft: true
 ---
 
 ## 1. 회원 한 명만 삭제하는 문제가 아니다

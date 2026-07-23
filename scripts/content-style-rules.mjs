@@ -2,6 +2,7 @@ const headingPattern = /^(#{2,3})\s+(.+?)\s*#*\s*$/;
 const headingNumberPattern = /^\d+(?:\.\d+)*[.)]?\s+/;
 const referenceSubheadings = new Set(["공식 자료", "한글 참고 링크"]);
 const forwardLookingPattern = /(다음 글에서|다음 글로|다음번에|뒤의 글에서|이후 글에서|후속 글에서)/;
+const titlePrefixPattern = /^\[[^\]]+\]\s*/;
 const markdownLinkPattern = /!?\[[^\]]*\]\(\s*(https?:\/\/[^)\s]+)[^)]*\)/g;
 const forbiddenReferenceHosts = [
   "wikipedia.org",
@@ -19,6 +20,7 @@ export function findContentStyleIssues(source) {
   let fence = null;
 
   checkTagIndentation(lines, frontmatterEnd, issues);
+  checkTitlePrefix(lines, frontmatterEnd, issues);
 
   for (let index = contentStart; index < lines.length; index += 1) {
     const line = lines[index];
@@ -91,6 +93,13 @@ function readFrontmatterScalar(lines, frontmatterEnd, key) {
     if (match) return match[1].trim().replace(/^(['"])(.*)\1$/, "$2");
   }
   return "";
+}
+
+function checkTitlePrefix(lines, frontmatterEnd, issues) {
+  const title = readFrontmatterScalar(lines, frontmatterEnd, "title");
+  if (titlePrefixPattern.test(title)) {
+    issues.push(issue(2, "title-prefix", "제목에는 카테고리 접두사를 사용하지 않습니다."));
+  }
 }
 
 function checkTagIndentation(lines, frontmatterEnd, issues) {

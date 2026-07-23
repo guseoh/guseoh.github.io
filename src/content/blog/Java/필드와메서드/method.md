@@ -1,12 +1,13 @@
 ---
-title: "[Java] 자바의 필드와 메서드는 무엇일까?"
+title: "자바의 필드와 메서드는 무엇일까?"
 description: "자바 객체의 상태를 저장하는 필드와 행동을 구현하는 메서드의 선언, 호출, 매개변수와 반환값을 알아본다."
 date: 2026-06-18
 updated: 2026-07-23
 lastVerified: 2026-07-23
-category: "Java"
 slug: "java/필드와메서드/method"
+aliases: []
 commentKey: "/blog/java/필드와메서드/method/"
+category: "Java"
 tags:
     - Java
     - Field
