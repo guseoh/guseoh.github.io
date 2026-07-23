@@ -9,7 +9,7 @@ commentKey: "/blog/os/os_4/"
 tags: ["OS"]
 series: "아주-쉬운-세가지-이야기"
 chapter: 4
-draft: false
+draft: true
 ---
 
 ## 제한적 직접 실행 원리
