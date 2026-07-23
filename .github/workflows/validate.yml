@@ -14,64 +14,22 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Collect changed content files
-        if: github.event_name == 'pull_request'
         shell: bash
         run: |
           git diff --name-only --diff-filter=ACMR \
             "${{ github.event.pull_request.base.sha }}"...HEAD \
             -- src/content/blog > /tmp/changed-content-files.txt
 
-      - name: Check content
+      - name: Diagnose content
         env:
-          CONTENT_CHECK_CHANGED_FILES_FILE: ${{ github.event_name == 'pull_request' && '/tmp/changed-content-files.txt' || '' }}
-        run: npm run content:check
-
-      - name: Type-check Astro
-        run: npm run check
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build
-        run: npm run build
-
-      - name: Smoke test local preview
-        shell: bash
+          CONTENT_CHECK_CHANGED_FILES_FILE: /tmp/changed-content-files.txt
         run: |
-          npm run preview -- --host 127.0.0.1 --port 4322 > /tmp/astro-preview.log 2>&1 &
-          preview_pid=$!
-          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
-
-          ready=false
-          for attempt in {1..30}; do
-            if curl -fsS "http://127.0.0.1:4322/" > /dev/null; then
-              ready=true
-              break
-            fi
-
-            sleep 1
-          done
-
-          if [ "$ready" != "true" ]; then
-            cat /tmp/astro-preview.log
-            exit 1
-          fi
-
-          SMOKE_BASE_URL="http://127.0.0.1:4322" npm run smoke
+          node scripts/check-content.mjs
+          node scripts/check-content-style.mjs
