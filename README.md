@@ -58,7 +58,7 @@ SMOKE_BASE_URL=https://guseoh.github.io npm run smoke
 
 ```yaml
 ---
-title: "[Java] 예시 글"
+title: "예시 글"
 description: "글에서 설명할 핵심 내용을 한 문장으로 작성한다."
 date: 2026-07-23
 updated: 2026-07-23
@@ -72,23 +72,24 @@ tags:
     - Example
 testedWith:
     java: "17"
-book: ""
-series: ""
+series: "data-structure"
 chapter: 1
 heroImage: "/og-image.svg"
 draft: true
 ---
 ```
 
-- `title`은 상세 페이지의 유일한 `h1`로 렌더링합니다.
+- `title`은 상세 페이지의 유일한 `h1`로 렌더링하며 카테고리 접두사를 붙이지 않습니다.
 - 본문 제목은 `##`부터 시작하고 `## 1. ...`, `### 1.1 ...`처럼 계층 번호를 사용합니다.
 - `description`에는 글이 답하는 핵심 질문이나 다루는 범위를 적습니다.
 - `date`는 최초 작성일, `updated`는 마지막 내용 수정일입니다.
 - `lastVerified`는 코드, 설명과 링크를 실제로 다시 확인한 날짜입니다. 검증하지 않았다면 생략합니다.
 - `slug`와 `commentKey`는 발행 후 가능한 한 바꾸지 않습니다.
 - 과거 URL을 유지해야 하면 `aliases`에 `/blog/.../` 형식으로 추가합니다.
-- `testedWith`에는 실제로 확인한 버전만 기록합니다.
+- `testedWith`에는 실제로 확인한 버전만 기록하며 검증 환경이 없다면 생략합니다.
 - `book`과 `series`에는 각각 `src/data/books.json`, `src/data/series.json`에 등록한 `id`를 사용합니다.
+- `chapter`는 Book 또는 Series 안에서 글의 순서를 정할 때만 작성합니다.
+- 글이 Book이나 Series에 속하지 않으면 `book`, `series`와 `chapter`를 생략합니다. 모든 글의 선택 필드 수를 억지로 맞추지 않습니다.
 - `draft: true`인 글은 목록, 검색, RSS, sitemap과 상세 페이지 생성에서 제외됩니다.
 
 ### 작성 순서
@@ -158,6 +159,7 @@ Markdown 이미지는 게시글 파일을 기준으로 상대 경로를 사용�
 - Series는 순서대로 이어 읽는 연재 묶음입니다.
 - Category, Book과 Series는 서로 독립적으로 관리합니다.
 - 등록되지 않은 Book id는 콘텐츠 스키마 검증에서 오류로 처리됩니다.
+- 등록되지 않은 Series id도 콘텐츠 스키마 검증에서 오류로 처리됩니다.
 
 Book과 Series의 표시 이름, 설명과 순서는 각각 다음 파일에서 관리합니다.
 

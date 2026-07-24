@@ -10,7 +10,8 @@ commentKey: "/blog/category/example-post/"
 category: "Category"
 tags:
     - Topic
-testedWith: { java: "17" }
+testedWith:
+    java: "17"
 book: ""
 series: ""
 chapter: 1
@@ -22,10 +23,11 @@ draft: true
 작성 전 확인
 - 현재 글이 답할 핵심 질문과 범위를 먼저 정한다.
 - 실제 코드, 테스트, 설정, 로그와 공식 자료로 내용을 확인한다.
-- 확인하지 않은 version과 실행 결과는 frontmatter나 본문에 작성하지 않는다.
+- 확인하지 않은 버전과 실행 결과는 frontmatter나 본문에 작성하지 않는다.
 - slug와 commentKey는 발행 후 가능한 한 변경하지 않는다.
 - aliases에는 이전 공개 URL이 있을 때만 /blog/.../ 형식으로 추가한다.
-- book과 series는 등록된 id가 있을 때만 작성한다.
+- testedWith는 실제로 확인한 환경만 남기고, 검증 환경이 없으면 필드를 삭제한다.
+- book과 series에는 등록된 id만 작성한다. 해당 묶음에 속하지 않으면 book, series와 chapter를 삭제한다.
 - 본문 heading은 ## 1. ..., ### 1.1 ...처럼 번호를 사용한다.
 - 코드 펜스에는 java, sql, yaml, json, http, bash, text 같은 언어 이름만 작성한다.
 - 파일명과 코드 설명은 코드 블록 밖의 일반 문단에 작성한다.

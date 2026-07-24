@@ -24,6 +24,14 @@
     "featured": false
   },
   {
+    "id": "pawcycle-commerce-운영-트러블슈팅",
+    "title": "PawCycle Commerce 운영·트러블슈팅",
+    "description": "PawCycle Commerce를 배포하고 운영하면서 내린 선택, 장애 원인, 해결 과정과 검증 결과를 기록합니다.",
+    "order": 40,
+    "status": "ongoing",
+    "featured": false
+  },
+  {
     "id": "data-structure",
     "title": "Data Structure",
     "description": "Java 컬렉션과 자료구조 학습 내용을 구현 관점에서 정리합니다.",

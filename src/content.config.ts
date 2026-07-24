@@ -2,9 +2,14 @@ import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import booksData from "./data/books.json";
+import seriesData from "./data/series.json";
 
 const configuredBookIds = new Set(
   (booksData as Array<{ id: string }>).map((book) => book.id)
+);
+
+const configuredSeriesIds = new Set(
+  (seriesData as Array<{ id: string }>).map((series) => series.id)
 );
 
 const blogSchema = z.object({
@@ -24,7 +29,12 @@ const blogSchema = z.object({
       message: "등록되지 않은 Book id입니다. src/data/books.json에 Book을 추가하거나 올바른 id를 사용해 주세요."
     }
   ),
-  series: z.string().optional(),
+  series: z.string().trim().optional().refine(
+    (seriesId) => !seriesId || configuredSeriesIds.has(seriesId),
+    {
+      message: "등록되지 않은 Series id입니다. src/data/series.json에 Series를 추가하거나 올바른 id를 사용해 주세요."
+    }
+  ),
   chapter: z.number().int().positive().optional(),
   seriesOrder: z.number().optional(),
   heroImage: z.string().optional(),
