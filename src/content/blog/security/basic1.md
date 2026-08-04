@@ -51,8 +51,7 @@ Spring Security가 제공하는 전체 기능은 [Spring Security](https://docs.
 
 > [!note] Authentication
 > 
-> `principal`: 사용자를 식별하는 정보이다. 아이디와 비밀번호로 인증하는 경우에는 일반적으로 [`UserDetails`](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/user-details.
-html#servlet-authentication-userdetails) 구현 객체가 저장된다.
+> `principal`: 사용자를 식별하는 정보이다. 아이디와 비밀번호로 인증하는 경우에는 일반적으로 [`UserDetails`](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/user-details.html#servlet-authentication-userdetails) 구현 객체가 저장된다.
 >
 > `credentials`: 사용자를 인증하는 데 사용된 정보로, 보통 비밀번호를 의미한다. 인증이 완료된 후에는 정보 유출을 방지하기 위해 이 값이 제거되는 경우가 많다.
 >   
