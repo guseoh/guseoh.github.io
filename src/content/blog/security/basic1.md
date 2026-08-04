@@ -2,7 +2,11 @@
 title: "인증과 인가는 무엇일까?"
 description: "인증은 사용자의 신원을 확인하는 과정이고, 인가는 확인된 사용자가 어떤 리소스와 동작에 접근할 수 있는지 판단하는 과정이다."
 date: 2026-08-04
-updated: 2026-08-04
+updated: 2026-08-05
+lastVerified: 2026-08-05
+slug: "security/basic1"
+aliases: []
+commentKey: "/blog/security/basic1/"
 category: "Spring Security"
 tags:
     - Spring Security
@@ -11,6 +15,7 @@ tags:
     - Authorization
 
 book: ""
+series: ""
 chapter: 1
 heroImage: "/og-image.svg"
 draft: false
