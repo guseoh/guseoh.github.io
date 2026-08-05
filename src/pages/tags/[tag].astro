@@ -2,35 +2,56 @@
 import type { CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
+import { getNavigationItemsByType } from "../../utils/navigation";
 import { buildTagSummary, normalizeTag } from "../../utils/tags";
 import { getPublishedPosts } from "../../utils/content/posts";
 import { SITE_DESCRIPTION, sortPostsByDate } from "../../utils/posts";
 
+type TagSummaryEntry = {
+  tag: string;
+  name: string;
+  count: number;
+};
+
+function buildVisibleTagSummary(posts: CollectionEntry<"blog">[]): TagSummaryEntry[] {
+  const summary = new Map<string, TagSummaryEntry>();
+
+  for (const item of getNavigationItemsByType("tag")) {
+    if (!item.slug) continue;
+    summary.set(item.slug, { tag: item.slug, name: item.title, count: 0 });
+  }
+
+  for (const entry of buildTagSummary(posts)) {
+    summary.set(entry.tag, entry);
+  }
+
+  return Array.from(summary.values());
+}
+
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
-  const tagSet = new Set(posts.flatMap((post) => post.data.tags.map((tag) => normalizeTag(tag))));
+  const tagSummary = buildVisibleTagSummary(posts);
 
-  return Array.from(tagSet).map((tag) => {
+  return tagSummary.map(({ tag, name }) => {
     const filtered = posts.filter((post) =>
       post.data.tags.some((entryTag) => normalizeTag(entryTag) === tag)
     );
 
     return {
       params: { tag },
-      props: { tag, posts: sortPostsByDate(filtered) }
+      props: { tag, tagName: name, posts: sortPostsByDate(filtered) }
     };
   });
 }
 
-const { tag, posts } = Astro.props as {
+const { tag, tagName, posts } = Astro.props as {
   tag: string;
+  tagName: string;
   posts: CollectionEntry<"blog">[];
 };
 
 const allPosts = await getPublishedPosts();
-const tagSummary = buildTagSummary(allPosts);
-const activeTag = tagSummary.find((entry) => entry.tag === tag);
-const tagName = activeTag?.name ?? tag;
+const tagSummary = buildVisibleTagSummary(allPosts);
 ---
 
 <BaseLayout title={`devjune.dev | #${tagName}`} description={`#${tagName} 태그 글 목록 - ${SITE_DESCRIPTION}`}>
@@ -48,11 +69,15 @@ const tagName = activeTag?.name ?? tag;
     ))}
   </nav>
 
-  <ul class="post-list" style="margin-top: 1rem;">
-    {posts.map((post) => (
-      <li>
-        <PostCard post={post} />
-      </li>
-    ))}
-  </ul>
+  {posts.length > 0 ? (
+    <ul class="post-list" style="margin-top: 1rem;">
+      {posts.map((post) => (
+        <li>
+          <PostCard post={post} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다.</p>
+  )}
 </BaseLayout>

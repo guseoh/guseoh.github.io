@@ -1,0 +1,143 @@
+/*
+ * Final presentation refinements.
+ * Keep these overrides isolated so the existing component styles remain easy
+ * to compare and roll back through the backup branch created for this work.
+ */
+
+@media (min-width: 981px) {
+  html {
+    /* Match the denser desktop scale requested without shrinking mobile text. */
+    font-size: 90%;
+  }
+
+  .site-header__inner {
+    min-height: 58px;
+  }
+
+  .site-layout {
+    padding-top: 1rem;
+  }
+
+  .post {
+    padding: 1.25rem;
+  }
+}
+
+.archive-empty {
+  margin-top: 1rem;
+  border: 1px dashed color-mix(in srgb, var(--border) 86%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-bg) 74%, transparent);
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Reference links receive a source icon and a compact source-type badge. */
+.post .reference-link {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+  text-decoration-thickness: 1px;
+}
+
+.post .reference-link__icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 84%, transparent);
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow) 18%, transparent);
+}
+
+.post .reference-link__icon svg,
+.post .reference-link__icon img {
+  width: 0.82rem;
+  height: 0.82rem;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  filter: none;
+  object-fit: contain;
+}
+
+.post .reference-link__icon--brand svg {
+  fill: var(--reference-icon-color, currentColor);
+}
+
+.post .reference-link__icon--generic svg {
+  fill: none;
+  stroke: var(--muted-readable);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.post .reference-link__label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.post .reference-link__type {
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--post-link) 20%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-soft) 44%, transparent);
+  color: var(--muted-readable);
+  font-family: var(--font-ui);
+  font-size: 0.64rem;
+  font-weight: 750;
+  line-height: 1;
+  padding: 0.22rem 0.36rem;
+  text-decoration: none;
+}
+
+/*
+ * Opaque screenshots are unaffected by the background. Transparent diagrams
+ * with dark strokes gain a readable canvas in dark mode.
+ */
+html[data-theme="dark"] .post img:not(.link-mention__favicon):not(.link-mention__preview) {
+  background-color: #fff;
+}
+
+html[data-theme="dark"] .post img.no-dark-filter:not(.light-bg),
+html[data-theme="dark"] .post img[data-theme-safe="true"]:not(.light-bg) {
+  background-color: transparent;
+}
+
+.post img.light-bg {
+  background: #fff;
+  padding: clamp(0.35rem, 1.2vw, 0.75rem);
+}
+
+html[data-theme="dark"] .post img.light-bg {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: #fff;
+  filter: none;
+}
+
+.post img.full-width {
+  width: 100%;
+  max-width: 100%;
+}
+
+.post > p:has(img.full-width),
+.post > figure:has(img.full-width),
+.post__content > p:has(img.full-width),
+.post__content > figure:has(img.full-width) {
+  width: 100%;
+  max-width: min(100%, var(--post-content-width));
+}
+
+@media (max-width: 640px) {
+  .post .reference-link__type {
+    font-size: 0.62rem;
+  }
+}

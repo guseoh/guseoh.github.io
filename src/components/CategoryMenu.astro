@@ -91,11 +91,12 @@ const isChildActive = (child: CategoryTreeGroup["children"][number]) =>
             {group.children.map((child) => {
               const isActive = isChildActive(child);
               const currentType = currentCategory === child.slug ? "category" : "page";
+              const href = child.href ?? `/search/?q=${encodeURIComponent(child.name)}`;
 
-              return child.href ? (
+              return (
                 <a
                   class:list={["category-menu__child", isActive && "is-active"]}
-                  href={child.href}
+                  href={href}
                   aria-current={isActive ? "page" : undefined}
                   data-sidebar-current={variant === "sidebar" && isActive ? currentType : undefined}
                 >
@@ -105,14 +106,6 @@ const isChildActive = (child: CategoryTreeGroup["children"][number]) =>
                   </span>
                   <strong>({child.count})</strong>
                 </a>
-              ) : (
-                <span class="category-menu__child category-menu__child--planned" aria-disabled="true">
-                  <span class="category-menu__child-label">
-                    {child.categoryIcon && <CategoryIcon category={child.categoryIcon} />}
-                    <span>{child.name}</span>
-                  </span>
-                  <small>준비 중</small>
-                </span>
               );
             })}
           </div>

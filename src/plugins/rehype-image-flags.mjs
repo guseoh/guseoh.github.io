@@ -1,5 +1,8 @@
 const filterOptOutPattern = /\s*\{(?:no-dark-filter|theme-safe|data-theme-safe)\}\s*/gi;
 const lightboxOptOutPattern = /\s*\{(?:no-lightbox|lightbox-false)\}\s*/gi;
+const lightBackgroundPattern = /\s*\{(?:light-bg|light-background)\}\s*/gi;
+const fullWidthPattern = /\s*\{(?:full-width|wide-image)\}\s*/gi;
+const darkSourcePattern = /\s*\{dark-src=(?:"([^"]+)"|'([^']+)'|([^}\s]+))\}\s*/gi;
 const titleTokenPattern = /(?:^|\s)(?:no-dark-filter|theme-safe|data-theme-safe)(?=\s|$)/gi;
 const lightboxTitleTokenPattern = /(?:^|\s)(?:no-lightbox|lightbox-false)(?=\s|$)/gi;
 const captionTitlePattern = /^caption:\s*(.+)$/i;
@@ -76,22 +79,54 @@ function visit(node, state) {
   applyCaption(node, state);
 }
 
+function testPattern(pattern, value) {
+  const matches = pattern.test(value);
+  pattern.lastIndex = 0;
+  return matches;
+}
+
+function getDarkSource(value) {
+  const match = darkSourcePattern.exec(value);
+  darkSourcePattern.lastIndex = 0;
+  return match?.[1] ?? match?.[2] ?? match?.[3];
+}
+
+function cleanMarkers(value) {
+  return value
+    .replace(filterOptOutPattern, " ")
+    .replace(lightboxOptOutPattern, " ")
+    .replace(lightBackgroundPattern, " ")
+    .replace(fullWidthPattern, " ")
+    .replace(darkSourcePattern, " ")
+    .replace(titleTokenPattern, " ")
+    .replace(lightboxTitleTokenPattern, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function applyImageFlags(image) {
   const properties = image.properties ?? {};
   const alt = typeof properties.alt === "string" ? properties.alt : "";
   const title = typeof properties.title === "string" ? properties.title : "";
-  const hasAltMarker = filterOptOutPattern.test(alt);
-  filterOptOutPattern.lastIndex = 0;
-  const hasLightboxAltMarker = lightboxOptOutPattern.test(alt);
-  lightboxOptOutPattern.lastIndex = 0;
-  const hasTitleMarker = filterOptOutPattern.test(title) || titleTokenPattern.test(title);
-  filterOptOutPattern.lastIndex = 0;
-  titleTokenPattern.lastIndex = 0;
-  const hasLightboxTitleMarker = lightboxOptOutPattern.test(title) || lightboxTitleTokenPattern.test(title);
-  lightboxOptOutPattern.lastIndex = 0;
-  lightboxTitleTokenPattern.lastIndex = 0;
+  const hasAltMarker = testPattern(filterOptOutPattern, alt);
+  const hasLightboxAltMarker = testPattern(lightboxOptOutPattern, alt);
+  const hasTitleMarker = testPattern(filterOptOutPattern, title) || testPattern(titleTokenPattern, title);
+  const hasLightboxTitleMarker = testPattern(lightboxOptOutPattern, title) || testPattern(lightboxTitleTokenPattern, title);
+  const hasLightBackground = testPattern(lightBackgroundPattern, alt) || testPattern(lightBackgroundPattern, title);
+  const hasFullWidth = testPattern(fullWidthPattern, alt) || testPattern(fullWidthPattern, title);
+  const darkSource = getDarkSource(alt) ?? getDarkSource(title);
 
-  if (!hasAltMarker && !hasTitleMarker && !hasLightboxAltMarker && !hasLightboxTitleMarker) return;
+  if (
+    !hasAltMarker &&
+    !hasTitleMarker &&
+    !hasLightboxAltMarker &&
+    !hasLightboxTitleMarker &&
+    !hasLightBackground &&
+    !hasFullWidth &&
+    !darkSource
+  ) {
+    return;
+  }
 
   const className = Array.isArray(properties.className)
     ? properties.className
@@ -99,18 +134,8 @@ function applyImageFlags(image) {
       ? properties.className.split(/\s+/).filter(Boolean)
       : [];
   const classNames = new Set(className);
-  const cleanAlt = alt
-    .replace(filterOptOutPattern, " ")
-    .replace(lightboxOptOutPattern, " ")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-  const cleanTitle = title
-    .replace(filterOptOutPattern, " ")
-    .replace(lightboxOptOutPattern, " ")
-    .replace(titleTokenPattern, " ")
-    .replace(lightboxTitleTokenPattern, " ")
-    .replace(/\s{2,}/g, " ")
-    .trim();
+  const cleanAlt = cleanMarkers(alt);
+  const cleanTitle = cleanMarkers(title);
 
   image.properties = {
     ...properties,
@@ -126,6 +151,21 @@ function applyImageFlags(image) {
     classNames.add("no-lightbox");
     image.properties["data-lightbox"] = "false";
     image.properties.dataLightbox = "false";
+  }
+
+  if (hasLightBackground) {
+    classNames.add("light-bg");
+    image.properties.dataLightBackground = "true";
+  }
+
+  if (hasFullWidth) {
+    classNames.add("full-width");
+    image.properties.dataFullWidth = "true";
+  }
+
+  if (darkSource) {
+    classNames.add("theme-source");
+    image.properties.dataDarkSrc = darkSource;
   }
 
   if (classNames.size > 0) {

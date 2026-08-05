@@ -5,29 +5,52 @@ import CategoryIcon from "../../components/CategoryIcon.astro";
 import PostCard from "../../components/PostCard.astro";
 import { buildCategorySummary, filterPostsByCategory } from "../../utils/categories";
 import { getPublishedPosts } from "../../utils/content/posts";
+import { getNavigationItemsByType } from "../../utils/navigation";
 import { SITE_DESCRIPTION, sortPostsByDate } from "../../utils/posts";
+
+type CategorySummaryEntry = {
+  slug: string;
+  name: string;
+  count: number;
+};
+
+function buildVisibleCategorySummary(posts: CollectionEntry<"blog">[]): CategorySummaryEntry[] {
+  const summary = new Map<string, CategorySummaryEntry>();
+
+  for (const item of getNavigationItemsByType("category")) {
+    if (!item.slug) continue;
+    summary.set(item.slug, { slug: item.slug, name: item.title, count: 0 });
+  }
+
+  for (const entry of buildCategorySummary(posts)) {
+    summary.set(entry.slug, entry);
+  }
+
+  return Array.from(summary.values());
+}
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
-  const categorySummary = buildCategorySummary(posts);
+  const categorySummary = buildVisibleCategorySummary(posts);
 
   return categorySummary.map(({ slug, name }) => ({
     params: { category: slug },
     props: {
+      categorySlug: slug,
       categoryName: name,
       posts: sortPostsByDate(filterPostsByCategory(posts, slug))
     }
   }));
 }
 
-const { categoryName, posts } = Astro.props as {
+const { categorySlug, categoryName, posts } = Astro.props as {
+  categorySlug: string;
   categoryName: string;
   posts: CollectionEntry<"blog">[];
 };
 
 const allPosts = await getPublishedPosts();
-const categorySummary = buildCategorySummary(allPosts);
-const activeCategory = categorySummary.find((category) => category.name === categoryName);
+const categorySummary = buildVisibleCategorySummary(allPosts);
 ---
 
 <BaseLayout title={`devjune.dev | ${categoryName}`} description={`${categoryName} 카테고리 글 목록 - ${SITE_DESCRIPTION}`}>
@@ -38,7 +61,7 @@ const activeCategory = categorySummary.find((category) => category.name === cate
 
   <nav class="archive-filter-list" aria-label="Category filters">
     {categorySummary.map(({ slug, name, count }) => (
-      <a class:list={["archive-filter-pill", activeCategory?.slug === slug && "is-active"]} href={`/categories/${slug}/`}>
+      <a class:list={["archive-filter-pill", categorySlug === slug && "is-active"]} href={`/categories/${slug}/`}>
         <CategoryIcon category={name} />
         <span>{name}</span>
         <strong>{count}</strong>
@@ -46,11 +69,15 @@ const activeCategory = categorySummary.find((category) => category.name === cate
     ))}
   </nav>
 
-  <ul class="post-list" style="margin-top: 1rem;">
-    {posts.map((post) => (
-      <li>
-        <PostCard post={post} />
-      </li>
-    ))}
-  </ul>
+  {posts.length > 0 ? (
+    <ul class="post-list" style="margin-top: 1rem;">
+      {posts.map((post) => (
+        <li>
+          <PostCard post={post} />
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다.</p>
+  )}
 </BaseLayout>
