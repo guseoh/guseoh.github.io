@@ -21,7 +21,8 @@ type SeriesPageEntry = {
   posts: CollectionEntry<"blog">[];
 };
 
-function buildVisibleSeries(posts: CollectionEntry<"blog">[]): SeriesPageEntry[] {
+export async function getStaticPaths() {
+  const posts = await getPublishedPostsSorted();
   const summary = new Map<string, SeriesPageEntry>();
 
   for (const item of getNavigationItemsByType("series")) {
@@ -50,14 +51,7 @@ function buildVisibleSeries(posts: CollectionEntry<"blog">[]): SeriesPageEntry[]
     });
   }
 
-  return Array.from(summary.values());
-}
-
-export async function getStaticPaths() {
-  const posts = await getPublishedPostsSorted();
-  const seriesSummary = buildVisibleSeries(posts);
-
-  return seriesSummary.map((series) => ({
+  return Array.from(summary.values()).map((series) => ({
     params: { series: series.id },
     props: series
   }));

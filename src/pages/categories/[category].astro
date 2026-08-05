@@ -8,14 +8,9 @@ import { getPublishedPosts } from "../../utils/content/posts";
 import { getNavigationItemsByType } from "../../utils/navigation";
 import { SITE_DESCRIPTION, sortPostsByDate } from "../../utils/posts";
 
-type CategorySummaryEntry = {
-  slug: string;
-  name: string;
-  count: number;
-};
-
-function buildVisibleCategorySummary(posts: CollectionEntry<"blog">[]): CategorySummaryEntry[] {
-  const summary = new Map<string, CategorySummaryEntry>();
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const summary = new Map<string, { slug: string; name: string; count: number }>();
 
   for (const item of getNavigationItemsByType("category")) {
     if (!item.slug) continue;
@@ -26,14 +21,7 @@ function buildVisibleCategorySummary(posts: CollectionEntry<"blog">[]): Category
     summary.set(entry.slug, entry);
   }
 
-  return Array.from(summary.values());
-}
-
-export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  const categorySummary = buildVisibleCategorySummary(posts);
-
-  return categorySummary.map(({ slug, name }) => ({
+  return Array.from(summary.values()).map(({ slug, name }) => ({
     params: { category: slug },
     props: {
       categorySlug: slug,
@@ -50,7 +38,18 @@ const { categorySlug, categoryName, posts } = Astro.props as {
 };
 
 const allPosts = await getPublishedPosts();
-const categorySummary = buildVisibleCategorySummary(allPosts);
+const visibleCategorySummary = new Map<string, { slug: string; name: string; count: number }>();
+
+for (const item of getNavigationItemsByType("category")) {
+  if (!item.slug) continue;
+  visibleCategorySummary.set(item.slug, { slug: item.slug, name: item.title, count: 0 });
+}
+
+for (const entry of buildCategorySummary(allPosts)) {
+  visibleCategorySummary.set(entry.slug, entry);
+}
+
+const categorySummary = Array.from(visibleCategorySummary.values());
 ---
 
 <BaseLayout title={`devjune.dev | ${categoryName}`} description={`${categoryName} 카테고리 글 목록 - ${SITE_DESCRIPTION}`}>

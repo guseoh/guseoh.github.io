@@ -7,14 +7,9 @@ import { buildTagSummary, normalizeTag } from "../../utils/tags";
 import { getPublishedPosts } from "../../utils/content/posts";
 import { SITE_DESCRIPTION, sortPostsByDate } from "../../utils/posts";
 
-type TagSummaryEntry = {
-  tag: string;
-  name: string;
-  count: number;
-};
-
-function buildVisibleTagSummary(posts: CollectionEntry<"blog">[]): TagSummaryEntry[] {
-  const summary = new Map<string, TagSummaryEntry>();
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const summary = new Map<string, { tag: string; name: string; count: number }>();
 
   for (const item of getNavigationItemsByType("tag")) {
     if (!item.slug) continue;
@@ -25,14 +20,7 @@ function buildVisibleTagSummary(posts: CollectionEntry<"blog">[]): TagSummaryEnt
     summary.set(entry.tag, entry);
   }
 
-  return Array.from(summary.values());
-}
-
-export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  const tagSummary = buildVisibleTagSummary(posts);
-
-  return tagSummary.map(({ tag, name }) => {
+  return Array.from(summary.values()).map(({ tag, name }) => {
     const filtered = posts.filter((post) =>
       post.data.tags.some((entryTag) => normalizeTag(entryTag) === tag)
     );
@@ -51,7 +39,18 @@ const { tag, tagName, posts } = Astro.props as {
 };
 
 const allPosts = await getPublishedPosts();
-const tagSummary = buildVisibleTagSummary(allPosts);
+const visibleTagSummary = new Map<string, { tag: string; name: string; count: number }>();
+
+for (const item of getNavigationItemsByType("tag")) {
+  if (!item.slug) continue;
+  visibleTagSummary.set(item.slug, { tag: item.slug, name: item.title, count: 0 });
+}
+
+for (const entry of buildTagSummary(allPosts)) {
+  visibleTagSummary.set(entry.tag, entry);
+}
+
+const tagSummary = Array.from(visibleTagSummary.values());
 ---
 
 <BaseLayout title={`devjune.dev | #${tagName}`} description={`#${tagName} 태그 글 목록 - ${SITE_DESCRIPTION}`}>
