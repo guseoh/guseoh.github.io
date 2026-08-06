@@ -2,7 +2,7 @@
 title: "ResponseEntity란 무엇일까?"
 description: "Spring MVC에서 ResponseEntity가 HTTP 상태 코드, 헤더와 본문을 함께 표현하는 방식과 사용 기준을 정리한다."
 date: 2026-06-09
-updated: 2026-07-23
+updated: 2026-08-06
 lastVerified: 2026-07-23
 slug: "spring/responseentity"
 aliases: []
@@ -179,11 +179,10 @@ public ResponseEntity getMember() {
 
 ## 5. 정리
 
-`ResponseEntity<T>`는 Spring MVC 컨트롤러에서 HTTP 상태 코드, 헤더와 본문을 하나의 반환값으로 표현한다. 본문은 `HttpMessageConverter`가 변환하며, `T`는 변환할 본문의 Java 타입을 나타낸다.
-
-`@RestController`에서 객체를 바로 반환해도 응답 본문을 만들 수 있다. `201 Created`와 `Location` 헤더처럼 상태 코드와 헤더까지 함께 지정해야 할 때 `ResponseEntity`를 사용한다.
-
-응답을 구성할 때는 builder 메서드의 편리함보다 HTTP 의미를 먼저 확인해야 한다. `201 Created`는 생성된 리소스를 나타내고, `204 No Content`에는 응답 본문이 없다.
+- `ResponseEntity<T>`는 Spring MVC 컨트롤러에서 HTTP 상태 코드, 헤더와 본문을 하나의 반환값으로 표현한다.
+- 응답 본문은 `HttpMessageConverter`가 변환하며 제네릭 타입 `T`는 변환할 Java 타입을 나타낸다.
+- 객체만 반환해도 응답 본문을 만들 수 있지만 상태 코드나 헤더를 함께 지정해야 할 때 `ResponseEntity`가 적합하다.
+- `201 Created`와 `Location`, `204 No Content`처럼 실제 처리 결과에 맞는 HTTP 의미를 먼저 선택해야 한다.
 
 ## 6. 참고 자료
 
