@@ -1,6 +1,6 @@
 export const SITE = {
   title: "devjune.dev",
-  description: "Java, Spring, JPA, HTTP와 인프라를 공부하고 검증한 내용을 축적하는 개인 기술 블로그",
+  description: "Java, Spring, JPA, HTTP와 인프라를 공부하고 프로젝트에서 검증한 내용을 축적하는 개인 기술 블로그",
   author: "오지훈",
   siteUrl: "https://guseoh.github.io",
   githubUrl: "https://github.com/guseoh",
@@ -22,12 +22,12 @@ export const BLOG_LIMITS = {
 } as const;
 
 export const CORE_TECH_TAGS = [
+  "Java",
   "Spring Boot",
-  "JPA",
-  "QueryDSL",
+  "Spring Security",
+  "Spring Data JPA",
   "MySQL",
   "Docker",
   "GitHub Actions",
-  "AWS EC2",
-  "Monitoring"
+  "AWS"
 ] as const;

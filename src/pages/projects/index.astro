@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { PROJECTS } from "../../data/projects";
+import { SITE_DESCRIPTION, SITE_URL } from "../../utils/posts";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "오지훈의 백엔드 프로젝트",
+  description: "DevPedia, PawCycle Commerce와 FutMatch의 목표, 구현 범위와 검증 기록",
+  itemListElement: PROJECTS.map((project, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    url: `${SITE_URL}/projects/${project.slug}/`,
+    name: project.name
+  }))
+};
+---
+
+<BaseLayout
+  title="devjune.dev | Projects"
+  description={`백엔드 프로젝트 사례와 검증 기록 - ${SITE_DESCRIPTION}`}
+  structuredData={structuredData}
+  wideContent={true}
+>
+  <div class="project-page">
+    <section class="hero project-index-hero">
+      <p class="project-eyebrow">Projects</p>
+      <h1>문제를 정의하고 설계·구현·검증한 과정을 기록합니다.</h1>
+      <p>
+        기능 목록만 나열하지 않고, 각 프로젝트가 해결하려는 문제와 현재 범위,
+        기술 선택의 근거와 아직 남아 있는 작업을 구분해 보여줍니다.
+      </p>
+    </section>
+
+    <section class="project-showcase" aria-labelledby="project-showcase-title">
+      <div class="project-section-head">
+        <div>
+          <p class="project-eyebrow">Case Studies</p>
+          <h2 id="project-showcase-title">현재 프로젝트</h2>
+        </div>
+        <span>{PROJECTS.length}개</span>
+      </div>
+
+      <div class="project-showcase-grid">
+        {PROJECTS.map((project) => (
+          <article class="project-showcase-card">
+            <div class="project-showcase-card__head">
+              <div>
+                <p>{project.eyebrow}</p>
+                <h3><a href={`/projects/${project.slug}/`}>{project.name}</a></h3>
+              </div>
+              <span>{project.status}</span>
+            </div>
+            <p class="project-showcase-card__summary">{project.summary}</p>
+            <div class="project-tech-list" aria-label={`${project.name} 기술 스택`}>
+              {project.tech.slice(0, 6).map((tech) => <span>{tech}</span>)}
+            </div>
+            <div class="project-card__actions">
+              <a href={`/projects/${project.slug}/`}>사례 보기</a>
+              <a href={project.repositoryUrl} target="_blank" rel="noreferrer">Repository</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

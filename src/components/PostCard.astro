@@ -5,18 +5,20 @@ import { formatPostDate, getPostDescription, getPostPath, getPostSlug, getReadin
 
 interface Props {
   post: CollectionEntry<"blog">;
-  variant?: "default" | "latest";
+  variant?: "default" | "latest" | "updated";
 }
 
 const { post, variant = "default" } = Astro.props as Props;
 const isLatest = variant === "latest";
+const isUpdated = variant === "updated";
 const readingTime = getReadingTime(post);
 const description = getPostDescription(post);
 const postPath = getPostPath(post);
 const postSlug = getPostSlug(post);
+const displayDate = isUpdated && post.data.updated ? post.data.updated : post.data.date;
 ---
 
-<article class:list={["card", "post-card", isLatest && "post-card--latest"]} data-post-slug={postSlug}>
+<article class:list={["card", "post-card", isLatest && "post-card--latest", isUpdated && "post-card--updated"]} data-post-slug={postSlug}>
   <header class="post-card__header">
     <h2><a href={postPath}>{post.data.title}</a></h2>
   </header>
@@ -25,8 +27,8 @@ const postSlug = getPostSlug(post);
 
   <div class="post-card__footer">
     <div class="post-card__meta">
-      <span>작성</span>
-      <time datetime={post.data.date.toISOString()}>{formatPostDate(post.data.date)}</time>
+      <span>{isUpdated ? "수정" : "작성"}</span>
+      <time datetime={displayDate.toISOString()}>{formatPostDate(displayDate)}</time>
       <span aria-hidden="true">·</span>
       <span>{readingTime}</span>
     </div>
@@ -34,4 +36,3 @@ const postSlug = getPostSlug(post);
     <PostMetaBadges category={post.data.category} tags={post.data.tags} maxTags={isLatest ? 3 : 4} />
   </div>
 </article>
-

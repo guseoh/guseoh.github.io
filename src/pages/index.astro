@@ -2,21 +2,38 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { SITE } from "../config/site";
 import { getPublishedPostsSorted } from "../utils/content/posts";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../utils/posts";
+import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../utils/posts";
 import ActivitySection from "../components/home/ActivitySection.astro";
 import ArchiveHero from "../components/home/ArchiveHero.astro";
+import FeaturedProjects from "../components/home/FeaturedProjects.astro";
 import LatestPosts from "../components/home/LatestPosts.astro";
+import RecentlyUpdatedPosts from "../components/home/RecentlyUpdatedPosts.astro";
 
 const posts = await getPublishedPostsSorted();
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_TITLE,
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+  inLanguage: SITE.language,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE_URL}/search/?q={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+};
 ---
 
 <BaseLayout
   title={SITE_TITLE}
   description={SITE_DESCRIPTION}
   minimalHome={true}
+  structuredData={structuredData}
 >
   <ArchiveHero />
-  <ActivitySection posts={posts} username={SITE.githubActivityUsername} />
+  <FeaturedProjects />
   <LatestPosts posts={posts} />
+  <RecentlyUpdatedPosts posts={posts} />
+  <ActivitySection posts={posts} username={SITE.githubActivityUsername} />
 </BaseLayout>
-
