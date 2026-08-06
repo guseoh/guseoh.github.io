@@ -18,9 +18,14 @@ type TagPageProps = {
   isAlias: boolean;
 };
 
+type TagStaticPath = {
+  params: { tag: string };
+  props: TagPageProps;
+};
+
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
-  const paths = getArchiveTagMetadata().map((metadata) => {
+  const paths: TagStaticPath[] = getArchiveTagMetadata().map((metadata) => {
     const filtered = posts.filter((post) =>
       post.data.tags.some((entryTag) => resolveTagSlug(entryTag) === metadata.slug)
     );
@@ -33,7 +38,7 @@ export async function getStaticPaths() {
         posts: sortPostsByDate(filtered),
         canonicalPath: `/tags/${metadata.slug}/`,
         isAlias: false
-      } satisfies TagPageProps
+      }
     };
   });
 
@@ -47,7 +52,7 @@ export async function getStaticPaths() {
           posts: [],
           canonicalPath: `/tags/${metadata.slug}/`,
           isAlias: true
-        } satisfies TagPageProps
+        }
       });
     }
   }
