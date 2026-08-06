@@ -2,8 +2,8 @@
 title: "Spring Security는 무엇을 해결할까?"
 description: "웹 애플리케이션에서 인증과 인가를 직접 처리할 때 생기는 문제를 살펴보고, Spring Security가 맡는 역할을 알아본다."
 date: 2026-08-05
-updated: 2026-08-05
-lastVerified: 2026-08-05
+updated: 2026-08-06
+lastVerified: 2026-08-06
 slug: "security/basic3"
 aliases: []
 commentKey: "/blog/security/basic3/"
@@ -82,7 +82,7 @@ if (!loginMember.isAdmin()) {
 
 ### 2.4 웹 공격 방어까지 직접 관리해야 한다
 
-로그인 기능을 구현했다고 해서 웹 애플리케이션이 안전해지는 것은 아니다. 세션을 사용하는 서비스라면 [세션 고정 공격](https://en.wikipedia.org/wiki/Session_fixation)과 [CSRF](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)를 고려해야 하며, 보안 관련 HTTP 응답 헤더도 적절하게 설정해야 한다.
+로그인 기능을 구현했다고 해서 웹 애플리케이션이 안전해지는 것은 아니다. 세션을 사용하는 서비스라면 [세션 고정 공격](https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html)과 [CSRF](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)를 고려해야 하며, 보안 관련 HTTP 응답 헤더도 적절하게 설정해야 한다.
 
 이런 기능은 정상적인 요청을 처리하는 비즈니스 로직과 성격이 다르다. 여러 Controller에 분산시키기보다 요청이 애플리케이션에 도달하기 전에 공통으로 적용하는 구조가 필요하다.
 
@@ -162,9 +162,9 @@ Spring Security는 인증과 인가 외에도 웹 애플리케이션에서 반�
 
 ## 4. 보안 처리는 Controller보다 앞에서 시작된다
 
-![이미지1](image-2.png)
+![Spring Security 필터가 Controller 앞에서 요청을 처리하는 흐름](image-2.png)
 
-Spring Security는 **Servlet Filter 기반 구조를 이용해 HTTP 요청이 Controller에 도달하기 전에 보안 처리를 시작**한다. 
+Spring Security는 **Servlet Filter 기반 구조를 이용해 HTTP 요청이 Controller에 도달하기 전에 보안 처리를 시작**한다.
 
 요청이 들어오면 Spring Security는 구성된 보안 기능을 순서에 맞게 적용한다. 인증이 필요한 요청에서는 사용자 신원을 확인하고, 인가 단계에서는 현재 사용자가 해당 요청에 접근할 수 있는지 검사한다. 요청이 허용되면 이후 애플리케이션 처리로 넘어가고, 그렇지 않으면 정해진 실패 응답을 반환한다.
 
@@ -209,6 +209,7 @@ Spring Security를 단순한 로그인 라이브러리로 보면 여러 설정�
 - [Spring Security — Servlet Authentication Architecture](https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html)
 - [Spring Security — Authorize HttpServletRequests](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html)
 - [Spring Security — Persisting Authentication](https://docs.spring.io/spring-security/reference/servlet/authentication/persistence.html)
+- [Spring Security — Session Management](https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html)
 - [Spring Security — Cross Site Request Forgery](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)
 - [Spring Security — Security HTTP Response Headers](https://docs.spring.io/spring-security/reference/servlet/exploits/headers.html)
 - [Spring Security — FAQ](https://docs.spring.io/spring-security/reference/servlet/appendix/faq.html)
