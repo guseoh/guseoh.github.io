@@ -20,11 +20,32 @@ export function getSeriesPosts(posts: CollectionEntry<"blog">[], seriesName?: st
       const entrySeries = entry.data.series?.trim();
       return entrySeries ? resolveSeriesId(entrySeries) === seriesId : false;
     })
-    .sort((a, b) => {
-      const orderA = a.data.chapter ?? a.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
-      const orderB = b.data.chapter ?? b.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+    .sort(compareLearningOrder);
+}
 
-      if (orderA !== orderB) return orderA - orderB;
-      return b.data.date.valueOf() - a.data.date.valueOf();
-    });
+export function getLearningPathPosts(
+  posts: CollectionEntry<"blog">[],
+  currentPost: CollectionEntry<"blog">
+) {
+  const seriesName = currentPost.data.series?.trim();
+  if (seriesName) return getSeriesPosts(posts, seriesName);
+  if (typeof currentPost.data.chapter !== "number") return [];
+
+  const categoryName = currentPost.data.category?.trim().toLocaleLowerCase("ko-KR");
+  if (!categoryName) return [];
+
+  return posts
+    .filter((entry) => {
+      const entryCategory = entry.data.category?.trim().toLocaleLowerCase("ko-KR");
+      return entryCategory === categoryName && typeof entry.data.chapter === "number";
+    })
+    .sort(compareLearningOrder);
+}
+
+function compareLearningOrder(a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) {
+  const orderA = a.data.chapter ?? a.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+  const orderB = b.data.chapter ?? b.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
+
+  if (orderA !== orderB) return orderA - orderB;
+  return b.data.date.valueOf() - a.data.date.valueOf();
 }
