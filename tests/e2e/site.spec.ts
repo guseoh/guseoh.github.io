@@ -50,11 +50,14 @@ test("모바일 상단 메뉴를 열고 닫을 수 있다", async ({ page }, tes
   test.skip(!testInfo.project.name.startsWith("mobile"));
   await page.goto("/");
 
-  const toggle = page.locator("[data-mobile-menu-toggle]");
+  const toggle = page.locator("#header-menu-toggle");
+  const navigation = page.locator("#top-nav");
+
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator("[data-top-nav]")).toBeVisible();
+  await expect(navigation).toBeVisible();
 
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(navigation).not.toHaveClass(/is-open/);
 });
