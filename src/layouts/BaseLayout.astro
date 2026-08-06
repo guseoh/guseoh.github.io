@@ -6,7 +6,7 @@ import LayoutScripts from "../components/layout/LayoutScripts.astro";
 import { SITE } from "../config/site";
 import { getPublishedPosts } from "../utils/content/posts";
 import { normalizeCategory } from "../utils/categories";
-import { buildTagSummary } from "../utils/tags";
+import { buildArchiveTagSummary } from "../utils/tags";
 import { buildSidebarNavigation } from "../utils/navigation";
 import {
   SIDEBAR_TAG_LIMIT,
@@ -30,6 +30,7 @@ interface Props {
   currentCategory?: string;
   canonicalUrl?: string;
   refreshUrl?: string;
+  robots?: string;
 }
 
 const {
@@ -44,12 +45,13 @@ const {
   structuredData,
   currentCategory: currentCategoryName,
   canonicalUrl: canonicalUrlOverride,
-  refreshUrl
+  refreshUrl,
+  robots
 } = Astro.props;
 
 const posts = await getPublishedPosts();
 const sidebarNavigation = buildSidebarNavigation(posts);
-const tagSummary = buildTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
+const tagSummary = buildArchiveTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
 const siteUrl = Astro.site ?? new URL(SITE_URL);
 const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride, siteUrl).toString()
@@ -76,6 +78,7 @@ function serializeJsonLd(value: unknown) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="author" content={SITE_AUTHOR} />
+    {robots && <meta name="robots" content={robots} />}
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalUrl} />
@@ -159,7 +162,6 @@ function serializeJsonLd(value: unknown) {
           </main>
         </div>
       </div>
-
     </div>
 
     <LayoutScripts />

@@ -1,7 +1,7 @@
 ---
 import CategoryIcon from "./CategoryIcon.astro";
 import { normalizeCategory } from "../utils/categories";
-import { formatTagName, normalizeTag } from "../utils/tags";
+import { formatTagName, getTagHref } from "../utils/tags";
 
 interface Props {
   category?: string;
@@ -21,8 +21,7 @@ const hiddenTagCount = Math.max(0, tags.length - visibleTags.length);
     <span>{categoryName}</span>
   </a>
   {visibleTags.map((tag) => (
-    <a class="badge badge--tag" href={`/tags/${normalizeTag(tag)}/`}>#{formatTagName(tag)}</a>
+    <a class="badge badge--tag" href={getTagHref(tag)}>#{formatTagName(tag)}</a>
   ))}
   {hiddenTagCount > 0 && <span class="badge badge--muted">+{hiddenTagCount}</span>}
 </div>
-

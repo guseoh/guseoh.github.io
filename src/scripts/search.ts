@@ -210,7 +210,7 @@ function renderPost(post: SearchIndexItem, reasons: string[], query: string) {
   badges.className = "badge-group";
   badges.append(createBadge(`/categories/${encodeURIComponent(normalizeSlug(post.category))}/`, post.category, "badge badge--category"));
   for (const tag of post.tags.slice(0, 4)) {
-    badges.append(createBadge(`/tags/${encodeURIComponent(normalizeSlug(tag))}/`, `#${tag}`, "badge"));
+    badges.append(createBadge(`/search/?tag=${encodeURIComponent(tag)}`, `#${tag}`, "badge"));
   }
   footer.append(metaGroup, badges);
 

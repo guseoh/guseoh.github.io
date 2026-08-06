@@ -2,81 +2,109 @@
 import type { CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
-import { getNavigationItemsByType } from "../../utils/navigation";
-import { buildTagSummary, normalizeTag } from "../../utils/tags";
+import {
+  buildArchiveTagSummary,
+  getArchiveTagMetadata,
+  resolveTagSlug
+} from "../../utils/tags";
 import { getPublishedPosts } from "../../utils/content/posts";
 import { SITE_DESCRIPTION, sortPostsByDate } from "../../utils/posts";
 
-export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  const summary = new Map<string, { tag: string; name: string; count: number }>();
-
-  for (const item of getNavigationItemsByType("tag")) {
-    if (!item.slug) continue;
-    summary.set(item.slug, { tag: item.slug, name: item.title, count: 0 });
-  }
-
-  for (const entry of buildTagSummary(posts)) {
-    summary.set(entry.tag, entry);
-  }
-
-  return Array.from(summary.values()).map(({ tag, name }) => {
-    const filtered = posts.filter((post) =>
-      post.data.tags.some((entryTag) => normalizeTag(entryTag) === tag)
-    );
-
-    return {
-      params: { tag },
-      props: { tag, tagName: name, posts: sortPostsByDate(filtered) }
-    };
-  });
-}
-
-const { tag, tagName, posts } = Astro.props as {
+type TagPageProps = {
   tag: string;
   tagName: string;
   posts: CollectionEntry<"blog">[];
+  canonicalPath: string;
+  isAlias: boolean;
 };
 
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const paths = getArchiveTagMetadata().map((metadata) => {
+    const filtered = posts.filter((post) =>
+      post.data.tags.some((entryTag) => resolveTagSlug(entryTag) === metadata.slug)
+    );
+
+    return {
+      params: { tag: metadata.slug },
+      props: {
+        tag: metadata.slug,
+        tagName: metadata.name,
+        posts: sortPostsByDate(filtered),
+        canonicalPath: `/tags/${metadata.slug}/`,
+        isAlias: false
+      } satisfies TagPageProps
+    };
+  });
+
+  for (const metadata of getArchiveTagMetadata()) {
+    for (const alias of metadata.aliases ?? []) {
+      paths.push({
+        params: { tag: alias },
+        props: {
+          tag: metadata.slug,
+          tagName: metadata.name,
+          posts: [],
+          canonicalPath: `/tags/${metadata.slug}/`,
+          isAlias: true
+        } satisfies TagPageProps
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { tag, tagName, posts, canonicalPath, isAlias } = Astro.props as TagPageProps;
 const allPosts = await getPublishedPosts();
-const visibleTagSummary = new Map<string, { tag: string; name: string; count: number }>();
-
-for (const item of getNavigationItemsByType("tag")) {
-  if (!item.slug) continue;
-  visibleTagSummary.set(item.slug, { tag: item.slug, name: item.title, count: 0 });
-}
-
-for (const entry of buildTagSummary(allPosts)) {
-  visibleTagSummary.set(entry.tag, entry);
-}
-
-const tagSummary = Array.from(visibleTagSummary.values());
+const tagSummary = buildArchiveTagSummary(allPosts);
 ---
 
-<BaseLayout title={`devjune.dev | #${tagName}`} description={`#${tagName} 태그 글 목록 - ${SITE_DESCRIPTION}`}>
-  <section class="hero">
-    <h1>#{tagName}</h1>
-    <p>{posts.length}개의 게시글이 이 태그에 연결되어 있습니다.</p>
-  </section>
+{isAlias ? (
+  <BaseLayout
+    title={`devjune.dev | #${tagName}`}
+    description={`#${tagName} 태그의 새 주소로 이동합니다.`}
+    canonicalUrl={canonicalPath}
+    refreshUrl={canonicalPath}
+    robots="noindex,follow"
+  >
+    <section class="hero post-alias-notice" aria-labelledby="tag-alias-title">
+      <p class="library-hero__eyebrow">Moved</p>
+      <h1 id="tag-alias-title">태그 주소가 변경되었습니다.</h1>
+      <p>같은 주제의 한글·영문 주소를 하나로 통합했습니다.</p>
+      <a href={canonicalPath}>#{tagName} 태그로 이동</a>
+    </section>
+  </BaseLayout>
+) : (
+  <BaseLayout
+    title={`devjune.dev | #${tagName}`}
+    description={`#${tagName} 태그 글 목록 - ${SITE_DESCRIPTION}`}
+    robots={posts.length === 0 ? "noindex,follow" : undefined}
+  >
+    <section class="hero">
+      <h1>#{tagName}</h1>
+      <p>{posts.length}개의 게시글이 이 핵심 태그에 연결되어 있습니다.</p>
+    </section>
 
-  <nav class="archive-filter-list" aria-label="Tag filters">
-    {tagSummary.map(({ tag: tagSlug, name, count }) => (
-      <a class:list={["archive-filter-pill", tagSlug === tag && "is-active"]} href={`/tags/${tagSlug}/`}>
-        <span>#{name}</span>
-        <strong>{count}</strong>
-      </a>
-    ))}
-  </nav>
-
-  {posts.length > 0 ? (
-    <ul class="post-list" style="margin-top: 1rem;">
-      {posts.map((post) => (
-        <li>
-          <PostCard post={post} />
-        </li>
+    <nav class="archive-filter-list" aria-label="Tag filters">
+      {tagSummary.map(({ tag: tagSlug, name, count }) => (
+        <a class:list={["archive-filter-pill", tagSlug === tag && "is-active"]} href={`/tags/${tagSlug}/`}>
+          <span>#{name}</span>
+          <strong>{count}</strong>
+        </a>
       ))}
-    </ul>
-  ) : (
-    <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다.</p>
-  )}
-</BaseLayout>
+    </nav>
+
+    {posts.length > 0 ? (
+      <ul class="post-list" style="margin-top: 1rem;">
+        {posts.map((post) => (
+          <li>
+            <PostCard post={post} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다.</p>
+    )}
+  </BaseLayout>
+)}
