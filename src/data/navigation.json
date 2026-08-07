@@ -2,42 +2,43 @@
   {
     "title": "Project",
     "slug": "project",
-    "description": "개인 프로젝트의 구현과 개선 과정을 모아봅니다.",
+    "description": "현재 진행 중인 백엔드 프로젝트와 검증 기록을 모아봅니다.",
     "items": [
       {
-        "title": "Board",
-        "slug": "board",
-        "type": "category",
-        "description": "Spring Boot 게시판 프로젝트 구현과 개선 기록",
-        "planned": true
+        "title": "DevPedia",
+        "slug": "devpedia",
+        "type": "search",
+        "query": "DevPedia",
+        "url": "/projects/devpedia/",
+        "description": "개발 커뮤니티와 프로젝트·스터디 모집 서비스"
+      },
+      {
+        "title": "PawCycle Commerce",
+        "slug": "pawcycle-commerce",
+        "type": "search",
+        "query": "PawCycle",
+        "url": "/projects/pawcycle-commerce/",
+        "description": "반려동물 소모품 구매와 정기배송 이커머스"
+      },
+      {
+        "title": "FutMatch",
+        "slug": "futmatch",
+        "type": "search",
+        "query": "FutMatch",
+        "url": "/projects/futmatch/",
+        "description": "풋살 예약·매칭 서비스의 도메인과 백엔드 설계"
       },
       {
         "title": "Performance",
         "slug": "performance",
         "type": "tag",
-        "description": "성능 측정과 쿼리 최적화",
-        "planned": true
+        "description": "성능 측정과 쿼리 최적화"
       },
       {
         "title": "Monitoring",
         "slug": "monitoring",
         "type": "tag",
-        "description": "Actuator와 P6Spy를 활용한 관측성 개선",
-        "planned": true
-      },
-      {
-        "title": "Board 개선 시리즈",
-        "slug": "board-프로젝트-개선-기록",
-        "type": "series",
-        "description": "Board 프로젝트 개선 과정을 순서대로 읽기",
-        "planned": true
-      },
-      {
-        "title": "Deployment",
-        "slug": "deployment",
-        "type": "tag",
-        "description": "배포와 운영 자동화 기록",
-        "planned": true
+        "description": "관측성, 로그와 운영 상태 확인"
       }
     ]
   },
@@ -78,11 +79,10 @@
       },
       {
         "title": "Spring Security",
-        "slug": "security",
+        "slug": "spring-security",
         "type": "tag",
         "icon": "spring-security",
-        "description": "인증과 인가 구현 기록",
-        "planned": true
+        "description": "인증과 인가, 세션과 웹 보안 학습"
       }
     ]
   },
@@ -111,9 +111,9 @@
       },
       {
         "title": "Data Structure",
-        "slug": "자료구조",
+        "slug": "data-structure",
         "type": "tag",
-        "description": "자료구조의 원리와 구현"
+        "description": "자료구조의 원리와 Java 구현"
       }
     ]
   },
@@ -138,22 +138,25 @@
         "title": "GitHub Actions",
         "slug": "github-actions",
         "type": "tag",
-        "description": "CI/CD와 반복 작업 자동화",
-        "planned": true
+        "description": "CI/CD와 반복 작업 자동화"
+      },
+      {
+        "title": "Deployment",
+        "slug": "deployment",
+        "type": "tag",
+        "description": "배포와 운영 자동화 기록"
       },
       {
         "title": "Docker",
         "slug": "docker",
         "type": "tag",
-        "description": "컨테이너 기반 개발과 배포",
-        "planned": true
+        "description": "컨테이너 기반 개발과 배포"
       },
       {
         "title": "AWS",
         "slug": "aws",
         "type": "tag",
-        "description": "클라우드 인프라 운영 기록",
-        "planned": true
+        "description": "클라우드 인프라 운영 기록"
       }
     ]
   },

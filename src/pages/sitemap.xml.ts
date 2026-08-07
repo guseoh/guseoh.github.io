@@ -1,8 +1,9 @@
+import { PROJECTS } from "../data/projects";
 import { buildBookSummaries } from "../utils/books";
 import { buildCategorySummary, filterPostsByCategory } from "../utils/categories";
 import { getPublishedPostsSorted } from "../utils/content/posts";
 import { buildSeriesSummary } from "../utils/series";
-import { buildTagSummary, normalizeTag } from "../utils/tags";
+import { buildArchiveTagSummary, resolveTagSlug } from "../utils/tags";
 import { getPostActivityDate, getPostPath, POSTS_PER_PAGE, SITE_URL } from "../utils/posts";
 
 function escapeXml(value: string) {
@@ -36,7 +37,7 @@ export async function GET() {
   const categories = buildCategorySummary(posts);
   const books = buildBookSummaries(posts);
   const series = buildSeriesSummary(posts);
-  const tags = buildTagSummary(posts);
+  const tags = buildArchiveTagSummary(posts);
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
 
   const urlsByPath = new Map<string, string | undefined>();
@@ -51,9 +52,14 @@ export async function GET() {
   addUrl("/blog/", latestPostDate(posts.slice(0, POSTS_PER_PAGE)));
   addUrl("/books/", latestPostDate(posts.filter((post) => post.data.book?.trim())));
   addUrl("/categories/", latestPostDate(posts));
+  addUrl("/projects/");
   addUrl("/tags/", latestPostDate(posts));
   addUrl("/series/", latestPostDate(posts.filter((post) => post.data.series?.trim())));
   addUrl("/search/");
+
+  for (const project of PROJECTS) {
+    addUrl(`/projects/${project.slug}/`);
+  }
 
   if (totalPages > 1) {
     for (let index = 1; index < totalPages; index += 1) {
@@ -76,7 +82,7 @@ export async function GET() {
 
   for (const tag of tags) {
     addUrl(`/tags/${tag.tag}/`, latestPostDate(posts.filter((post) =>
-      post.data.tags.some((postTag) => normalizeTag(postTag) === tag.tag)
+      post.data.tags.some((postTag) => resolveTagSlug(postTag) === tag.tag)
     )));
   }
 
@@ -102,4 +108,3 @@ export async function GET() {
     }
   });
 }
-

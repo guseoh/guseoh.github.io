@@ -1,22 +1,24 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro";
-import { GITHUB_URL } from "../../utils/posts";
+import { SITE_TITLE } from "../../utils/posts";
 
 interface Props {
-  currentPath: string;
+  currentPath?: string;
 }
 
-const { currentPath } = Astro.props as Props;
-
-const headerLinks = [
-  { href: "/", label: "Home" },
-  { href: "/blog", label: "Posts" },
-  { href: "/books", label: "Books" },
-  { href: "/series", label: "Series" },
-  { href: "/search", label: "Search" }
+const { currentPath = "/" } = Astro.props as Props;
+const navItems = [
+  { href: "/blog/", label: "Posts" },
+  { href: "/projects/", label: "Projects" },
+  { href: "/categories/", label: "Categories" },
+  { href: "/tags/", label: "Tags" },
+  { href: "/books/", label: "Books" },
+  { href: "/series/", label: "Series" },
+  { href: "/about/", label: "About" },
+  { href: "/search/", label: "Search" }
 ];
 
-function isNavActive(href: string) {
+function isActive(href: string) {
   const normalizedHref = href === "/" ? "/" : href.replace(/\/+$/, "");
   if (normalizedHref === "/") return currentPath === "/";
 
@@ -26,7 +28,7 @@ function isNavActive(href: string) {
 
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="brand" href="/" aria-label="devjune.dev 홈으로 이동">devjune.dev</a>
+    <a class="brand" href="/" aria-label={`${SITE_TITLE} 홈으로 이동`}>{SITE_TITLE}</a>
 
     <div class="header-actions">
       <button
@@ -44,19 +46,16 @@ function isNavActive(href: string) {
 
       <nav id="top-nav" class="top-nav" aria-label="Primary navigation">
         {
-          headerLinks.map(({ href, label }) => (
+          navItems.map(({ href, label }) => (
             <a
-              class:list={["top-nav__link", isNavActive(href) && "is-active"]}
+              class:list={["top-nav__link", isActive(href) && "is-active"]}
               href={href}
-              aria-current={isNavActive(href) ? "page" : undefined}
+              aria-current={isActive(href) ? "page" : undefined}
             >
               {label}
             </a>
           ))
         }
-        <a class="top-nav__link top-nav__link--external" href={GITHUB_URL} target="_blank" rel="noreferrer">
-          GitHub
-        </a>
       </nav>
 
       <ThemeToggle />

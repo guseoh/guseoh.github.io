@@ -1,17 +1,36 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { CORE_TECH_TAGS, GITHUB_URL, SITE_DESCRIPTION } from "../utils/posts";
+import { CORE_TECH_TAGS, GITHUB_URL, SITE_AUTHOR, SITE_DESCRIPTION, SITE_URL } from "../utils/posts";
+import { PROJECTS } from "../data/projects";
 
-const boardUrl = "https://github.com/guseoh/Board";
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    name: `${SITE_AUTHOR} 소개`,
+    url: `${SITE_URL}/about/`,
+    mainEntity: {
+      "@type": "Person",
+      name: SITE_AUTHOR,
+      url: `${SITE_URL}/about/`,
+      sameAs: [GITHUB_URL],
+      knowsAbout: [...CORE_TECH_TAGS]
+    }
+  }
+];
 ---
 
-<BaseLayout title="devjune.dev | About" description={`개인 기술 블로그 소개 - ${SITE_DESCRIPTION}`}>
+<BaseLayout
+  title="devjune.dev | About"
+  description={`개인 기술 블로그 소개 - ${SITE_DESCRIPTION}`}
+  structuredData={structuredData}
+>
   <section class="hero about-hero">
     <p class="about-hero__eyebrow">About</p>
     <h1>Java와 Spring을 공부하고 기록하는 오지훈입니다.</h1>
     <p>
-      Java, Spring, JPA, HTTP와 인프라를 학습하며 이해한 원리와 다시 확인할 내용을 기록합니다.
-      프로젝트 코드는 개념을 실제 동작과 연결하고 시행착오를 검증하는 자료로 활용합니다.
+      기능을 구현한 사실만 남기기보다, 어떤 문제를 발견했고 무엇을 기준으로 설계했으며
+      테스트와 운영에서 무엇을 확인했는지 기록합니다.
     </p>
   </section>
 
@@ -19,8 +38,8 @@ const boardUrl = "https://github.com/guseoh/Board";
     <section class="about-panel">
       <h2>지금 집중하는 방향</h2>
       <p>
-        Spring Boot 기반 게시판 프로젝트를 운영 가능한 백엔드 서비스처럼 다듬어가며,
-        회원/게시글/댓글/OAuth2 로그인 흐름과 검색, 배포, 모니터링 개선 과정을 정리합니다.
+        Java와 Spring 기반 백엔드의 기본기를 다지는 동시에 DevPedia, PawCycle Commerce와 FutMatch에서
+        제품 요구사항, 도메인 규칙, 보안, 데이터 정합성과 운영 검증을 연결하고 있습니다.
       </p>
     </section>
 
@@ -28,21 +47,40 @@ const boardUrl = "https://github.com/guseoh/Board";
       <h2>주요 관심 기술</h2>
       <div class="about-tech-list" aria-label="주요 관심 기술">
         {CORE_TECH_TAGS.map((tag) => <span>{tag}</span>)}
-        <span>QueryDSL</span>
-        <span>성능 개선</span>
       </div>
     </section>
 
     <section class="about-panel about-panel--wide">
-      <h2>Board 프로젝트</h2>
-      <p>
-        Board는 Spring Boot 기반 게시판 프로젝트입니다. 회원, 게시글, 댓글, OAuth2 로그인,
-        QueryDSL 검색, Docker 배포, CI/CD, 모니터링과 성능 측정 과정을 블로그 글로 확장해 나갈 예정입니다.
-      </p>
+      <div class="about-panel__head">
+        <div>
+          <p class="project-eyebrow">Current Work</p>
+          <h2>현재 프로젝트</h2>
+        </div>
+        <a href="/projects/">전체 보기</a>
+      </div>
+      <div class="about-project-grid">
+        {PROJECTS.map((project) => (
+          <article>
+            <span>{project.status}</span>
+            <h3><a href={`/projects/${project.slug}/`}>{project.name}</a></h3>
+            <p>{project.summary}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="about-panel about-panel--wide">
+      <h2>기록 원칙</h2>
+      <ul class="about-principles">
+        <li>현재 코드와 공식 자료로 확인한 범위만 완료 또는 검증됐다고 표현합니다.</li>
+        <li>결정된 내용과 아직 열려 있는 선택을 구분해 기록합니다.</li>
+        <li>AI 도구는 구현과 검토를 보조하지만 작업 범위와 최종 판단은 사용자가 통제합니다.</li>
+        <li>실행하지 않은 테스트나 운영 검증을 성공했다고 보고하지 않습니다.</li>
+      </ul>
       <div class="about-actions">
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a>
-        <a href={boardUrl} target="_blank" rel="noreferrer">Board Repository</a>
-        <a href="/search/?group=project">Project 글 보기</a>
+        <a href="/projects/">Projects</a>
+        <a href="/rss.xml">RSS</a>
       </div>
     </section>
   </div>

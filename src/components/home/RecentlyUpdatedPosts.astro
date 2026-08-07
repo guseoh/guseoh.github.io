@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PostCard from "../PostCard.astro";
+
+interface Props {
+  posts: CollectionEntry<"blog">[];
+  limit?: number;
+}
+
+const { posts, limit = 4 } = Astro.props as Props;
+const visiblePosts = posts
+  .filter((post) => post.data.updated && post.data.updated.valueOf() > post.data.date.valueOf())
+  .sort((a, b) => (b.data.updated?.valueOf() ?? 0) - (a.data.updated?.valueOf() ?? 0))
+  .slice(0, limit);
+---
+
+{visiblePosts.length > 0 && (
+  <section class="home-section home-updated-posts" aria-labelledby="home-updated-posts-title">
+    <div class="home-section__head">
+      <div>
+        <p class="home-section__eyebrow">Maintained</p>
+        <h2 id="home-updated-posts-title" class="home-section__title">최근 다시 본 글</h2>
+      </div>
+      <a class="home-section__link" href="/blog/">전체 글</a>
+    </div>
+
+    <ul class="post-list home-updated-list">
+      {visiblePosts.map((post) => (
+        <li><PostCard post={post} variant="updated" /></li>
+      ))}
+    </ul>
+  </section>
+)}

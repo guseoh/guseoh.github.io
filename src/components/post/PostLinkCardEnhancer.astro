@@ -1,4 +1,37 @@
-<script is:inline>
+---
+import * as simpleIcons from "simple-icons";
+import type { SimpleIcon } from "simple-icons";
+
+const iconRegistry = simpleIcons as unknown as Record<string, SimpleIcon>;
+const requestedIcons = {
+  spring: "siSpring",
+  springSecurity: "siSpringsecurity",
+  mdn: "siMdnwebdocs",
+  github: "siGithub",
+  velog: "siVelog",
+  tistory: "siTistory",
+  medium: "siMedium",
+  oracle: "siOracle",
+  openjdk: "siOpenjdk",
+  docker: "siDocker",
+  aws: "siAmazonwebservices",
+  astro: "siAstro",
+  typescript: "siTypescript",
+  node: "siNodedotjs",
+  npm: "siNpm",
+  gradle: "siGradle",
+  stackoverflow: "siStackoverflow"
+} as const;
+
+const referenceIconMap = Object.fromEntries(
+  Object.entries(requestedIcons).flatMap(([key, exportName]) => {
+    const icon = iconRegistry[exportName];
+    return icon ? [[key, { path: icon.path, hex: icon.hex, slug: icon.slug }]] : [];
+  })
+);
+---
+
+<script is:inline define:vars={{ referenceIconMap }}>
   (() => {
     const content = document.querySelector(".post__content");
     if (!(content instanceof HTMLElement) || content.dataset.linkCardsReady === "true") return;
@@ -19,6 +52,140 @@
       if (preview.complete && preview.naturalWidth === 0) {
         showFallback();
       }
+    }
+
+    const themeImages = Array.from(content.querySelectorAll("img[data-dark-src]"));
+    if (themeImages.length > 0) {
+      const applyThemeImageSources = () => {
+        const useDarkSource = document.documentElement.dataset.theme === "dark";
+
+        for (const image of themeImages) {
+          if (!(image instanceof HTMLImageElement)) continue;
+          const darkSource = image.dataset.darkSrc;
+          if (!darkSource) continue;
+
+          image.dataset.lightSrc ??= image.getAttribute("src") ?? image.src;
+          const nextSource = useDarkSource ? darkSource : image.dataset.lightSrc;
+          if (nextSource && image.getAttribute("src") !== nextSource) {
+            image.setAttribute("src", nextSource);
+          }
+        }
+      };
+
+      applyThemeImageSources();
+      new MutationObserver(applyThemeImageSources).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"]
+      });
+    }
+
+    const normalizeHeading = (value) => value.replace(/\s+/g, "").toLowerCase();
+    const referenceHeading = Array.from(content.querySelectorAll("h2, h3")).find((heading) =>
+      normalizeHeading(heading.textContent ?? "").includes("참고자료")
+    );
+
+    if (!(referenceHeading instanceof HTMLHeadingElement)) return;
+
+    const headingLevel = Number(referenceHeading.tagName.slice(1));
+    const referenceLinks = [];
+    let section = referenceHeading.nextElementSibling;
+
+    while (section) {
+      const sectionLevel = /^H[1-6]$/.test(section.tagName) ? Number(section.tagName.slice(1)) : 7;
+      if (sectionLevel <= headingLevel) break;
+
+      if (section instanceof HTMLAnchorElement) {
+        referenceLinks.push(section);
+      }
+      referenceLinks.push(...section.querySelectorAll("a[href]"));
+      section = section.nextElementSibling;
+    }
+
+    const rules = [
+      { test: (host) => host === "docs.spring.io" || host === "spring.io" || host.endsWith(".spring.io"), icon: "spring", type: "공식 문서" },
+      { test: (host) => host.includes("spring-security"), icon: "springSecurity", type: "공식 문서" },
+      { test: (host) => host === "developer.mozilla.org", icon: "mdn", type: "공식 문서" },
+      { test: (host) => host === "docs.oracle.com" || host.endsWith(".oracle.com"), icon: "oracle", type: "공식 문서" },
+      { test: (host) => host === "openjdk.org" || host.endsWith(".openjdk.org"), icon: "openjdk", type: "공식 문서" },
+      { test: (host) => host === "docs.docker.com" || host.endsWith(".docker.com"), icon: "docker", type: "공식 문서" },
+      { test: (host) => host === "docs.aws.amazon.com" || host.endsWith(".amazonaws.com"), icon: "aws", type: "공식 문서" },
+      { test: (host) => host === "docs.astro.build" || host.endsWith(".astro.build"), icon: "astro", type: "공식 문서" },
+      { test: (host) => host === "www.typescriptlang.org" || host === "typescriptlang.org", icon: "typescript", type: "공식 문서" },
+      { test: (host) => host === "nodejs.org" || host.endsWith(".nodejs.org"), icon: "node", type: "공식 문서" },
+      { test: (host) => host === "docs.npmjs.com" || host === "www.npmjs.com" || host === "npmjs.com", icon: "npm", type: "공식 문서" },
+      { test: (host) => host === "docs.gradle.org" || host.endsWith(".gradle.org"), icon: "gradle", type: "공식 문서" },
+      { test: (host) => host === "stackoverflow.com" || host.endsWith(".stackoverflow.com"), icon: "stackoverflow", type: "Q&A" },
+      { test: (host) => host === "github.com" || host.endsWith(".github.com"), icon: "github", type: "GitHub" },
+      { test: (host) => host === "velog.io" || host.endsWith(".velog.io"), icon: "velog", type: "기술 블로그" },
+      { test: (host) => host === "tistory.com" || host.endsWith(".tistory.com"), icon: "tistory", type: "기술 블로그" },
+      { test: (host) => host === "medium.com" || host.endsWith(".medium.com"), icon: "medium", type: "기술 블로그" },
+      { test: (host) => host.endsWith(".github.io") || host.endsWith(".oopy.io"), icon: undefined, type: "기술 블로그" }
+    ];
+
+    const genericIcon = () => {
+      const icon = document.createElement("span");
+      icon.className = "reference-link__icon reference-link__icon--generic";
+      icon.setAttribute("aria-hidden", "true");
+      icon.innerHTML = '<svg viewBox="0 0 24 24" focusable="false"><path d="M7 3h7l3 3v15H7z"></path><path d="M14 3v4h4M10 12h5M10 16h5"></path></svg>';
+      return icon;
+    };
+
+    const brandIcon = (iconData) => {
+      const icon = document.createElement("span");
+      icon.className = "reference-link__icon reference-link__icon--brand";
+      icon.setAttribute("aria-hidden", "true");
+      icon.style.setProperty("--reference-icon-color", `#${iconData.hex}`);
+      icon.innerHTML = `<svg viewBox="0 0 24 24" focusable="false" data-simple-icons-slug="${iconData.slug}"><path d="${iconData.path}"></path></svg>`;
+      return icon;
+    };
+
+    const faviconIcon = (url) => {
+      const icon = document.createElement("span");
+      icon.className = "reference-link__icon reference-link__icon--favicon";
+      icon.setAttribute("aria-hidden", "true");
+
+      const image = document.createElement("img");
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.referrerPolicy = "no-referrer";
+      image.src = `${url.origin}/favicon.ico`;
+      image.addEventListener("error", () => icon.replaceWith(genericIcon()), { once: true });
+      icon.append(image);
+      return icon;
+    };
+
+    for (const link of referenceLinks) {
+      if (!(link instanceof HTMLAnchorElement) || link.dataset.referenceLinkReady === "true") continue;
+
+      let url;
+      try {
+        url = new URL(link.href, window.location.href);
+      } catch {
+        continue;
+      }
+
+      if (!/^https?:$/.test(url.protocol)) continue;
+
+      link.dataset.referenceLinkReady = "true";
+      link.classList.add("reference-link");
+
+      const host = url.hostname.toLowerCase().replace(/^www\./, "");
+      const rule = rules.find((candidate) => candidate.test(host));
+      const iconData = rule?.icon ? referenceIconMap[rule.icon] : undefined;
+      const icon = iconData ? brandIcon(iconData) : faviconIcon(url);
+      const label = document.createElement("span");
+      label.className = "reference-link__label";
+
+      while (link.firstChild) {
+        label.append(link.firstChild);
+      }
+
+      const type = document.createElement("small");
+      type.className = "reference-link__type";
+      type.textContent = rule?.type ?? "참고 링크";
+
+      link.append(icon, label, type);
     }
   })();
 </script>

@@ -11,4 +11,12 @@ const { title = SITE_TITLE } = Astro.props as Props;
 <section class="archive-hero archive-hero--simple" aria-label="Blog intro">
   <p class="archive-hero__eyebrow">{title}</p>
   <h1>Java와 Spring을 공부하고 기록하는 오지훈입니다.</h1>
+  <p class="archive-hero__lead">
+    개념을 외우는 데서 끝내지 않고 프로젝트의 설계, 구현과 검증 결과를 연결해 오래 다시 볼 수 있는 기록으로 남깁니다.
+  </p>
+  <div class="archive-hero__actions">
+    <a href="/projects/">프로젝트 보기</a>
+    <a href="/blog/">최근 글 읽기</a>
+    <a href="/about/">소개</a>
+  </div>
 </section>

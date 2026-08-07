@@ -15,11 +15,11 @@ import PostToc from "../../components/post/PostToc.astro";
 import { SITE } from "../../config/site";
 import { normalizeCategory } from "../../utils/categories";
 import { getPublishedPostsSorted } from "../../utils/content/posts";
-import { getAdjacentPosts, getSeriesPosts } from "../../utils/postNavigation";
+import { getAdjacentPosts, getLearningPathPosts } from "../../utils/postNavigation";
 import { buildPostTocHeadings } from "../../utils/postToc";
 import { getRelatedPosts } from "../../utils/relatedPosts";
 import { getSeriesContinuationMessage, getSeriesMetadata } from "../../utils/series";
-import { formatTagName, normalizeTag } from "../../utils/tags";
+import { formatTagName, getTagHref } from "../../utils/tags";
 import {
   DETAIL_TAG_LIMIT,
   GITHUB_URL,
@@ -93,8 +93,15 @@ const hiddenTagCount = Math.max(0, post.data.tags.length - visibleTags.length);
 const seriesName = post.data.series?.trim();
 const seriesMetadata = seriesName ? getSeriesMetadata(seriesName) : undefined;
 const seriesTitle = seriesMetadata?.title ?? seriesName;
-const seriesPosts = getSeriesPosts(allPosts, seriesName);
 const seriesContinuationMessage = seriesName ? getSeriesContinuationMessage(seriesName) : "";
+const learningPathPosts = getLearningPathPosts(allPosts, post);
+const learningPathIndex = learningPathPosts.findIndex((entry) => entry.id === post.id);
+const learningPathTitle = seriesTitle ?? `${categoryName} 학습 경로`;
+const showLearningPath = Boolean(seriesName) || learningPathPosts.length > 1;
+const previousLearningPost = learningPathIndex > 0 ? learningPathPosts[learningPathIndex - 1] : undefined;
+const nextLearningPost = learningPathIndex >= 0 && learningPathIndex < learningPathPosts.length - 1
+  ? learningPathPosts[learningPathIndex + 1]
+  : undefined;
 const { newerPost, olderPost } = getAdjacentPosts(allPosts, post.id);
 const relatedPosts = getRelatedPosts(post, allPosts, { limit: 3 });
 const siteUrl = Astro.site ?? new URL(SITE.siteUrl);
@@ -155,6 +162,15 @@ const postStructuredData = {
   articleSection: categoryName,
   keywords: post.data.tags.length > 0 ? post.data.tags : undefined
 };
+const breadcrumbStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: SITE.siteUrl },
+    { "@type": "ListItem", position: 2, name: categoryName, item: new URL(`/categories/${categorySlug}/`, siteUrl).toString() },
+    { "@type": "ListItem", position: 3, name: postTitle, item: postUrl }
+  ]
+};
 ---
 
 {isAlias ? (
@@ -166,6 +182,7 @@ const postStructuredData = {
     canonicalUrl={canonicalPath}
     refreshUrl={canonicalPath}
     currentCategory={post.data.category}
+    robots="noindex,follow"
   >
     <section class="hero post-alias-notice" aria-labelledby="alias-title">
       <p class="library-hero__eyebrow">Moved</p>
@@ -186,7 +203,7 @@ const postStructuredData = {
   updatedTime={(post.data.updated ?? post.data.date).toISOString()}
   type="article"
   wideContent={true}
-  structuredData={postStructuredData}
+  structuredData={[postStructuredData, breadcrumbStructuredData]}
   currentCategory={post.data.category}
   canonicalUrl={canonicalPath}
 >
@@ -240,16 +257,14 @@ const postStructuredData = {
           </div>
         )}
 
-        {
-          post.data.tags.length > 0 && (
-            <div class="post-meta-tags" aria-label="Post tags">
-              {visibleTags.map((tag) => (
-                <a class="tag" href={`/tags/${normalizeTag(tag)}/`}>#{formatTagName(tag)}</a>
-              ))}
-              {hiddenTagCount > 0 && <span class="tag tag--muted">+{hiddenTagCount} tags</span>}
-            </div>
-          )
-        }
+        {post.data.tags.length > 0 && (
+          <div class="post-meta-tags" aria-label="Post tags">
+            {visibleTags.map((tag) => (
+              <a class="tag" href={getTagHref(tag)}>#{formatTagName(tag)}</a>
+            ))}
+            {hiddenTagCount > 0 && <span class="tag tag--muted">+{hiddenTagCount} tags</span>}
+          </div>
+        )}
       </header>
 
       {isStalePost && (
@@ -267,26 +282,51 @@ const postStructuredData = {
       </div>
 
       <footer class="post-footer">
-        {seriesName && seriesTitle && (
-          <section class="post-series" aria-label="Post series">
-            <p class="post-series__label">Series</p>
-            <h2>
-              {seriesMetadata ? <a href={`/series/${seriesMetadata.id}/`}>{seriesTitle}</a> : seriesTitle}
-            </h2>
-            {seriesPosts.length > 1 ? (
+        {showLearningPath && learningPathTitle && (
+          <section class="post-series post-learning-path" aria-label="Learning path">
+            <div class="post-learning-path__head">
+              <div>
+                <p class="post-series__label">Learning Path</p>
+                <h2>
+                  {seriesMetadata ? <a href={`/series/${seriesMetadata.id}/`}>{learningPathTitle}</a> : learningPathTitle}
+                </h2>
+              </div>
+              {learningPathIndex >= 0 && learningPathPosts.length > 0 && (
+                <span>{learningPathIndex + 1} / {learningPathPosts.length}</span>
+              )}
+            </div>
+
+            {learningPathPosts.length > 1 ? (
               <ol class="post-series__list">
-                {seriesPosts.map((seriesPost) => (
-                  <li class:list={[seriesPost.id === post.id && "is-current"]}>
-                    {seriesPost.id === post.id ? (
-                      <span>{seriesPost.data.title}</span>
+                {learningPathPosts.map((learningPost) => (
+                  <li class:list={[learningPost.id === post.id && "is-current"]}>
+                    {learningPost.id === post.id ? (
+                      <span>{learningPost.data.title}</span>
                     ) : (
-                      <a href={getPostPath(seriesPost)}>{seriesPost.data.title}</a>
+                      <a href={getPostPath(learningPost)}>{learningPost.data.title}</a>
                     )}
                   </li>
                 ))}
               </ol>
             ) : (
               <p class="post-series__empty">{seriesContinuationMessage}</p>
+            )}
+
+            {(previousLearningPost || nextLearningPost) && (
+              <nav class="post-learning-path__nav" aria-label="학습 경로 이전과 다음 글">
+                {previousLearningPost ? (
+                  <a href={getPostPath(previousLearningPost)}>
+                    <span>이전 단계</span>
+                    <strong>{previousLearningPost.data.title}</strong>
+                  </a>
+                ) : <span></span>}
+                {nextLearningPost ? (
+                  <a class="post-learning-path__next" href={getPostPath(nextLearningPost)}>
+                    <span>다음 단계</span>
+                    <strong>{nextLearningPost.data.title}</strong>
+                  </a>
+                ) : <span></span>}
+              </nav>
             )}
           </section>
         )}

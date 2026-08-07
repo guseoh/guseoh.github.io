@@ -36,31 +36,38 @@ export type NavigationGroupView = Omit<NavigationGroup, "items"> & {
   items: NavigationItemView[];
 };
 
+const NAVIGATION_GROUPS = navigationData as NavigationGroup[];
+
+export function getNavigationItemsByType(type: NavigationItemType) {
+  return NAVIGATION_GROUPS.flatMap((group) => group.items)
+    .filter((item) => item.type === type);
+}
+
 export function buildNavigationGroups(posts: CollectionEntry<"blog">[]): NavigationGroupView[] {
-  return (navigationData as NavigationGroup[])
-    .map((group) => {
-      const items = group.items.map((item) => {
-        const matchingPosts = filterPostsByNavigationItem(posts, item);
-
-        return {
-          ...item,
-          href: item.planned ? undefined : getNavigationItemHref(item),
-          count: matchingPosts.length
-        };
-      });
-
-      const groupPostIds = new Set(items.flatMap((item) =>
-        filterPostsByNavigationItem(posts, item).map((post) => post.id)
-      ));
+  return NAVIGATION_GROUPS.map((group) => {
+    const items = group.items.map((item) => {
+      const matchingPosts = filterPostsByNavigationItem(posts, item);
 
       return {
-        ...group,
-        href: `/search/?group=${group.slug}`,
-        count: groupPostIds.size,
-        items
+        ...item,
+        // Navigation entries remain reachable even before their first post is
+        // published. The destination page renders an explicit empty state.
+        href: getNavigationItemHref(item),
+        count: matchingPosts.length
       };
-    })
-    .filter((group) => group.count > 0);
+    });
+
+    const groupPostIds = new Set(items.flatMap((item) =>
+      filterPostsByNavigationItem(posts, item).map((post) => post.id)
+    ));
+
+    return {
+      ...group,
+      href: `/search/?group=${group.slug}`,
+      count: groupPostIds.size,
+      items
+    };
+  });
 }
 
 export function buildSidebarNavigation(posts: CollectionEntry<"blog">[]): CategoryTreeGroup[] {
@@ -78,14 +85,12 @@ export function buildSidebarNavigation(posts: CollectionEntry<"blog">[]): Catego
       // technology tags can share this data path without placeholder spacing.
       categoryIcon: item.icon ?? item.slug,
       description: item.description,
-      planned: item.planned
+      planned: false
     }))
   }));
 }
 
 function filterPostsByNavigationItem(posts: CollectionEntry<"blog">[], item: NavigationItem) {
-  if (item.planned) return [];
-
   if (item.type === "category") {
     return posts.filter((post) => getCategorySlug(post) === item.slug);
   }

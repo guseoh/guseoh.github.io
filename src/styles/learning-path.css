@@ -1,0 +1,77 @@
+.post-learning-path__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.post-learning-path__head > span {
+  flex: 0 0 auto;
+  border: 1px solid var(--tag-border);
+  border-radius: 999px;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  font-size: 0.72rem;
+  font-weight: 850;
+  padding: 0.38rem 0.55rem;
+}
+
+.post-learning-path__nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.8rem;
+}
+
+.post-learning-path__nav a {
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--ink);
+  padding: 0.68rem 0.75rem;
+  text-decoration: none;
+}
+
+.post-learning-path__nav a:hover,
+.post-learning-path__nav a:focus-visible {
+  border-color: color-mix(in srgb, var(--link) 52%, var(--border));
+  background: var(--surface-hover);
+}
+
+.post-learning-path__nav a span {
+  color: var(--muted-readable);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.post-learning-path__nav a strong {
+  overflow: hidden;
+  color: var(--heading);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-learning-path__next {
+  text-align: right;
+}
+
+@media (max-width: 680px) {
+  .post-learning-path__head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .post-learning-path__nav {
+    grid-template-columns: 1fr;
+  }
+
+  .post-learning-path__next {
+    text-align: left;
+  }
+}

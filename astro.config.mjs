@@ -1,4 +1,5 @@
-﻿import { defineConfig } from "astro/config";
+import { unified } from "@astrojs/markdown-remark";
+import { defineConfig } from "astro/config";
 import { rehypeExternalLinks } from "./src/plugins/rehype-external-links.mjs";
 import { rehypeImageFlags } from "./src/plugins/rehype-image-flags.mjs";
 import { rehypeTableScroll } from "./src/plugins/rehype-table-scroll.mjs";
@@ -29,18 +30,20 @@ function remarkDemoteContentH1() {
 export default defineConfig({
   site: SITE.siteUrl,
   markdown: {
-    remarkPlugins: [
-      remarkDemoteContentH1,
-      remarkTableCaptions,
-      remarkCallout,
-      remarkCodeMeta,
-      [remarkLinkMention, { site: SITE.siteUrl }]
-    ],
-    rehypePlugins: [
-      [rehypeExternalLinks, { site: SITE.siteUrl }],
-      rehypeTableScroll,
-      rehypeImageFlags
-    ],
+    processor: unified({
+      remarkPlugins: [
+        remarkDemoteContentH1,
+        remarkTableCaptions,
+        remarkCallout,
+        remarkCodeMeta,
+        [remarkLinkMention, { site: SITE.siteUrl }]
+      ],
+      rehypePlugins: [
+        [rehypeExternalLinks, { site: SITE.siteUrl }],
+        rehypeTableScroll,
+        rehypeImageFlags
+      ]
+    }),
     syntaxHighlight: {
       type: "shiki",
       excludeLangs: ["math"]

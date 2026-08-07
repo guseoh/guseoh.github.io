@@ -3,55 +3,89 @@ import type { CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCategoryName } from "../../utils/categories";
 import { getPublishedPostsSorted } from "../../utils/content/posts";
-import { buildSeriesSummary } from "../../utils/series";
+import { getNavigationItemsByType } from "../../utils/navigation";
+import {
+  buildSeriesSummary,
+  getSeriesMetadata,
+  type SeriesStatus
+} from "../../utils/series";
 import { formatPostDate, getPostDescription, getPostPath, SITE_DESCRIPTION } from "../../utils/posts";
+
+type SeriesPageEntry = {
+  id: string;
+  title: string;
+  description: string;
+  status: SeriesStatus;
+  category: string;
+  latestDate?: Date;
+  posts: CollectionEntry<"blog">[];
+};
 
 export async function getStaticPaths() {
   const posts = await getPublishedPostsSorted();
-  const seriesSummary = buildSeriesSummary(posts);
+  const summary = new Map<string, SeriesPageEntry>();
 
-  return seriesSummary.map((series) => ({
+  for (const item of getNavigationItemsByType("series")) {
+    if (!item.slug) continue;
+    const metadata = getSeriesMetadata(item.slug);
+
+    summary.set(item.slug, {
+      id: item.slug,
+      title: metadata?.title ?? item.title,
+      description: metadata?.description ?? item.description ?? `${item.title} 시리즈 글을 모아둔 목록입니다.`,
+      status: metadata?.status ?? "planned",
+      category: "",
+      posts: []
+    });
+  }
+
+  for (const entry of buildSeriesSummary(posts)) {
+    summary.set(entry.id, {
+      id: entry.id,
+      title: entry.title,
+      description: entry.description,
+      status: entry.status,
+      category: entry.category,
+      latestDate: entry.latestDate,
+      posts: entry.posts
+    });
+  }
+
+  return Array.from(summary.values()).map((series) => ({
     params: { series: series.id },
-    props: {
-      seriesName: series.title,
-      description: series.description,
-      status: series.status,
-      category: series.category,
-      latestDate: series.latestDate,
-      posts: series.posts
-    }
+    props: series
   }));
 }
 
-const { seriesName, description, status, category, latestDate, posts } = Astro.props as {
-  seriesName: string;
-  description: string;
-  status: string;
-  category: string;
-  latestDate: Date;
-  posts: CollectionEntry<"blog">[];
+const { title: seriesName, description, status, category, latestDate, posts } = Astro.props as SeriesPageEntry;
+const statusLabel: Record<SeriesStatus, string> = {
+  planned: "예정",
+  ongoing: "진행 중",
+  completed: "완료"
 };
 ---
 
 <BaseLayout title={`devjune.dev | ${seriesName}`} description={`${description} - ${SITE_DESCRIPTION}`}>
   <div class="library-page">
     <section class="hero library-hero">
-      <p class="library-hero__eyebrow">Series · {category}</p>
+      <p class="library-hero__eyebrow">{category ? `Series · ${category}` : "Series"}</p>
       <h1>{seriesName}</h1>
       <p>{description}</p>
       <dl class="library-summary">
         <div>
           <dt>Status</dt>
-          <dd>{status}</dd>
+          <dd>{statusLabel[status]}</dd>
         </div>
         <div>
           <dt>Posts</dt>
           <dd>{posts.length}</dd>
         </div>
-        <div>
-          <dt>Updated</dt>
-          <dd>{formatPostDate(latestDate)}</dd>
-        </div>
+        {latestDate && (
+          <div>
+            <dt>Updated</dt>
+            <dd>{formatPostDate(latestDate)}</dd>
+          </div>
+        )}
       </dl>
     </section>
 
@@ -64,25 +98,29 @@ const { seriesName, description, status, category, latestDate, posts } = Astro.p
         <span>{posts.length}개의 글</span>
       </div>
 
-      <ol class="chapter-list">
-        {posts.map((post, index) => (
-          <li>
-            <a href={getPostPath(post)}>
-              <span class="chapter-list__number">{String(index + 1).padStart(2, "0")}</span>
-              <span class="chapter-list__content">
-                <strong>{post.data.title}</strong>
-                <span>{getPostDescription(post)}</span>
-              </span>
-              <span class="chapter-list__meta">
-                <span>{getCategoryName(post)}</span>
-                <time datetime={(post.data.updated ?? post.data.date).toISOString()}>
-                  {formatPostDate(post.data.updated ?? post.data.date)}
-                </time>
-              </span>
-            </a>
-          </li>
-        ))}
-      </ol>
+      {posts.length > 0 ? (
+        <ol class="chapter-list">
+          {posts.map((post, index) => (
+            <li>
+              <a href={getPostPath(post)}>
+                <span class="chapter-list__number">{String(index + 1).padStart(2, "0")}</span>
+                <span class="chapter-list__content">
+                  <strong>{post.data.title}</strong>
+                  <span>{getPostDescription(post)}</span>
+                </span>
+                <span class="chapter-list__meta">
+                  <span>{getCategoryName(post)}</span>
+                  <time datetime={(post.data.updated ?? post.data.date).toISOString()}>
+                    {formatPostDate(post.data.updated ?? post.data.date)}
+                  </time>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다.</p>
+      )}
     </section>
   </div>
 </BaseLayout>
