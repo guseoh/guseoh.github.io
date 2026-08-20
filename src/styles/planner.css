@@ -221,7 +221,7 @@ html[data-theme="dark"] {
     gap: 0.27rem;
     border: 0;
     border-radius: 8px;
-    background: color-mix(in srgb, var(--surface) 84%, transparent);
+    background: transparent;
     color: var(--heading);
     padding: 0;
     box-shadow: none;
