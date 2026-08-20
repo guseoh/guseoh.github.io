@@ -99,7 +99,7 @@ const githubPanelStats = [
               ))}
             </div>
 
-            <div class="grass-chart__grid" role="grid" aria-label="날짜별 블로그 활동 개수">
+            <div class="grass-chart__grid" role="list" aria-label="날짜별 블로그 활동 개수">
               {blogStats.weeks.map((week) => (
                 week.days.map((day) => (
                   day.isOutsideRange
@@ -108,7 +108,7 @@ const githubPanelStats = [
                       <span
                         class:list={["grass-cell", day.isToday && "grass-cell--today"]}
                         data-level={day.level}
-                        role="gridcell"
+                        role="listitem"
                         aria-label={day.label}
                         title={day.label}
                       />
@@ -171,7 +171,7 @@ const githubPanelStats = [
               ))}
             </div>
 
-            <div class="grass-chart__grid" role="grid" aria-label="날짜별 GitHub contribution 개수">
+            <div class="grass-chart__grid" role="list" aria-label="날짜별 GitHub contribution 개수">
               {githubStats.weeks.map((week) => (
                 week.days.map((day) => (
                   day.isOutsideRange
@@ -180,7 +180,7 @@ const githubPanelStats = [
                       <span
                         class:list={["grass-cell", day.isToday && "grass-cell--today"]}
                         data-level={day.level}
-                        role="gridcell"
+                        role="listitem"
                         aria-label={day.label}
                         title={day.label}
                       />
