@@ -12,9 +12,45 @@ interface Props {
   currentPath: string;
 }
 
+type SidebarNavItem = {
+  href: string;
+  label: string;
+  iconPath: string;
+};
+
 const { categoryHierarchy, tagSummary, totalPostCount, currentCategory, currentTag, currentPath } = Astro.props as Props;
 const normalizedCurrentPath = currentPath.replace(/\/+$/, "") || "/";
 const isCategoriesPage = normalizedCurrentPath === "/categories";
+const navGroups: Array<{ label: string; items: SidebarNavItem[] }> = [
+  {
+    label: "탐색",
+    items: [
+      { href: "/blog/", label: "글", iconPath: "M6 4h12v16H6z M9 8h6 M9 12h6 M9 16h4" },
+      { href: "/categories/", label: "카테고리", iconPath: "M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z" },
+      { href: "/tags/", label: "태그", iconPath: "M4 4h7l9 9-7 7-9-9V4z M8 8h.01" }
+    ]
+  },
+  {
+    label: "모음",
+    items: [
+      { href: "/books/", label: "도서", iconPath: "M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z M8 4v16" },
+      { href: "/series/", label: "시리즈", iconPath: "M7 6h13 M7 12h13 M7 18h13 M4 6h.01 M4 12h.01 M4 18h.01" }
+    ]
+  },
+  {
+    label: "기타",
+    items: [
+      { href: "/about/", label: "소개", iconPath: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M5 21a7 7 0 0 1 14 0" },
+      { href: "/search/", label: "검색", iconPath: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M16 16l4 4" }
+    ]
+  }
+];
+const railItems = navGroups.flatMap((group) => group.items);
+
+const isNavActive = (href: string) => {
+  const normalizedHref = href.replace(/\/+$/, "") || "/";
+  return normalizedCurrentPath === normalizedHref || normalizedCurrentPath.startsWith(`${normalizedHref}/`);
+};
 ---
 
 <button id="sidebar-open" class="sidebar-open" type="button" aria-label="사이드바 열기" aria-controls="site-sidebar" aria-expanded="false">
@@ -25,22 +61,65 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
 
 <button id="sidebar-backdrop" class="sidebar-backdrop" type="button" aria-label="사이드바 닫기" hidden></button>
 
-<aside id="site-sidebar" class="site-sidebar" aria-label="사이트 탐색" aria-hidden="false" tabindex="-1">
-  <section class="sidebar-close-section" aria-label="사이드바 제어">
-    <button id="sidebar-collapse-toggle" class="sidebar-collapse-toggle" type="button" aria-label="사이드바 닫기" aria-controls="site-sidebar" aria-expanded="true">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
-        <path d="M8.5 4v16M15 8l-4 4 4 4"></path>
-      </svg>
-      <span class="sr-only">사이드바 닫기</span>
-    </button>
+<nav id="sidebar-rail" class="sidebar-rail" aria-label="축소된 사이트 탐색">
+  <a class="sidebar-rail__brand" href="/" aria-label="devjune.dev 홈" title="devjune.dev">J</a>
+  <div class="sidebar-rail__items">
+    {railItems.map((item) => (
+      <a
+        class:list={["sidebar-rail__item", isNavActive(item.href) && "is-active"]}
+        href={item.href}
+        aria-label={item.label}
+        aria-current={isNavActive(item.href) ? "page" : undefined}
+        title={item.label}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d={item.iconPath}></path>
+        </svg>
+      </a>
+    ))}
+  </div>
+  <button id="sidebar-rail-expand" class="sidebar-rail__expand" type="button" aria-label="사이드바 펼쳐서 고정" title="사이드바 펼쳐서 고정">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
+      <path d="M8.5 4v16M11 8l4 4-4 4"></path>
+    </svg>
+  </button>
+</nav>
 
-    <button id="sidebar-close" class="sidebar-close" type="button" aria-label="사이드바 닫기" aria-controls="site-sidebar" aria-expanded="true">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
-        <path d="M8.5 4v16M15 8l-4 4 4 4"></path>
-      </svg>
-    </button>
+<aside id="site-sidebar" class="site-sidebar" aria-label="사이트 탐색" aria-hidden="false" tabindex="-1">
+  <section class="sidebar-close-section sidebar-planner-head" aria-label="사이드바 제어">
+    <a class="sidebar-planner-brand" href="/" aria-label="devjune.dev 홈">
+      <span class="sidebar-planner-brand__mark" aria-hidden="true">J</span>
+      <span class="sidebar-planner-brand__text">
+        <strong>DEVJUNE.DEV</strong>
+        <small>Backend Notes</small>
+      </span>
+    </a>
+
+    <div class="sidebar-planner-head__actions">
+      <button id="sidebar-pin-toggle" class="sidebar-pin-toggle" type="button" aria-label="사이드바 펼쳐서 고정" aria-controls="site-sidebar">
+        <span>고정</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
+          <path d="M8.5 4v16M11 8l4 4-4 4"></path>
+        </svg>
+      </button>
+
+      <button id="sidebar-collapse-toggle" class="sidebar-collapse-toggle" type="button" aria-label="사이드바 축소" aria-controls="site-sidebar" aria-expanded="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
+          <path d="M8.5 4v16M15 8l-4 4 4 4"></path>
+        </svg>
+        <span class="sr-only">사이드바 축소</span>
+      </button>
+
+      <button id="sidebar-close" class="sidebar-close" type="button" aria-label="사이드바 닫기" aria-controls="site-sidebar" aria-expanded="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
+          <path d="M8.5 4v16M15 8l-4 4 4 4"></path>
+        </svg>
+      </button>
+    </div>
   </section>
 
   <form class="sidebar-search" action="/search/" method="get" role="search" aria-label="게시글 검색">
@@ -58,6 +137,28 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
       </button>
     </div>
   </form>
+
+  <nav class="sidebar-primary-nav" aria-label="주요 메뉴">
+    {navGroups.map((group) => (
+      <section class="sidebar-primary-nav__group">
+        <p class="sidebar-primary-nav__label">{group.label}</p>
+        <div class="sidebar-primary-nav__items">
+          {group.items.map((item) => (
+            <a
+              class:list={["sidebar-primary-nav__item", isNavActive(item.href) && "is-active"]}
+              href={item.href}
+              aria-current={isNavActive(item.href) ? "page" : undefined}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d={item.iconPath}></path>
+              </svg>
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
+  </nav>
 
   <section class="category-panel" aria-label="분류 탐색">
     <div class="category-panel__header">
@@ -112,3 +213,116 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
     }
   </section>
 </aside>
+
+<script is:inline>
+  (() => {
+    const shell = document.querySelector(".site-shell");
+    const sidebar = document.getElementById("site-sidebar");
+    const rail = document.getElementById("sidebar-rail");
+    const openButton = document.getElementById("sidebar-open");
+    const railExpandButton = document.getElementById("sidebar-rail-expand");
+    const pinButton = document.getElementById("sidebar-pin-toggle");
+    const collapseButton = document.getElementById("sidebar-collapse-toggle");
+    const desktopMedia = window.matchMedia("(min-width: 981px)");
+
+    if (
+      !(shell instanceof HTMLElement) ||
+      !(sidebar instanceof HTMLElement) ||
+      !(rail instanceof HTMLElement) ||
+      !(openButton instanceof HTMLButtonElement)
+    ) return;
+
+    const OPEN_DELAY_MS = 110;
+    const CLOSE_DELAY_MS = 140;
+    let openTimer = 0;
+    let closeTimer = 0;
+
+    const clearTimers = () => {
+      window.clearTimeout(openTimer);
+      window.clearTimeout(closeTimer);
+      openTimer = 0;
+      closeTimer = 0;
+    };
+
+    const isCollapsed = () => shell.classList.contains("sidebar-collapsed");
+    const isWithinHoverZone = () =>
+      rail.matches(":hover") ||
+      sidebar.matches(":hover") ||
+      rail.contains(document.activeElement) ||
+      sidebar.contains(document.activeElement);
+
+    const setHoverExpanded = (expanded) => {
+      const shouldExpand = Boolean(expanded) && desktopMedia.matches && isCollapsed();
+      shell.classList.toggle("sidebar-hover-expanded", shouldExpand);
+
+      if (shouldExpand) {
+        sidebar.removeAttribute("aria-hidden");
+        sidebar.inert = false;
+      } else if (desktopMedia.matches && isCollapsed()) {
+        sidebar.setAttribute("aria-hidden", "true");
+        sidebar.inert = true;
+      }
+    };
+
+    const scheduleOpen = () => {
+      if (!desktopMedia.matches || !isCollapsed()) return;
+      window.clearTimeout(closeTimer);
+      closeTimer = 0;
+      if (shell.classList.contains("sidebar-hover-expanded") || openTimer) return;
+      openTimer = window.setTimeout(() => {
+        openTimer = 0;
+        setHoverExpanded(true);
+      }, OPEN_DELAY_MS);
+    };
+
+    const scheduleClose = () => {
+      window.clearTimeout(openTimer);
+      openTimer = 0;
+      if (!shell.classList.contains("sidebar-hover-expanded") || closeTimer) return;
+      closeTimer = window.setTimeout(() => {
+        closeTimer = 0;
+        if (!isWithinHoverZone()) setHoverExpanded(false);
+      }, CLOSE_DELAY_MS);
+    };
+
+    for (const element of [rail, sidebar]) {
+      element.addEventListener("pointerenter", scheduleOpen);
+      element.addEventListener("pointerleave", scheduleClose);
+      element.addEventListener("focusin", scheduleOpen);
+      element.addEventListener("focusout", scheduleClose);
+    }
+
+    const pinSidebar = () => {
+      clearTimers();
+      setHoverExpanded(false);
+      if (!isCollapsed()) return;
+      openButton.click();
+      window.requestAnimationFrame(() => {
+        if (collapseButton instanceof HTMLButtonElement && !collapseButton.hidden) {
+          collapseButton.focus();
+        }
+      });
+    };
+
+    if (railExpandButton instanceof HTMLButtonElement) {
+      railExpandButton.addEventListener("click", pinSidebar);
+    }
+
+    if (pinButton instanceof HTMLButtonElement) {
+      pinButton.addEventListener("click", pinSidebar);
+    }
+
+    const stateObserver = new MutationObserver(() => {
+      if (!isCollapsed()) {
+        clearTimers();
+        setHoverExpanded(false);
+      }
+    });
+    stateObserver.observe(shell, { attributes: true, attributeFilter: ["class"] });
+
+    desktopMedia.addEventListener("change", () => {
+      clearTimers();
+      setHoverExpanded(false);
+    });
+  })();
+</script>

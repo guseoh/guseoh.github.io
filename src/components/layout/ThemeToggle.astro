@@ -18,6 +18,113 @@
       <circle cx="12" cy="12" r="3.6"></circle>
       <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"></path>
     </svg>
+    <svg class="theme-icon theme-icon--planner" viewBox="0 0 24 24" focusable="false">
+      <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"></rect>
+      <path d="M8 2.8v3.4M16 2.8v3.4M3.5 8.7h17M8.2 14.2l2.1 2.1 5-5"></path>
+    </svg>
   </span>
   <span class="theme-toggle__label">System</span>
 </button>
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const themeButton = document.getElementById("theme-toggle");
+    const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
+    const label = themeButton?.querySelector(".theme-toggle__label");
+    const themeModes = ["system", "light", "dark", "planner"];
+
+    const getStoredThemeMode = () => {
+      try {
+        const stored = localStorage.getItem("theme");
+        return themeModes.includes(stored) ? stored : "system";
+      } catch {
+        return "system";
+      }
+    };
+
+    const getEffectiveTheme = (mode) => {
+      if (mode === "planner") return "dark";
+      if (mode === "light" || mode === "dark") return mode;
+      return themeMedia.matches ? "dark" : "light";
+    };
+
+    const getThemeModeLabel = (mode) => {
+      if (mode === "light") return "Light";
+      if (mode === "dark") return "Dark";
+      if (mode === "planner") return "Planner";
+      return "System";
+    };
+
+    const updateThemeButton = (mode, theme) => {
+      if (!(themeButton instanceof HTMLButtonElement)) return;
+
+      const current = getThemeModeLabel(mode);
+      const effective = mode === "system" ? ` (${theme === "dark" ? "Dark" : "Light"})` : "";
+      themeButton.dataset.theme = theme;
+      themeButton.dataset.themeMode = mode;
+      themeButton.removeAttribute("aria-pressed");
+      themeButton.setAttribute("aria-label", `현재 테마: ${current}${effective}. 테마를 전환합니다.`);
+      themeButton.title = `현재 테마: ${current}${effective}`;
+
+      if (label instanceof HTMLElement) {
+        label.textContent = current;
+      }
+    };
+
+    const applyThemeMode = (mode, { persist = true, notify = true } = {}) => {
+      const nextMode = themeModes.includes(mode) ? mode : "system";
+      const nextTheme = getEffectiveTheme(nextMode);
+      root.setAttribute("data-theme", nextTheme);
+      root.setAttribute("data-theme-mode", nextMode);
+      root.style.colorScheme = nextTheme;
+      updateThemeButton(nextMode, nextTheme);
+
+      if (persist) {
+        try {
+          localStorage.setItem("theme", nextMode);
+        } catch {
+        }
+      }
+
+      if (notify) {
+        window.dispatchEvent(new CustomEvent("themechange", { detail: { theme: nextTheme, mode: nextMode } }));
+      }
+    };
+
+    applyThemeMode(getStoredThemeMode(), { persist: false, notify: false });
+
+    if (themeButton instanceof HTMLButtonElement) {
+      themeButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const mode = root.getAttribute("data-theme-mode") || getStoredThemeMode();
+        const index = Math.max(0, themeModes.indexOf(mode));
+        applyThemeMode(themeModes[(index + 1) % themeModes.length]);
+      }, true);
+    }
+
+    window.addEventListener("storage", (event) => {
+      if (event.key !== "theme") return;
+      queueMicrotask(() => applyThemeMode(getStoredThemeMode(), { persist: false }));
+    });
+
+    themeMedia.addEventListener("change", () => {
+      const mode = root.getAttribute("data-theme-mode") || getStoredThemeMode();
+      if (mode === "system") {
+        applyThemeMode("system", { persist: false });
+      }
+    });
+
+    const compatibilityObserver = new MutationObserver(() => {
+      if (getStoredThemeMode() !== "planner") return;
+      if (root.getAttribute("data-theme-mode") === "planner") return;
+      applyThemeMode("planner", { persist: false, notify: false });
+    });
+
+    compatibilityObserver.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme-mode"]
+    });
+  })();
+</script>

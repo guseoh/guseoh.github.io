@@ -35,13 +35,42 @@ test("검색어와 필터가 결과에 반영된다", async ({ page }) => {
   await expect(page.locator("[data-search-list] .post-card").first()).toBeVisible();
 });
 
-test("테마 전환 상태가 문서에 반영된다", async ({ page }) => {
+test("테마 전환에 Planner 모드가 포함된다", async ({ page }) => {
   await page.goto("/");
-  const root = page.locator("html");
-  const before = await root.getAttribute("data-theme-mode");
+  await page.evaluate(() => localStorage.setItem("theme", "system"));
+  await page.reload();
 
-  await page.locator("#theme-toggle").click();
-  await expect(root).not.toHaveAttribute("data-theme-mode", before ?? "system");
+  const root = page.locator("html");
+  const toggle = page.locator("#theme-toggle");
+
+  await expect(root).toHaveAttribute("data-theme-mode", "system");
+  await toggle.click();
+  await expect(root).toHaveAttribute("data-theme-mode", "light");
+  await toggle.click();
+  await expect(root).toHaveAttribute("data-theme-mode", "dark");
+  await toggle.click();
+  await expect(root).toHaveAttribute("data-theme-mode", "planner");
+  await expect(root).toHaveAttribute("data-theme", "dark");
+  await expect(toggle.locator(".theme-toggle__label")).toHaveText("Planner");
+  await toggle.click();
+  await expect(root).toHaveAttribute("data-theme-mode", "system");
+});
+
+test("데스크톱 사이드바는 축소 후 hover로 임시 확장하고 고정할 수 있다", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("desktop"));
+  await page.goto("/blog/");
+
+  const shell = page.locator(".site-shell");
+  const rail = page.locator("#sidebar-rail");
+
+  await page.locator("#sidebar-collapse-toggle").click();
+  await expect(shell).toHaveClass(/sidebar-collapsed/);
+  await expect(rail).toBeVisible();
+
+  await rail.hover();
+  await expect(shell).toHaveClass(/sidebar-hover-expanded/);
+  await page.locator("#sidebar-pin-toggle").click();
+  await expect(shell).not.toHaveClass(/sidebar-collapsed/);
 });
 
 test("모바일 상단 메뉴를 열고 닫을 수 있다", async ({ page }, testInfo) => {

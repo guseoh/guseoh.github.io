@@ -108,6 +108,7 @@ function serializeJsonLd(value: unknown) {
     <script is:inline>
       (() => {
         const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const themeModes = ["light", "dark", "system", "planner"];
         let stored = null;
 
         try {
@@ -115,8 +116,12 @@ function serializeJsonLd(value: unknown) {
         } catch {
         }
 
-        const mode = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
-        const theme = mode === "system" ? (systemDark ? "dark" : "light") : mode;
+        const mode = themeModes.includes(stored) ? stored : "system";
+        const theme = mode === "planner"
+          ? "dark"
+          : mode === "system"
+            ? (systemDark ? "dark" : "light")
+            : mode;
         document.documentElement.setAttribute("data-theme", theme);
         document.documentElement.setAttribute("data-theme-mode", mode);
         document.documentElement.style.colorScheme = theme;

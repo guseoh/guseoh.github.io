@@ -4,7 +4,9 @@
 @import "./components.css";
 @import "./library.css";
 @import "./home.css";
-@import "./sections.css";
 @import "./post.css";
 @import "./refinements.css";
+@import "./sections.css";
 @import "./learning-path.css";
+@import "./planner.css";
+@import "./reading.css";
