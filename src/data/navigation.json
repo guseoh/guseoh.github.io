@@ -1,48 +1,5 @@
 [
   {
-    "title": "Project",
-    "slug": "project",
-    "description": "현재 진행 중인 백엔드 프로젝트와 검증 기록을 모아봅니다.",
-    "items": [
-      {
-        "title": "DevPedia",
-        "slug": "devpedia",
-        "type": "search",
-        "query": "DevPedia",
-        "url": "/projects/devpedia/",
-        "description": "개발 커뮤니티와 프로젝트·스터디 모집 서비스"
-      },
-      {
-        "title": "PawCycle Commerce",
-        "slug": "pawcycle-commerce",
-        "type": "search",
-        "query": "PawCycle",
-        "url": "/projects/pawcycle-commerce/",
-        "description": "반려동물 소모품 구매와 정기배송 이커머스"
-      },
-      {
-        "title": "FutMatch",
-        "slug": "futmatch",
-        "type": "search",
-        "query": "FutMatch",
-        "url": "/projects/futmatch/",
-        "description": "풋살 예약·매칭 서비스의 도메인과 백엔드 설계"
-      },
-      {
-        "title": "Performance",
-        "slug": "performance",
-        "type": "tag",
-        "description": "성능 측정과 쿼리 최적화"
-      },
-      {
-        "title": "Monitoring",
-        "slug": "monitoring",
-        "type": "tag",
-        "description": "관측성, 로그와 운영 상태 확인"
-      }
-    ]
-  },
-  {
     "title": "Backend",
     "slug": "backend",
     "description": "Java와 Spring 백엔드의 핵심 구현 주제입니다.",
@@ -83,6 +40,12 @@
         "type": "tag",
         "icon": "spring-security",
         "description": "인증과 인가, 세션과 웹 보안 학습"
+      },
+      {
+        "title": "Performance",
+        "slug": "performance",
+        "type": "tag",
+        "description": "성능 측정과 쿼리 최적화"
       }
     ]
   },
@@ -145,6 +108,12 @@
         "slug": "deployment",
         "type": "tag",
         "description": "배포와 운영 자동화 기록"
+      },
+      {
+        "title": "Monitoring",
+        "slug": "monitoring",
+        "type": "tag",
+        "description": "관측성, 로그와 운영 상태 확인"
       },
       {
         "title": "Docker",

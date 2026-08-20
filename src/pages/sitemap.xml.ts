@@ -1,4 +1,3 @@
-import { PROJECTS } from "../data/projects";
 import { buildBookSummaries } from "../utils/books";
 import { buildCategorySummary, filterPostsByCategory } from "../utils/categories";
 import { getPublishedPostsSorted } from "../utils/content/posts";
@@ -52,14 +51,9 @@ export async function GET() {
   addUrl("/blog/", latestPostDate(posts.slice(0, POSTS_PER_PAGE)));
   addUrl("/books/", latestPostDate(posts.filter((post) => post.data.book?.trim())));
   addUrl("/categories/", latestPostDate(posts));
-  addUrl("/projects/");
   addUrl("/tags/", latestPostDate(posts));
   addUrl("/series/", latestPostDate(posts.filter((post) => post.data.series?.trim())));
   addUrl("/search/");
-
-  for (const project of PROJECTS) {
-    addUrl(`/projects/${project.slug}/`);
-  }
 
   if (totalPages > 1) {
     for (let index = 1; index < totalPages; index += 1) {

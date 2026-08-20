@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { CORE_TECH_TAGS, GITHUB_URL, SITE_AUTHOR, SITE_DESCRIPTION, SITE_URL } from "../utils/posts";
-import { PROJECTS } from "../data/projects";
 
 const structuredData = [
   {
@@ -27,7 +26,7 @@ const structuredData = [
 >
   <section class="hero about-hero">
     <p class="about-hero__eyebrow">About</p>
-    <h1>Java와 Spring을 공부하고 기록하는 오지훈입니다.</h1>
+    <h1>문제를 이해하고 검증하면서 백엔드 기본기를 쌓고 있습니다.</h1>
     <p>
       기능을 구현한 사실만 남기기보다, 어떤 문제를 발견했고 무엇을 기준으로 설계했으며
       테스트와 운영에서 무엇을 확인했는지 기록합니다.
@@ -38,8 +37,8 @@ const structuredData = [
     <section class="about-panel">
       <h2>지금 집중하는 방향</h2>
       <p>
-        Java와 Spring 기반 백엔드의 기본기를 다지는 동시에 DevPedia, PawCycle Commerce와 FutMatch에서
-        제품 요구사항, 도메인 규칙, 보안, 데이터 정합성과 운영 검증을 연결하고 있습니다.
+        Java와 Spring 기반 백엔드의 기본기를 다지면서 설계, 데이터 정합성, 보안, 성능과 운영 검증을
+        실제 코드와 학습 기록으로 연결하고 있습니다.
       </p>
     </section>
 
@@ -47,25 +46,6 @@ const structuredData = [
       <h2>주요 관심 기술</h2>
       <div class="about-tech-list" aria-label="주요 관심 기술">
         {CORE_TECH_TAGS.map((tag) => <span>{tag}</span>)}
-      </div>
-    </section>
-
-    <section class="about-panel about-panel--wide">
-      <div class="about-panel__head">
-        <div>
-          <p class="project-eyebrow">Current Work</p>
-          <h2>현재 프로젝트</h2>
-        </div>
-        <a href="/projects/">전체 보기</a>
-      </div>
-      <div class="about-project-grid">
-        {PROJECTS.map((project) => (
-          <article>
-            <span>{project.status}</span>
-            <h3><a href={`/projects/${project.slug}/`}>{project.name}</a></h3>
-            <p>{project.summary}</p>
-          </article>
-        ))}
       </div>
     </section>
 
@@ -79,7 +59,7 @@ const structuredData = [
       </ul>
       <div class="about-actions">
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a>
-        <a href="/projects/">Projects</a>
+        <a href="/blog/">Posts</a>
         <a href="/rss.xml">RSS</a>
       </div>
     </section>

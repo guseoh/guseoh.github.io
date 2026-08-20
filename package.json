@@ -18,7 +18,7 @@
     "quality:install": "npm install --no-save --package-lock=false @playwright/test@1.61.1 @axe-core/playwright@4.12.1 @lhci/cli@0.15.x",
     "test:e2e": "playwright test",
     "lighthouse": "lhci autorun",
-    "smoke": "node scripts/smoke-test.mjs && node scripts/smoke-projects.mjs"
+    "smoke": "node scripts/smoke-test.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.0",

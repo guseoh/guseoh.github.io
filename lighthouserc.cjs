@@ -6,7 +6,7 @@ module.exports = {
       startServerReadyTimeout: 120000,
       url: [
         "http://127.0.0.1:4323/",
-        "http://127.0.0.1:4323/projects/",
+        "http://127.0.0.1:4323/blog/",
         "http://127.0.0.1:4323/blog/security/basic1/",
         "http://127.0.0.1:4323/search/"
       ],
