@@ -120,3 +120,37 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
     }
   </section>
 </aside>
+
+<script is:inline>
+  (() => {
+    const storageKey = "blog-left-sidebar-collapsed";
+    const desktopMedia = window.matchMedia("(min-width: 981px)");
+    const shell = document.querySelector(".site-shell");
+    const sidebar = document.getElementById("site-sidebar");
+
+    try {
+      if (localStorage.getItem(storageKey) === null) {
+        localStorage.setItem(storageKey, "true");
+
+        if (desktopMedia.matches && shell instanceof HTMLElement && sidebar instanceof HTMLElement) {
+          document.documentElement.classList.add("left-sidebar-collapsed");
+          shell.classList.add("sidebar-collapsed");
+          sidebar.setAttribute("aria-hidden", "true");
+          sidebar.inert = true;
+        }
+      }
+    } catch {
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || !desktopMedia.matches) return;
+      if (!(shell instanceof HTMLElement) || shell.classList.contains("sidebar-collapsed")) return;
+
+      const closeButton = document.getElementById("sidebar-collapse-toggle");
+      if (closeButton instanceof HTMLButtonElement) {
+        event.preventDefault();
+        closeButton.click();
+      }
+    });
+  })();
+</script>
