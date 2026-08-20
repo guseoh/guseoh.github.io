@@ -12,45 +12,9 @@ interface Props {
   currentPath: string;
 }
 
-type SidebarNavItem = {
-  href: string;
-  label: string;
-  iconPath: string;
-};
-
 const { categoryHierarchy, tagSummary, totalPostCount, currentCategory, currentTag, currentPath } = Astro.props as Props;
 const normalizedCurrentPath = currentPath.replace(/\/+$/, "") || "/";
 const isCategoriesPage = normalizedCurrentPath === "/categories";
-const navGroups: Array<{ label: string; items: SidebarNavItem[] }> = [
-  {
-    label: "탐색",
-    items: [
-      { href: "/blog/", label: "글", iconPath: "M6 4h12v16H6z M9 8h6 M9 12h6 M9 16h4" },
-      { href: "/categories/", label: "카테고리", iconPath: "M4 4h6v6H4z M14 4h6v6h-6z M4 14h6v6H4z M14 14h6v6h-6z" },
-      { href: "/tags/", label: "태그", iconPath: "M4 4h7l9 9-7 7-9-9V4z M8 8h.01" }
-    ]
-  },
-  {
-    label: "모음",
-    items: [
-      { href: "/books/", label: "도서", iconPath: "M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z M8 4v16" },
-      { href: "/series/", label: "시리즈", iconPath: "M7 6h13 M7 12h13 M7 18h13 M4 6h.01 M4 12h.01 M4 18h.01" }
-    ]
-  },
-  {
-    label: "기타",
-    items: [
-      { href: "/about/", label: "소개", iconPath: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M5 21a7 7 0 0 1 14 0" },
-      { href: "/search/", label: "검색", iconPath: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z M16 16l4 4" }
-    ]
-  }
-];
-const railItems = navGroups.flatMap((group) => group.items);
-
-const isNavActive = (href: string) => {
-  const normalizedHref = href.replace(/\/+$/, "") || "/";
-  return normalizedCurrentPath === normalizedHref || normalizedCurrentPath.startsWith(`${normalizedHref}/`);
-};
 ---
 
 <button id="sidebar-open" class="sidebar-open" type="button" aria-label="사이드바 열기" aria-controls="site-sidebar" aria-expanded="false">
@@ -63,21 +27,6 @@ const isNavActive = (href: string) => {
 
 <nav id="sidebar-rail" class="sidebar-rail" aria-label="축소된 사이트 탐색">
   <a class="sidebar-rail__brand" href="/" aria-label="devjune.dev 홈" title="devjune.dev">J</a>
-  <div class="sidebar-rail__items">
-    {railItems.map((item) => (
-      <a
-        class:list={["sidebar-rail__item", isNavActive(item.href) && "is-active"]}
-        href={item.href}
-        aria-label={item.label}
-        aria-current={isNavActive(item.href) ? "page" : undefined}
-        title={item.label}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d={item.iconPath}></path>
-        </svg>
-      </a>
-    ))}
-  </div>
   <button id="sidebar-rail-expand" class="sidebar-rail__expand" type="button" aria-label="사이드바 펼쳐서 고정" title="사이드바 펼쳐서 고정">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
@@ -137,28 +86,6 @@ const isNavActive = (href: string) => {
       </button>
     </div>
   </form>
-
-  <nav class="sidebar-primary-nav" aria-label="주요 메뉴">
-    {navGroups.map((group) => (
-      <section class="sidebar-primary-nav__group">
-        <p class="sidebar-primary-nav__label">{group.label}</p>
-        <div class="sidebar-primary-nav__items">
-          {group.items.map((item) => (
-            <a
-              class:list={["sidebar-primary-nav__item", isNavActive(item.href) && "is-active"]}
-              href={item.href}
-              aria-current={isNavActive(item.href) ? "page" : undefined}
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d={item.iconPath}></path>
-              </svg>
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </div>
-      </section>
-    ))}
-  </nav>
 
   <section class="category-panel" aria-label="분류 탐색">
     <div class="category-panel__header">
