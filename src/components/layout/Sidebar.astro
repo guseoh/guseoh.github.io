@@ -25,16 +25,6 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
 
 <button id="sidebar-backdrop" class="sidebar-backdrop" type="button" aria-label="사이드바 닫기" hidden></button>
 
-<nav id="sidebar-rail" class="sidebar-rail" aria-label="축소된 사이트 탐색">
-  <a class="sidebar-rail__brand" href="/" aria-label="devjune.dev 홈" title="devjune.dev">J</a>
-  <button id="sidebar-rail-expand" class="sidebar-rail__expand" type="button" aria-label="사이드바 펼쳐서 고정" title="사이드바 펼쳐서 고정">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
-      <path d="M8.5 4v16M11 8l4 4-4 4"></path>
-    </svg>
-  </button>
-</nav>
-
 <aside id="site-sidebar" class="site-sidebar" aria-label="사이트 탐색" aria-hidden="false" tabindex="-1">
   <section class="sidebar-close-section sidebar-planner-head" aria-label="사이드바 제어">
     <a class="sidebar-planner-brand" href="/" aria-label="devjune.dev 홈">
@@ -46,26 +36,16 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
     </a>
 
     <div class="sidebar-planner-head__actions">
-      <button id="sidebar-pin-toggle" class="sidebar-pin-toggle" type="button" aria-label="사이드바 펼쳐서 고정" aria-controls="site-sidebar">
-        <span>고정</span>
+      <button id="sidebar-collapse-toggle" class="sidebar-collapse-toggle" type="button" aria-label="사이드바 닫기" aria-controls="site-sidebar" aria-expanded="true">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
-          <path d="M8.5 4v16M11 8l4 4-4 4"></path>
+          <path d="M6 6l12 12M18 6L6 18"></path>
         </svg>
-      </button>
-
-      <button id="sidebar-collapse-toggle" class="sidebar-collapse-toggle" type="button" aria-label="사이드바 축소" aria-controls="site-sidebar" aria-expanded="true">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
-          <path d="M8.5 4v16M15 8l-4 4 4 4"></path>
-        </svg>
-        <span class="sr-only">사이드바 축소</span>
+        <span class="sr-only">사이드바 닫기</span>
       </button>
 
       <button id="sidebar-close" class="sidebar-close" type="button" aria-label="사이드바 닫기" aria-controls="site-sidebar" aria-expanded="true">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <rect x="3.5" y="4" width="17" height="16" rx="2.5"></rect>
-          <path d="M8.5 4v16M15 8l-4 4 4 4"></path>
+          <path d="M6 6l12 12M18 6L6 18"></path>
         </svg>
       </button>
     </div>
@@ -140,116 +120,3 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
     }
   </section>
 </aside>
-
-<script is:inline>
-  (() => {
-    const shell = document.querySelector(".site-shell");
-    const sidebar = document.getElementById("site-sidebar");
-    const rail = document.getElementById("sidebar-rail");
-    const openButton = document.getElementById("sidebar-open");
-    const railExpandButton = document.getElementById("sidebar-rail-expand");
-    const pinButton = document.getElementById("sidebar-pin-toggle");
-    const collapseButton = document.getElementById("sidebar-collapse-toggle");
-    const desktopMedia = window.matchMedia("(min-width: 981px)");
-
-    if (
-      !(shell instanceof HTMLElement) ||
-      !(sidebar instanceof HTMLElement) ||
-      !(rail instanceof HTMLElement) ||
-      !(openButton instanceof HTMLButtonElement)
-    ) return;
-
-    const OPEN_DELAY_MS = 110;
-    const CLOSE_DELAY_MS = 140;
-    let openTimer = 0;
-    let closeTimer = 0;
-
-    const clearTimers = () => {
-      window.clearTimeout(openTimer);
-      window.clearTimeout(closeTimer);
-      openTimer = 0;
-      closeTimer = 0;
-    };
-
-    const isCollapsed = () => shell.classList.contains("sidebar-collapsed");
-    const isWithinHoverZone = () =>
-      rail.matches(":hover") ||
-      sidebar.matches(":hover") ||
-      rail.contains(document.activeElement) ||
-      sidebar.contains(document.activeElement);
-
-    const setHoverExpanded = (expanded) => {
-      const shouldExpand = Boolean(expanded) && desktopMedia.matches && isCollapsed();
-      shell.classList.toggle("sidebar-hover-expanded", shouldExpand);
-
-      if (shouldExpand) {
-        sidebar.removeAttribute("aria-hidden");
-        sidebar.inert = false;
-      } else if (desktopMedia.matches && isCollapsed()) {
-        sidebar.setAttribute("aria-hidden", "true");
-        sidebar.inert = true;
-      }
-    };
-
-    const scheduleOpen = () => {
-      if (!desktopMedia.matches || !isCollapsed()) return;
-      window.clearTimeout(closeTimer);
-      closeTimer = 0;
-      if (shell.classList.contains("sidebar-hover-expanded") || openTimer) return;
-      openTimer = window.setTimeout(() => {
-        openTimer = 0;
-        setHoverExpanded(true);
-      }, OPEN_DELAY_MS);
-    };
-
-    const scheduleClose = () => {
-      window.clearTimeout(openTimer);
-      openTimer = 0;
-      if (!shell.classList.contains("sidebar-hover-expanded") || closeTimer) return;
-      closeTimer = window.setTimeout(() => {
-        closeTimer = 0;
-        if (!isWithinHoverZone()) setHoverExpanded(false);
-      }, CLOSE_DELAY_MS);
-    };
-
-    for (const element of [rail, sidebar]) {
-      element.addEventListener("pointerenter", scheduleOpen);
-      element.addEventListener("pointerleave", scheduleClose);
-      element.addEventListener("focusin", scheduleOpen);
-      element.addEventListener("focusout", scheduleClose);
-    }
-
-    const pinSidebar = () => {
-      clearTimers();
-      setHoverExpanded(false);
-      if (!isCollapsed()) return;
-      openButton.click();
-      window.requestAnimationFrame(() => {
-        if (collapseButton instanceof HTMLButtonElement && !collapseButton.hidden) {
-          collapseButton.focus();
-        }
-      });
-    };
-
-    if (railExpandButton instanceof HTMLButtonElement) {
-      railExpandButton.addEventListener("click", pinSidebar);
-    }
-
-    if (pinButton instanceof HTMLButtonElement) {
-      pinButton.addEventListener("click", pinSidebar);
-    }
-
-    const stateObserver = new MutationObserver(() => {
-      if (!isCollapsed()) {
-        clearTimers();
-        setHoverExpanded(false);
-      }
-    });
-    stateObserver.observe(shell, { attributes: true, attributeFilter: ["class"] });
-
-    desktopMedia.addEventListener("change", () => {
-      clearTimers();
-      setHoverExpanded(false);
-    });
-  })();
-</script>
