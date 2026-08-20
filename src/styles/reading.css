@@ -78,20 +78,21 @@ html.left-sidebar-collapsed .post-view > .post-column,
   margin-inline: 0;
 }
 
+/* Prose gets more breathing room, while code remains intentionally denser. */
 .post__content > :where(p, ul, ol, blockquote) {
   font-size: clamp(1rem, 0.99rem + 0.1vw, 1.04rem);
-  line-height: 1.75;
+  line-height: 1.85;
 }
 
 .post__content p {
-  margin-top: 0.95rem;
+  margin-top: 1.15rem;
 }
 
 .post > :where(p, ul, ol, blockquote, .markdown-alert),
 .post__content > :where(p, ul, ol, blockquote, .markdown-alert),
 .post > :where(ul, ol) :where(li),
 .post__content > :where(ul, ol) :where(li) {
-  line-height: 1.75;
+  line-height: 1.85;
 }
 
 .post > h2,
@@ -125,13 +126,52 @@ html.left-sidebar-collapsed .post-view > .post-column,
   max-width: 100%;
 }
 
-.post img {
-  width: auto;
-  max-width: 100%;
+.post__content > .code-block,
+.post > .code-block {
+  margin-top: 1.55rem;
+  margin-bottom: 1.85rem;
+}
+
+.post pre,
+.post .code-block pre {
+  line-height: 1.6;
+}
+
+/* Language is metadata, not a heading. Keep the header compact and quiet. */
+.code-block__header {
+  gap: 0.6rem;
+  background: color-mix(in srgb, var(--code-card-header-bg) 74%, var(--code-block-bg));
+  padding: 0.32rem 0.58rem;
 }
 
 .code-block__language {
-  font-weight: 500;
+  color: color-mix(in srgb, var(--code-language-text) 78%, transparent);
+  font-size: 0.68rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.code-copy-button {
+  min-width: 2.85rem;
+  min-height: 2.15rem;
+  border-color: color-mix(in srgb, var(--control-border) 68%, transparent);
+  background: transparent;
+  color: var(--muted-readable);
+  font-size: 0.7rem;
+  font-weight: 650;
+  padding: 0.34rem 0.52rem;
+}
+
+.code-copy-button:hover,
+.code-copy-button:focus-visible {
+  background: var(--surface-hover);
+  color: var(--link-hover);
+}
+
+.post img {
+  width: auto;
+  max-width: 100%;
 }
 
 .post-footer {
@@ -220,14 +260,28 @@ html.left-sidebar-collapsed .post-view > .post-column,
 
   .post__content > :where(p, ul, ol, blockquote) {
     font-size: 1rem;
-    line-height: 1.72;
+    line-height: 1.8;
   }
 
   .post > :where(p, ul, ol, blockquote, .markdown-alert),
   .post__content > :where(p, ul, ol, blockquote, .markdown-alert),
   .post > :where(ul, ol) :where(li),
   .post__content > :where(ul, ol) :where(li) {
-    line-height: 1.72;
+    line-height: 1.8;
+  }
+
+  .post__content p {
+    margin-top: 1.05rem;
+  }
+
+  .post__content > .code-block,
+  .post > .code-block {
+    margin-top: 1.3rem;
+    margin-bottom: 1.55rem;
+  }
+
+  .code-block__header {
+    padding: 0.3rem 0.5rem;
   }
 
   .comments-wrap {
