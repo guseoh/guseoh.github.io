@@ -56,21 +56,38 @@ test("테마 전환에 Planner 모드가 포함된다", async ({ page }) => {
   await expect(root).toHaveAttribute("data-theme-mode", "system");
 });
 
-test("데스크톱 사이드바는 축소 후 hover로 임시 확장하고 고정할 수 있다", async ({ page }, testInfo) => {
+test("데스크톱 사이드바는 햄버거 버튼으로만 열고 닫는다", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
+
   await page.goto("/blog/");
+  await page.evaluate(() => localStorage.setItem("blog-left-sidebar-collapsed", "true"));
+  await page.reload();
 
   const shell = page.locator(".site-shell");
-  const rail = page.locator("#sidebar-rail");
+  const sidebar = page.locator("#site-sidebar");
+  const openButton = page.locator("#sidebar-open");
+
+  await expect(page.locator("#sidebar-rail")).toHaveCount(0);
+  await expect(shell).toHaveClass(/sidebar-collapsed/);
+  await expect(openButton).toBeVisible();
+  await expect(sidebar).toHaveAttribute("aria-hidden", "true");
+
+  await openButton.click();
+  await expect(shell).not.toHaveClass(/sidebar-collapsed/);
+  await expect(sidebar).toBeVisible();
+  await expect(sidebar).toHaveAttribute("aria-hidden", "false");
 
   await page.locator("#sidebar-collapse-toggle").click();
   await expect(shell).toHaveClass(/sidebar-collapsed/);
-  await expect(rail).toBeVisible();
+  await expect(openButton).toBeVisible();
+});
 
-  await rail.hover();
-  await expect(shell).toHaveClass(/sidebar-hover-expanded/);
-  await page.locator("#sidebar-pin-toggle").click();
-  await expect(shell).not.toHaveClass(/sidebar-collapsed/);
+test("데스크톱 글 본문은 넓은 중앙 읽기 폭을 유지한다", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("desktop"));
+  await page.goto("/blog/jpa/relationship-mapping/");
+
+  const width = await page.locator(".post-column").evaluate((element) => element.getBoundingClientRect().width);
+  expect(width).toBeGreaterThanOrEqual(880);
 });
 
 test("모바일 상단 메뉴를 열고 닫을 수 있다", async ({ page }, testInfo) => {
