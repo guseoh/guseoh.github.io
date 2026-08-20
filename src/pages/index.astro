@@ -5,7 +5,6 @@ import { getPublishedPostsSorted } from "../utils/content/posts";
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "../utils/posts";
 import ActivitySection from "../components/home/ActivitySection.astro";
 import ArchiveHero from "../components/home/ArchiveHero.astro";
-import FeaturedProjects from "../components/home/FeaturedProjects.astro";
 import LatestPosts from "../components/home/LatestPosts.astro";
 import RecentlyUpdatedPosts from "../components/home/RecentlyUpdatedPosts.astro";
 
@@ -32,7 +31,6 @@ const structuredData = {
   structuredData={structuredData}
 >
   <ArchiveHero />
-  <FeaturedProjects />
   <LatestPosts posts={posts} />
   <RecentlyUpdatedPosts posts={posts} />
   <ActivitySection posts={posts} username={SITE.githubActivityUsername} />
