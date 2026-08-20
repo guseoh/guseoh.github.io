@@ -131,7 +131,8 @@ function serializeJsonLd(value: unknown) {
       (() => {
         try {
           const desktop = window.matchMedia("(min-width: 981px)").matches;
-          const collapsed = localStorage.getItem("blog-left-sidebar-collapsed") === "true";
+          const stored = localStorage.getItem("blog-left-sidebar-collapsed");
+          const collapsed = stored === null ? true : stored === "true";
 
           if (desktop && collapsed) {
             document.documentElement.classList.add("left-sidebar-collapsed");
