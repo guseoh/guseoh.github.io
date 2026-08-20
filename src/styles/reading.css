@@ -1,11 +1,11 @@
-/* Reading layout: keep the article on a stable reading axis and place the desktop TOC independently. */
+/* Reading layout: keep the article on a stable center axis and place the desktop TOC independently. */
 .post-view,
 .post-view--single,
 html.left-sidebar-collapsed .post-view,
 html.left-sidebar-collapsed .post-view--single,
 .site-shell.sidebar-collapsed .post-view,
 .site-shell.sidebar-collapsed .post-view--single {
-  --post-reading-width: 50rem;
+  --post-reading-width: 57rem;
   --post-toc-width: 14rem;
   width: 100%;
   max-width: none;
@@ -18,6 +18,8 @@ html.left-sidebar-collapsed .post-view--single,
 .post-view:not(.post-view--single) > .post-column,
 html.left-sidebar-collapsed .post-view > .post-column,
 .site-shell.sidebar-collapsed .post-view > .post-column {
+  position: static;
+  left: auto;
   width: min(100%, var(--post-reading-width));
   max-width: var(--post-reading-width);
   margin-inline: auto;
@@ -160,25 +162,11 @@ html.left-sidebar-collapsed .post-view > .post-column,
   font-weight: 760;
 }
 
-/* On wide desktop screens the left sidebar no longer decides the article's visual center. */
-@media (min-width: 1440px) {
-  .site-layout--wide .post-view > .post-column,
-  .site-layout--wide .post-view--single > .post-column {
-    position: relative;
-    left: -8.625rem;
-  }
-
-  html.left-sidebar-collapsed .site-layout--wide .post-view > .post-column,
-  html.left-sidebar-collapsed .site-layout--wide .post-view--single > .post-column,
-  .site-shell.sidebar-collapsed .site-layout--wide .post-view > .post-column,
-  .site-shell.sidebar-collapsed .site-layout--wide .post-view--single > .post-column {
-    left: -2.625rem;
-  }
-
+@media (min-width: 1540px) {
   .post-view > .post-toc {
     position: fixed;
     top: 5.15rem;
-    right: max(1.5rem, calc((100vw - 1760px) / 2 + 1rem));
+    right: clamp(2rem, 3vw, 4rem);
     z-index: 24;
     width: var(--post-toc-width);
     max-height: calc(100vh - 6.15rem);
@@ -191,7 +179,7 @@ html.left-sidebar-collapsed .post-view > .post-column,
   }
 }
 
-@media (max-width: 1439px) {
+@media (max-width: 1539px) {
   .post-view,
   .post-view--single,
   html.left-sidebar-collapsed .post-view,
@@ -206,7 +194,6 @@ html.left-sidebar-collapsed .post-view > .post-column,
   .post-view:not(.post-view--single) > .post-column,
   html.left-sidebar-collapsed .post-view > .post-column,
   .site-shell.sidebar-collapsed .post-view > .post-column {
-    position: static;
     width: 100%;
     max-width: var(--post-reading-width);
   }
