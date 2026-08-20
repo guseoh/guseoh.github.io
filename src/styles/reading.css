@@ -1,43 +1,26 @@
-/* Reading layout: center the article itself and keep the TOC outside that calculation. */
-.post-view {
+/* Reading layout: keep the article on a stable reading axis and place the desktop TOC independently. */
+.post-view,
+.post-view--single,
+html.left-sidebar-collapsed .post-view,
+html.left-sidebar-collapsed .post-view--single,
+.site-shell.sidebar-collapsed .post-view,
+.site-shell.sidebar-collapsed .post-view--single {
   --post-reading-width: 50rem;
   --post-toc-width: 14rem;
-  --post-side-space: 14rem;
   width: 100%;
   max-width: none;
-  grid-template-columns:
-    minmax(var(--post-side-space), 1fr)
-    minmax(0, var(--post-reading-width))
-    minmax(var(--post-side-space), 1fr);
-  column-gap: 0;
-  justify-content: stretch;
+  display: block;
   margin-inline: auto;
 }
 
 .post-view > .post-column,
-.post-view--single > .post-column {
-  width: 100%;
+.post-view--single > .post-column,
+.post-view:not(.post-view--single) > .post-column,
+html.left-sidebar-collapsed .post-view > .post-column,
+.site-shell.sidebar-collapsed .post-view > .post-column {
+  width: min(100%, var(--post-reading-width));
   max-width: var(--post-reading-width);
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: center;
-}
-
-.post-view > .post-toc {
-  width: min(calc(100% - 1.5rem), var(--post-toc-width));
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: start;
-  margin-left: 1.5rem;
-}
-
-.post-view--single {
-  width: 100%;
-  max-width: none;
-  grid-template-columns:
-    minmax(var(--post-side-space), 1fr)
-    minmax(0, var(--post-reading-width))
-    minmax(var(--post-side-space), 1fr);
+  margin-inline: auto;
 }
 
 .post {
@@ -173,16 +156,42 @@
   margin-inline: 0;
 }
 
-.post-toc {
-  top: 5.15rem;
-  padding-top: 0.35rem;
-}
-
 .post-toc__title {
   font-weight: 760;
 }
 
-@media (max-width: 1679px) {
+/* On wide desktop screens the left sidebar no longer decides the article's visual center. */
+@media (min-width: 1440px) {
+  .site-layout--wide .post-view > .post-column,
+  .site-layout--wide .post-view--single > .post-column {
+    position: relative;
+    left: -8.625rem;
+  }
+
+  html.left-sidebar-collapsed .site-layout--wide .post-view > .post-column,
+  html.left-sidebar-collapsed .site-layout--wide .post-view--single > .post-column,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view > .post-column,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view--single > .post-column {
+    left: -2.625rem;
+  }
+
+  .post-view > .post-toc {
+    position: fixed;
+    top: 5.15rem;
+    right: max(1.5rem, calc((100vw - 1760px) / 2 + 1rem));
+    z-index: 24;
+    width: var(--post-toc-width);
+    max-height: calc(100vh - 6.15rem);
+    margin: 0;
+    padding: 0.35rem 0 0.2rem 0.35rem;
+  }
+
+  .post-view > .post-toc-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 1439px) {
   .post-view,
   .post-view--single,
   html.left-sidebar-collapsed .post-view,
@@ -190,20 +199,16 @@
   .site-shell.sidebar-collapsed .post-view,
   .site-shell.sidebar-collapsed .post-view--single {
     width: min(100%, var(--post-reading-width));
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .post-view > .post-column,
   .post-view--single > .post-column,
   .post-view:not(.post-view--single) > .post-column,
-  html.left-sidebar-collapsed .post-view:not(.post-view--single) > .post-column,
-  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) > .post-column {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .post-view--single > .post-column {
-    grid-row: 1;
+  html.left-sidebar-collapsed .post-view > .post-column,
+  .site-shell.sidebar-collapsed .post-view > .post-column {
+    position: static;
+    width: 100%;
+    max-width: var(--post-reading-width);
   }
 
   .post-view > .post-toc-mobile,
@@ -211,8 +216,7 @@
   .site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
     display: block;
     width: 100%;
-    grid-column: 1;
-    grid-row: 1;
+    margin: 0 auto 1rem;
   }
 
   .post-toc,
