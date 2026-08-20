@@ -132,12 +132,16 @@
 .post .table-scroll,
 .post .link-mention,
 .post figure,
-.post img,
 .post > p:has(> img:only-child),
 .post > p:has(> a:only-child > img:only-child),
 .post__content > p:has(> img:only-child),
 .post__content > p:has(> a:only-child > img:only-child) {
   width: 100%;
+  max-width: 100%;
+}
+
+.post img {
+  width: auto;
   max-width: 100%;
 }
 
