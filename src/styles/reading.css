@@ -202,53 +202,103 @@ html.left-sidebar-collapsed .post-view > .post-column,
   font-weight: 760;
 }
 
-@media (min-width: 1540px) {
-  .post-view > .post-toc {
-    position: fixed;
+/* Compact TOC is the fallback when there is not enough room for a reading rail. */
+.post-view > .post-toc-mobile,
+html.left-sidebar-collapsed .post-view > .post-toc-mobile,
+.site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
+  display: block;
+  width: min(100%, var(--post-reading-width));
+  margin: 0 auto 1rem;
+}
+
+.post-toc,
+html.left-sidebar-collapsed .post-toc,
+.site-shell.sidebar-collapsed .post-toc {
+  display: none;
+}
+
+/* Expanded desktop sidebar: reserve an actual right column for the sticky TOC. */
+@media (min-width: 1280px) {
+  .post-view:not(.post-view--single),
+  html.left-sidebar-collapsed .post-view:not(.post-view--single),
+  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) {
+    display: grid;
+    grid-template-columns: minmax(0, var(--post-reading-width)) minmax(12rem, var(--post-toc-width));
+    column-gap: clamp(1.5rem, 2vw, 2.5rem);
+    align-items: start;
+    justify-content: center;
+  }
+
+  .post-view:not(.post-view--single) > .post-column,
+  html.left-sidebar-collapsed .post-view:not(.post-view--single) > .post-column,
+  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) > .post-column {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    max-width: var(--post-reading-width);
+    margin-inline: 0;
+    justify-self: end;
+  }
+
+  .post-view > .post-toc,
+  html.left-sidebar-collapsed .post-view > .post-toc,
+  .site-shell.sidebar-collapsed .post-view > .post-toc {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
     top: 5.15rem;
-    right: clamp(2rem, 3vw, 4rem);
     z-index: 24;
-    width: var(--post-toc-width);
+    width: 100%;
     max-height: calc(100vh - 6.15rem);
     margin: 0;
     padding: 0.35rem 0 0.2rem 0.35rem;
   }
 
-  .post-view > .post-toc-mobile {
+  .post-view > .post-toc-mobile,
+  html.left-sidebar-collapsed .post-view > .post-toc-mobile,
+  .site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
     display: none;
   }
 }
 
-@media (max-width: 1539px) {
-  .post-view,
-  .post-view--single,
-  html.left-sidebar-collapsed .post-view,
-  html.left-sidebar-collapsed .post-view--single,
-  .site-shell.sidebar-collapsed .post-view,
-  .site-shell.sidebar-collapsed .post-view--single {
-    width: min(100%, var(--post-reading-width));
+/* When the left navigation is collapsed, the reading rail fits from normal desktop widths. */
+@media (min-width: 981px) and (max-width: 1279px) {
+  html.left-sidebar-collapsed .post-view:not(.post-view--single),
+  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) {
+    display: grid;
+    grid-template-columns: minmax(0, var(--post-reading-width)) minmax(12rem, var(--post-toc-width));
+    column-gap: clamp(1.25rem, 2vw, 2rem);
+    align-items: start;
+    justify-content: center;
   }
 
-  .post-view > .post-column,
-  .post-view--single > .post-column,
-  .post-view:not(.post-view--single) > .post-column,
-  html.left-sidebar-collapsed .post-view > .post-column,
-  .site-shell.sidebar-collapsed .post-view > .post-column {
+  html.left-sidebar-collapsed .post-view:not(.post-view--single) > .post-column,
+  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) > .post-column {
+    grid-column: 1;
+    grid-row: 1;
     width: 100%;
     max-width: var(--post-reading-width);
+    margin-inline: 0;
+    justify-self: end;
   }
 
-  .post-view > .post-toc-mobile,
+  html.left-sidebar-collapsed .post-view > .post-toc,
+  .site-shell.sidebar-collapsed .post-view > .post-toc {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 5.15rem;
+    z-index: 24;
+    width: 100%;
+    max-height: calc(100vh - 6.15rem);
+    margin: 0;
+    padding: 0.35rem 0 0.2rem 0.35rem;
+  }
+
   html.left-sidebar-collapsed .post-view > .post-toc-mobile,
   .site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
-    display: block;
-    width: 100%;
-    margin: 0 auto 1rem;
-  }
-
-  .post-toc,
-  html.left-sidebar-collapsed .post-toc,
-  .site-shell.sidebar-collapsed .post-toc {
     display: none;
   }
 }
