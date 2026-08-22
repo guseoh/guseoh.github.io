@@ -217,8 +217,8 @@ html.left-sidebar-collapsed .post-toc,
   display: none;
 }
 
-/* Expanded desktop sidebar: reserve an actual right column for the sticky TOC. */
-@media (min-width: 1280px) {
+/* With the full left navigation visible, wait until both reading columns fit comfortably. */
+@media (min-width: 1400px) {
   .post-view:not(.post-view--single),
   html.left-sidebar-collapsed .post-view:not(.post-view--single),
   .site-shell.sidebar-collapsed .post-view:not(.post-view--single) {
@@ -262,8 +262,8 @@ html.left-sidebar-collapsed .post-toc,
   }
 }
 
-/* When the left navigation is collapsed, the reading rail fits from normal desktop widths. */
-@media (min-width: 981px) and (max-width: 1279px) {
+/* A collapsed left navigation frees enough horizontal space for the reading rail earlier. */
+@media (min-width: 1280px) and (max-width: 1399px) {
   html.left-sidebar-collapsed .post-view:not(.post-view--single),
   .site-shell.sidebar-collapsed .post-view:not(.post-view--single) {
     display: grid;
