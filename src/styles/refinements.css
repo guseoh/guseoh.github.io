@@ -136,6 +136,43 @@ html[data-theme="dark"] .post img.light-bg {
   max-width: min(100%, var(--post-content-width));
 }
 
+/*
+ * Keep the reading TOC in the right sticky column on desktop-sized viewports.
+ * The base post styles collapse the TOC at 1439px; restoring the two-column
+ * layout down to 1281px avoids showing the compact TOC above the article on
+ * common desktop/browser scaling combinations. Tablet/mobile stays unchanged.
+ */
+@media (min-width: 1281px) and (max-width: 1439px) {
+  .post-view:not(.post-view--single),
+  html.left-sidebar-collapsed .post-view:not(.post-view--single),
+  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) {
+    width: min(100%, calc(var(--post-body-max) + var(--post-toc-width) + var(--post-toc-gap)));
+    grid-template-columns: minmax(0, var(--post-body-max)) minmax(12rem, var(--post-toc-width));
+    justify-content: center;
+  }
+
+  .post-view:not(.post-view--single) > .post-column,
+  html.left-sidebar-collapsed .post-view:not(.post-view--single) > .post-column,
+  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) > .post-column {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .post-view > .post-toc-mobile,
+  html.left-sidebar-collapsed .post-view > .post-toc-mobile,
+  .site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
+    display: none;
+  }
+
+  .post-view > .post-toc,
+  html.left-sidebar-collapsed .post-view > .post-toc,
+  .site-shell.sidebar-collapsed .post-view > .post-toc {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
 @media (max-width: 640px) {
   .post .reference-link__type {
     font-size: 0.62rem;
