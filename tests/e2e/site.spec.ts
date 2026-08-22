@@ -30,7 +30,7 @@ for (const route of representativeRoutes) {
 
 test("검색어와 필터가 결과에 반영된다", async ({ page }) => {
   await page.goto("/search/");
-  await page.getByLabel("검색어").fill("Spring");
+  await page.getByRole("searchbox", { name: "검색어", exact: true }).fill("Spring");
   await expect(page.locator("[data-search-meta]")).toContainText("결과");
   await expect(page.locator("[data-search-list] .post-card").first()).toBeVisible();
 });
@@ -82,12 +82,19 @@ test("데스크톱 사이드바는 햄버거 버튼으로만 열고 닫는다", 
   await expect(openButton).toBeVisible();
 });
 
-test("데스크톱 글 본문은 넓은 중앙 읽기 폭을 유지한다", async ({ page }, testInfo) => {
+test("데스크톱 글은 본문 폭과 오른쪽 TOC를 유지한다", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
   await page.goto("/blog/jpa/relationship-mapping/");
+  await page.evaluate(() => localStorage.setItem("blog-left-sidebar-collapsed", "true"));
+  await page.reload();
 
   const width = await page.locator(".post-column").evaluate((element) => element.getBoundingClientRect().width);
-  expect(width).toBeGreaterThanOrEqual(880);
+  expect(width).toBeGreaterThanOrEqual(800);
+
+  const desktopToc = page.locator(".post-toc");
+  await expect(desktopToc).toBeVisible();
+  await expect(page.locator(".post-toc-mobile")).toBeHidden();
+  await expect(desktopToc).toHaveCSS("position", "sticky");
 });
 
 test("모바일 상단 메뉴를 열고 닫을 수 있다", async ({ page }, testInfo) => {
