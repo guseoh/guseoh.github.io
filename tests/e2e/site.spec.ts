@@ -94,7 +94,7 @@ test("데스크톱 글은 본문 폭과 오른쪽 TOC를 유지한다", async ({
   const desktopToc = page.locator(".post-toc");
   await expect(desktopToc).toBeVisible();
   await expect(page.locator(".post-toc-mobile")).toBeHidden();
-  await expect(desktopToc).toHaveCSS("position", "sticky");
+  await expect(desktopToc).toHaveCSS("position", "fixed");
 });
 
 test("모바일 상단 메뉴를 열고 닫을 수 있다", async ({ page }, testInfo) => {

@@ -174,6 +174,69 @@ html.left-sidebar-collapsed .post-view > .post-column,
   max-width: 100%;
 }
 
+/*
+ * Post image sizing contract:
+ * - ordinary standalone images share the same readable display width and stay centered;
+ * - `{full-width}` remains an explicit opt-in for large diagrams/screenshots.
+ */
+.post__content > p:has(> img:only-child) > img:not(.full-width) {
+  display: block;
+  width: min(100%, 48rem) !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin-inline: auto;
+}
+
+.post__content > p:has(> a:only-child > img:only-child) > a {
+  display: block;
+  width: min(100%, 48rem);
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.post__content > p:has(> a:only-child > img:only-child) > a > img:not(.full-width) {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0;
+}
+
+.post__content > figure:has(img:not(.full-width)) {
+  width: min(100%, 48rem);
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.post__content > figure:has(img:not(.full-width)) img:not(.full-width) {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin-inline: auto;
+}
+
+.post__content > p:has(img.full-width),
+.post__content > figure:has(img.full-width) {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+
+.post__content > p:has(> a:only-child > img.full-width:only-child) > a {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+.post__content img.full-width {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin-inline: auto;
+}
+
 .post-footer {
   width: 100%;
   max-width: 100%;
@@ -202,7 +265,7 @@ html.left-sidebar-collapsed .post-view > .post-column,
   font-weight: 760;
 }
 
-/* Compact TOC is the fallback when there is not enough room for a reading rail. */
+/* Compact TOC is the fallback when all three desktop rails do not fit. */
 .post-view > .post-toc-mobile,
 html.left-sidebar-collapsed .post-view > .post-toc-mobile,
 .site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
@@ -217,88 +280,94 @@ html.left-sidebar-collapsed .post-toc,
   display: none;
 }
 
-/* With the full left navigation visible, wait until both reading columns fit comfortably. */
-@media (min-width: 1400px) {
-  .post-view:not(.post-view--single),
-  html.left-sidebar-collapsed .post-view:not(.post-view--single),
-  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) {
-    display: grid;
-    grid-template-columns: minmax(0, var(--post-reading-width)) minmax(12rem, var(--post-toc-width));
-    column-gap: clamp(1.5rem, 2vw, 2.5rem);
-    align-items: start;
-    justify-content: center;
-  }
-
-  .post-view:not(.post-view--single) > .post-column,
-  html.left-sidebar-collapsed .post-view:not(.post-view--single) > .post-column,
-  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) > .post-column {
-    grid-column: 1;
-    grid-row: 1;
-    width: 100%;
-    max-width: var(--post-reading-width);
-    margin-inline: 0;
-    justify-self: end;
-  }
-
-  .post-view > .post-toc,
-  html.left-sidebar-collapsed .post-view > .post-toc,
-  .site-shell.sidebar-collapsed .post-view > .post-toc {
+/*
+ * Wide desktop shell: the article owns the viewport center, the site navigation
+ * remains on the left, and the TOC is taken out of article flow on the right.
+ * Planner already uses a fixed left drawer, so it needs no article offset.
+ */
+@media (min-width: 1480px) {
+  .site-layout--wide .post-view:not(.post-view--single),
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single),
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) {
     display: block;
-    grid-column: 2;
-    grid-row: 1;
-    position: sticky;
+  }
+
+  .site-layout--wide .post-view:not(.post-view--single) > .post-column {
+    position: relative;
+    left: -8.625rem;
+    width: min(100%, var(--post-reading-width));
+    max-width: var(--post-reading-width);
+    margin-inline: auto;
+  }
+
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column {
+    left: -2.625rem;
+  }
+
+  html[data-theme-mode="planner"] .site-layout--wide .post-view:not(.post-view--single) > .post-column,
+  html[data-theme-mode="planner"].left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column,
+  html[data-theme-mode="planner"] .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column {
+    left: 0;
+  }
+
+  .site-layout--wide .post-view:not(.post-view--single) > .post-toc,
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc {
+    display: block;
+    position: fixed;
     top: 5.15rem;
+    right: max(1.5rem, calc((100vw - 1760px) / 2 + 1rem));
     z-index: 24;
-    width: 100%;
+    width: var(--post-toc-width);
     max-height: calc(100vh - 6.15rem);
     margin: 0;
     padding: 0.35rem 0 0.2rem 0.35rem;
   }
 
-  .post-view > .post-toc-mobile,
-  html.left-sidebar-collapsed .post-view > .post-toc-mobile,
-  .site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
+  .site-layout--wide .post-view:not(.post-view--single) > .post-toc-mobile,
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc-mobile,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc-mobile {
     display: none;
   }
 }
 
-/* A collapsed left navigation frees enough horizontal space for the reading rail earlier. */
-@media (min-width: 1280px) and (max-width: 1399px) {
-  html.left-sidebar-collapsed .post-view:not(.post-view--single),
-  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) {
-    display: grid;
-    grid-template-columns: minmax(0, var(--post-reading-width)) minmax(12rem, var(--post-toc-width));
-    column-gap: clamp(1.25rem, 2vw, 2rem);
-    align-items: start;
-    justify-content: center;
-  }
-
-  html.left-sidebar-collapsed .post-view:not(.post-view--single) > .post-column,
-  .site-shell.sidebar-collapsed .post-view:not(.post-view--single) > .post-column {
-    grid-column: 1;
-    grid-row: 1;
-    width: 100%;
-    max-width: var(--post-reading-width);
-    margin-inline: 0;
-    justify-self: end;
-  }
-
-  html.left-sidebar-collapsed .post-view > .post-toc,
-  .site-shell.sidebar-collapsed .post-view > .post-toc {
+/* A collapsed left navigation leaves enough room for the right TOC from normal desktop widths. */
+@media (min-width: 1280px) and (max-width: 1479px) {
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single),
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) {
     display: block;
-    grid-column: 2;
-    grid-row: 1;
-    position: sticky;
+  }
+
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column {
+    position: relative;
+    left: -2.625rem;
+    width: min(100%, var(--post-reading-width));
+    max-width: var(--post-reading-width);
+    margin-inline: auto;
+  }
+
+  html[data-theme-mode="planner"].left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column,
+  html[data-theme-mode="planner"] .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column {
+    left: 0;
+  }
+
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc {
+    display: block;
+    position: fixed;
     top: 5.15rem;
+    right: 1.5rem;
     z-index: 24;
-    width: 100%;
+    width: var(--post-toc-width);
     max-height: calc(100vh - 6.15rem);
     margin: 0;
     padding: 0.35rem 0 0.2rem 0.35rem;
   }
 
-  html.left-sidebar-collapsed .post-view > .post-toc-mobile,
-  .site-shell.sidebar-collapsed .post-view > .post-toc-mobile {
+  html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc-mobile,
+  .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc-mobile {
     display: none;
   }
 }
