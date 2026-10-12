@@ -80,31 +80,31 @@ html.left-sidebar-collapsed .post-view > .post-column,
 
 /* Prose gets more breathing room, while code remains intentionally denser. */
 .post__content > :where(p, ul, ol, blockquote) {
-  font-size: clamp(1rem, 0.99rem + 0.1vw, 1.04rem);
-  line-height: 1.85;
+  font-size: clamp(1rem, 0.99rem + 0.08vw, 1.02rem);
+  line-height: 1.79;
 }
 
 .post__content p {
-  margin-top: 1.15rem;
+  margin-top: 1rem;
 }
 
 .post > :where(p, ul, ol, blockquote, .markdown-alert),
 .post__content > :where(p, ul, ol, blockquote, .markdown-alert),
 .post > :where(ul, ol) :where(li),
 .post__content > :where(ul, ol) :where(li) {
-  line-height: 1.85;
+  line-height: 1.79;
 }
 
 .post > h2,
 .post__content h2 {
-  margin-top: clamp(2.55rem, 4vw, 3.05rem);
-  margin-bottom: 0.9rem;
+  margin-top: clamp(2.35rem, 3.7vw, 2.8rem);
+  margin-bottom: 0.85rem;
 }
 
 .post > h3,
 .post__content h3 {
-  margin-top: clamp(2.1rem, 3.2vw, 2.55rem);
-  margin-bottom: 0.8rem;
+  margin-top: clamp(1.95rem, 3vw, 2.35rem);
+  margin-bottom: 0.75rem;
 }
 
 .post > h4,
@@ -128,8 +128,8 @@ html.left-sidebar-collapsed .post-view > .post-column,
 
 .post__content > .code-block,
 .post > .code-block {
-  margin-top: 1.55rem;
-  margin-bottom: 1.85rem;
+  margin-top: 1.3rem;
+  margin-bottom: 1.5rem;
 }
 
 .post pre,
@@ -141,7 +141,7 @@ html.left-sidebar-collapsed .post-view > .post-column,
 .code-block__header {
   gap: 0.6rem;
   background: color-mix(in srgb, var(--code-card-header-bg) 74%, var(--code-block-bg));
-  padding: 0.32rem 0.58rem;
+  padding: 0.28rem 0.54rem;
 }
 
 .code-block__language {
@@ -390,13 +390,13 @@ html.left-sidebar-collapsed .post-toc,
   }
 
   .post__content p {
-    margin-top: 1.05rem;
+    margin-top: 0.98rem;
   }
 
   .post__content > .code-block,
   .post > .code-block {
-    margin-top: 1.3rem;
-    margin-bottom: 1.55rem;
+    margin-top: 1.2rem;
+    margin-bottom: 1.45rem;
   }
 
   .code-block__header {

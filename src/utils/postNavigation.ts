@@ -34,12 +34,17 @@ export function getLearningPathPosts(
   const categoryName = currentPost.data.category?.trim().toLocaleLowerCase("ko-KR");
   if (!categoryName) return [];
 
-  return posts
-    .filter((entry) => {
-      const entryCategory = entry.data.category?.trim().toLocaleLowerCase("ko-KR");
-      return entryCategory === categoryName && typeof entry.data.chapter === "number";
-    })
-    .sort(compareLearningOrder);
+  const categoryPosts = posts.filter((entry) => {
+    const entryCategory = entry.data.category?.trim().toLocaleLowerCase("ko-KR");
+    return entryCategory === categoryName && typeof entry.data.chapter === "number";
+  });
+
+  // Without an explicit series, duplicate chapter numbers are ambiguous.
+  // Do not invent a reading order from publication dates in that case.
+  const chapters = categoryPosts.map((entry) => entry.data.chapter);
+  if (new Set(chapters).size !== chapters.length) return [];
+
+  return categoryPosts.sort(compareLearningOrder);
 }
 
 function compareLearningOrder(a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) {
