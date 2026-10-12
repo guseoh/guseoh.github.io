@@ -68,11 +68,11 @@
 
 .post-list {
   display: grid;
-  gap: 1rem;
+  gap: 0.9rem;
 }
 
 .card {
-  padding: 1rem;
+  padding: 0.9rem;
 }
 
 .post-card {
@@ -80,8 +80,8 @@
   height: 100%;
   min-width: 0;
   flex-direction: column;
-  gap: 0.56rem;
-  padding: 0.9rem;
+  gap: 0.5rem;
+  padding: 0.78rem;
   transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
@@ -93,8 +93,8 @@
 }
 
 .post-card__header h2 {
-  font-size: 1.04rem;
-  line-height: 1.32;
+  font-size: 1rem;
+  line-height: 1.35;
 }
 
 .post-card__header a {
@@ -116,15 +116,15 @@
   display: -webkit-box;
   overflow: hidden;
   color: var(--muted-readable);
-  font-size: 0.88rem;
-  line-height: 1.5;
+  font-size: 0.86rem;
+  line-height: 1.52;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
 
 .post-card__footer {
   display: grid;
-  gap: 0.46rem;
+  gap: 0.4rem;
   margin-top: auto;
 }
 
@@ -139,12 +139,12 @@
 }
 
 .post-card .badge-group {
-  gap: 0.32rem;
+  gap: 0.28rem;
 }
 
 .post-card .badge {
   font-size: 0.72rem;
-  padding: 0.28rem 0.44rem;
+  padding: 0.25rem 0.4rem;
 }
 
 .badge-group,
@@ -773,13 +773,13 @@
 .post-list--switch {
   width: 100%;
   max-width: 920px;
-  margin: 0.9rem auto 0;
+  margin: 0.8rem auto 0;
   grid-template-columns: 1fr;
 }
 
 .post-list--switch[data-view="grid"] {
   max-width: none;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
 }
 
 .project-card {
@@ -791,14 +791,14 @@
 }
 
 .series-list {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
 }
 
 .series-card {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.75rem;
   height: 100%;
-  padding: 1rem;
+  padding: 0.88rem;
 }
 
 .series-card__head {
@@ -823,8 +823,8 @@
 .about-panel h2,
 .post-series h2,
 .series-card h2 {
-  margin-top: 0.55rem;
-  font-size: 1.3rem;
+  margin-top: 0.48rem;
+  font-size: 1.22rem;
 }
 
 .series-card h2 a {
@@ -872,7 +872,7 @@
 
 .series-card__posts {
   display: grid;
-  gap: 0.48rem;
+  gap: 0.42rem;
   margin: 0;
   padding-left: 1.15rem;
 }
