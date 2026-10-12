@@ -103,7 +103,10 @@ const nextLearningPost = learningPathIndex >= 0 && learningPathIndex < learningP
   ? learningPathPosts[learningPathIndex + 1]
   : undefined;
 const { newerPost, olderPost } = getAdjacentPosts(allPosts, post.id);
-const relatedPosts = getRelatedPosts(post, allPosts, { limit: 3 });
+// A learning-path entry should not also appear as a related-post recommendation.
+const learningPathPostIds = new Set(learningPathPosts.map((entry) => entry.id));
+const relatedCandidates = allPosts.filter((entry) => !learningPathPostIds.has(entry.id));
+const relatedPosts = getRelatedPosts(post, relatedCandidates, { limit: 3 });
 const siteUrl = Astro.site ?? new URL(SITE.siteUrl);
 const postUrl = getPostUrl(post, siteUrl);
 const postImagePath = getPostOgImagePath(post);
@@ -218,25 +221,25 @@ const breadcrumbStructuredData = {
         <h1>{post.data.title}</h1>
         <p class="post__description">{description}</p>
 
-        <dl class="post-meta-grid">
+        <dl class="post-meta-grid post-meta-grid--compact" aria-label="게시글 정보">
           <div class="post-meta-item">
-            <dt>작성일</dt>
+            <dt class="sr-only">작성일</dt>
             <dd><time datetime={post.data.date.toISOString()}>{formatPostDate(post.data.date)}</time></dd>
           </div>
-          {post.data.updated && (
+          {post.data.updated && post.data.updated.valueOf() !== post.data.date.valueOf() && (
             <div class="post-meta-item">
-              <dt>수정일</dt>
-              <dd><time datetime={post.data.updated.toISOString()}>{formatPostDate(post.data.updated)}</time></dd>
+              <dt class="sr-only">수정일</dt>
+              <dd>수정 <time datetime={post.data.updated.toISOString()}>{formatPostDate(post.data.updated)}</time></dd>
             </div>
           )}
-          {post.data.lastVerified && (
+          {post.data.lastVerified && post.data.lastVerified.valueOf() !== (post.data.updated ?? post.data.date).valueOf() && (
             <div class="post-meta-item post-meta-item--verification">
-              <dt>마지막 검증</dt>
-              <dd><time datetime={post.data.lastVerified.toISOString()}>{formatPostDate(post.data.lastVerified)}</time></dd>
+              <dt class="sr-only">마지막 검증</dt>
+              <dd>검증 <time datetime={post.data.lastVerified.toISOString()}>{formatPostDate(post.data.lastVerified)}</time></dd>
             </div>
           )}
           <div class="post-meta-item">
-            <dt>카테고리</dt>
+            <dt class="sr-only">카테고리</dt>
             <dd>
               <a class="tag tag--category" href={`/categories/${categorySlug}/`}>
                 <CategoryIcon category={categoryName} />
@@ -245,7 +248,7 @@ const breadcrumbStructuredData = {
             </dd>
           </div>
           <div class="post-meta-item">
-            <dt>읽는 시간</dt>
+            <dt class="sr-only">읽는 시간</dt>
             <dd>{readingTime}</dd>
           </div>
         </dl>
@@ -312,7 +315,7 @@ const breadcrumbStructuredData = {
               <p class="post-series__empty">{seriesContinuationMessage}</p>
             )}
 
-            {(previousLearningPost || nextLearningPost) && (
+            {learningPathPosts.length > 3 && (previousLearningPost || nextLearningPost) && (
               <nav class="post-learning-path__nav" aria-label="학습 경로 이전과 다음 글">
                 {previousLearningPost ? (
                   <a href={getPostPath(previousLearningPost)}>
@@ -333,20 +336,6 @@ const breadcrumbStructuredData = {
 
         <PostRelatedPosts relatedPosts={relatedPosts} />
 
-        <section class="post-feedback" aria-labelledby="post-feedback-title">
-          <h2 id="post-feedback-title">이 글 개선하기</h2>
-          <div class="post-feedback__actions">
-            {showEditLink && editUrl && (
-              <a href={editUrl} target="_blank" rel="noopener noreferrer" aria-label={`${postTitle} Markdown 파일을 GitHub에서 수정하기`}>
-                GitHub에서 이 글 수정하기
-              </a>
-            )}
-            <a href={issueUrl.toString()} target="_blank" rel="noopener noreferrer" aria-label={`${postTitle} 내용 오류를 GitHub Issue로 신고하기`}>
-              내용 오류 신고하기
-            </a>
-          </div>
-        </section>
-
         <nav class="post-adjacent" aria-label="Previous and next posts">
           {olderPost ? (
             <a class="post-adjacent__card" href={getPostPath(olderPost)}>
@@ -366,6 +355,20 @@ const breadcrumbStructuredData = {
             <span class="post-adjacent__card post-adjacent__card--empty post-adjacent__card--next">다음 글이 없습니다.</span>
           )}
         </nav>
+
+        <section class="post-feedback" aria-labelledby="post-feedback-title">
+          <h2 id="post-feedback-title">이 글 개선하기</h2>
+          <div class="post-feedback__actions">
+            {showEditLink && editUrl && (
+              <a href={editUrl} target="_blank" rel="noopener noreferrer" aria-label={`${postTitle} Markdown 파일을 GitHub에서 수정하기`}>
+                GitHub에서 이 글 수정하기
+              </a>
+            )}
+            <a href={issueUrl.toString()} target="_blank" rel="noopener noreferrer" aria-label={`${postTitle} 내용 오류를 GitHub Issue로 신고하기`}>
+              내용 오류 신고하기
+            </a>
+          </div>
+        </section>
       </footer>
     </article>
     <PostComments commentKey={commentKey} postUrl={postUrl} />

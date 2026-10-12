@@ -20,7 +20,7 @@ const { relatedPosts } = Astro.props as Props;
         <h2 id="post-related-title">함께 읽으면 좋은 글</h2>
       </div>
 
-      <div class="post-related__grid">
+      <div class="post-related__grid" data-count={relatedPosts.length}>
         {relatedPosts.map(({ post, commonTags, reasons }) => {
           const categoryName = post.data.category?.trim() || "Uncategorized";
           const categorySlug = normalizeCategory(categoryName);
