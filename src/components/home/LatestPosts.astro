@@ -30,9 +30,9 @@ const visiblePosts = posts.slice(0, limit);
     <p class="section-empty">아직 공개된 글이 없습니다.</p>
   ) : (
     <ul id="home-latest-post-list" class="post-list post-list--switch home-post-list" data-post-list>
-      {visiblePosts.map((post) => (
+      {visiblePosts.map((post, index) => (
         <li>
-          <PostCard post={post} variant="latest" />
+          <PostCard post={post} variant="latest" featured={index === 0} />
         </li>
       ))}
     </ul>

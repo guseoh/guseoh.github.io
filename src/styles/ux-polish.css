@@ -1,0 +1,296 @@
+/*
+ * UI/UX polish for the compact (browser ~90%) design.
+ * Keep type scale and responsive layout geometry in their original files.
+ * These rules only improve visual hierarchy, navigation and touch usability.
+ */
+
+/* Reading: reduce over-bold dark emphasis, retain readable Korean prose. */
+html[data-theme="dark"] .post {
+  --article-strong-weight: 680;
+  --article-strong-color: var(--heading);
+}
+
+.post__header h1 {
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+
+.post__description {
+  max-width: 72ch;
+  text-wrap: pretty;
+}
+
+.post__content > :where(p, ul, ol, blockquote) {
+  letter-spacing: -0.005em;
+}
+
+.post__content p + p {
+  margin-top: 1.12rem;
+}
+
+.post__content :where(h2, h3, h4) {
+  text-wrap: pretty;
+  scroll-margin-top: 5.8rem;
+}
+
+/* Sidebar: keep categories and tags distinct without visual clutter. */
+.site-sidebar {
+  gap: 0.72rem;
+}
+
+.category-panel__header {
+  margin-bottom: 0.46rem;
+  padding-bottom: 0.46rem;
+}
+
+.category-panel__header h2,
+.category-panel__subhead {
+  letter-spacing: 0.018em;
+}
+
+.category-panel__header a {
+  font-weight: 700;
+}
+
+.category-menu--sidebar .category-menu__all.is-active,
+.category-menu--sidebar .category-menu__child.is-active,
+.category-panel .topic-pill--tag.is-active {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 83%, var(--surface));
+  color: var(--heading);
+}
+
+.category-menu--sidebar .category-menu__child,
+.category-panel .topic-pill--tag {
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+.category-panel .topic-cloud--tags {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted-readable) 35%, transparent) transparent;
+}
+
+/* Contents: distinguish headings from subheadings, keep the current
+ * section visible while scrolling through lengthy articles. */
+.post-toc {
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted-readable) 30%, transparent) transparent;
+}
+
+.post-toc__title {
+  padding-bottom: 0.42rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.post-toc__list {
+  margin-top: 0.48rem;
+}
+
+.post-toc__item.depth-2 a {
+  font-weight: 620;
+}
+
+.post-toc__item.depth-3 {
+  padding-left: 0.72rem;
+}
+
+.post-toc__item.depth-3 a {
+  font-size: 0.8rem;
+  line-height: 1.48;
+}
+
+.post-toc__item a.is-active,
+.post-toc-mobile__item a.is-active {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 86%, var(--surface));
+  color: var(--heading);
+  font-weight: 800;
+}
+
+.post-toc__item a:focus-visible,
+.post-toc-mobile__item a:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Home: a clear primary reading action and a visibly featured newest post. */
+.archive-hero--simple {
+  border-radius: 12px;
+  padding: clamp(1.2rem, 2vw, 1.75rem);
+}
+
+.archive-hero--simple h1 {
+  max-width: 38ch;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.archive-hero__lead {
+  max-width: 56ch;
+}
+
+.archive-hero__actions a:first-child {
+  border-color: var(--link);
+  background: var(--link);
+  color: var(--surface);
+}
+
+.archive-hero__actions a:first-child:hover,
+.archive-hero__actions a:first-child:focus-visible {
+  border-color: var(--link-hover);
+  background: var(--link-hover);
+  color: var(--surface);
+}
+
+.home-section__head {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  padding-bottom: 0.55rem;
+}
+
+.post-card--featured {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent-soft) 48%, var(--card-bg)),
+    var(--card-bg) 66%
+  );
+}
+
+.post-card__eyebrow {
+  display: block;
+  color: var(--link);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.post-card--featured .post-card__header h2 {
+  font-size: clamp(1.08rem, 1.02rem + 0.32vw, 1.32rem);
+  text-wrap: pretty;
+}
+
+/* All Posts: grid cards stay compact, list cards get a scan-friendly meta rail. */
+.post-list--switch:not(.home-post-list)[data-view="list"] .post-card {
+  gap: 0.5rem;
+}
+
+.post-list--switch[data-view="grid"] .post-card,
+.search-results .post-card {
+  border-radius: 10px;
+}
+
+.post-card__header a {
+  text-wrap: pretty;
+}
+
+/* Search and category pages: better grouping and visible selected filters. */
+.search-page-form {
+  align-items: stretch;
+  gap: 0.62rem;
+}
+
+.search-page-form :is(input, select):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 66%, transparent);
+  outline-offset: 2px;
+}
+
+.search-results-meta {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  padding-bottom: 0.58rem;
+}
+
+.search-match-reasons {
+  margin-top: 0.48rem;
+}
+
+.search-empty,
+.archive-empty {
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  padding: 1rem 1.2rem;
+}
+
+.category-menu--page .category-menu__all.is-active,
+.category-menu--page .category-menu__child.is-active {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 75%, var(--surface));
+}
+
+/* Responsive composition; avoid changing the user's preferred compact scale. */
+/* Three columns keep longer Korean titles readable on wide screens,
+ * and avoid a half-empty last row for small article collections. */
+@media (min-width: 1200px) {
+  .home-post-list.post-list--switch[data-view="grid"],
+  .post-list--switch:not(.home-post-list)[data-view="grid"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .post-list--switch:not(.home-post-list)[data-view="list"] .post-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(11rem, 33%);
+    grid-template-rows: auto auto;
+    align-items: start;
+    column-gap: 1.2rem;
+  }
+
+  .post-list--switch:not(.home-post-list)[data-view="list"] .post-card__header {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .post-list--switch:not(.home-post-list)[data-view="list"] .post-card__description {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .post-list--switch:not(.home-post-list)[data-view="list"] .post-card__footer {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    margin: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 1rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .archive-hero--simple h1 {
+    text-wrap: pretty;
+  }
+
+  .post-toc-mobile__toggle,
+  .view-switch__button,
+  .sidebar-close,
+  .sidebar-search__submit,
+  .category-menu__toggle {
+    min-height: 3rem;
+  }
+
+  .post-toc-mobile__item a,
+  .top-nav__link {
+    min-height: 2.75rem;
+  }
+
+  .post-toc-mobile__item a {
+    padding-block: 0.55rem;
+  }
+
+  .search-page-form {
+    gap: 0.5rem;
+  }
+
+  .search-page-form :is(input, select, button),
+  .search-reset-link {
+    min-height: 2.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-menu--sidebar .category-menu__child,
+  .category-panel .topic-pill--tag {
+    transition: none;
+  }
+}
