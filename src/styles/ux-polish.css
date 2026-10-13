@@ -218,11 +218,16 @@ html[data-theme="dark"] .post {
 }
 
 /* Responsive composition; avoid changing the user's preferred compact scale. */
-@media (min-width: 900px) {
-  .home-post-list.post-list--switch[data-view="grid"] > li:first-child {
-    grid-column: span 2;
+/* Three columns keep longer Korean titles readable on wide screens,
+ * and avoid a half-empty last row for small article collections. */
+@media (min-width: 1200px) {
+  .home-post-list.post-list--switch[data-view="grid"],
+  .post-list--switch:not(.home-post-list)[data-view="grid"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
+@media (min-width: 900px) {
   .post-list--switch:not(.home-post-list)[data-view="list"] .post-card {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(11rem, 33%);

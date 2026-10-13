@@ -13,6 +13,22 @@ test("홈의 최근 글 강조와 주요 CTA가 정상적으로 보인다", asyn
   expect(bg).not.toBe("rgba(0, 0, 0, 0)");
 });
 
+test("넓은 화면에서는 게시글 카드가 읽기 편한 3열로 정렬된다", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("desktop"));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const route of ["/", "/blog/"]) {
+    await page.goto(route);
+    const grid = route === "/" ? page.locator("#home-latest-post-list") : page.locator("#blog-post-list");
+    const toggle = route === "/"
+      ? page.locator('[data-view-list-id="home-latest-post-list"]')
+      : page.locator('[data-view-list-id="blog-post-list"]');
+    await toggle.getByRole("button", { name: "Grid view" }).click();
+    await expect(grid).toHaveAttribute("data-view", "grid");
+    const widths = await grid.evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
+    expect(widths).toBe(3);
+  }
+});
+
 test("데스크톱 목록 보기는 제목과 메타 정보의 두 영역으로 구성된다", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
   await page.setViewportSize({ width: 1440, height: 900 });
