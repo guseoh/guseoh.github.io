@@ -10,11 +10,15 @@ test("980px와 981px 경계에서 기본 글자 크기가 갑자기 바뀌지 �
       () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
     );
 
-    expect(measurements[width]).toBeGreaterThanOrEqual(14.95);
-    expect(measurements[width]).toBeLessThanOrEqual(16.05);
+    // Dense desktop targets about 90% of the former 15px baseline;
+    // mobile remains closer to its previous reading scale.
+    expect(measurements[width]).toBeGreaterThanOrEqual(13.45);
+    expect(measurements[width]).toBeLessThanOrEqual(15.55);
   }
 
   expect(Math.abs(measurements[980] - measurements[981])).toBeLessThan(0.25);
+  expect(measurements[375]).toBeGreaterThan(measurements[981]);
+  expect(measurements[1920]).toBeCloseTo(13.5, 1);
 });
 
 test("테마 전환은 한 번 클릭에 한 번만 발생하고 Planner 설정을 유지한다", async ({ page }) => {
