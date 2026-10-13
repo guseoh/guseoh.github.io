@@ -116,12 +116,16 @@
   line-height: 1.55;
 }
 
-.post .post__content > :is(.code-block, pre) + p {
-  margin-top: 0.18rem;
+/* Earlier reading and typography rules assign a paragraph margin even
+ * after a code object. Only the immediate code-explanation relationship wins. */
+.post .post__content > .code-block + p,
+.post .post__content > pre + p {
+  margin-top: 0.18rem !important;
 }
 
-.post .post__content > :is(.code-block, pre) + :is(ul, ol) {
-  margin-top: 0.25rem;
+.post .post__content > .code-block + :is(ul, ol),
+.post .post__content > pre + :is(ul, ol) {
+  margin-top: 0.25rem !important;
 }
 
 /* Native HTML tables are wrapped by rehypeTableScroll.
