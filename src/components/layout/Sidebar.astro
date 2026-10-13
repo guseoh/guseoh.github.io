@@ -69,7 +69,7 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
 
   <section class="category-panel" aria-label="분류 탐색">
     <div class="category-panel__header">
-      <h2>전체 탐색</h2>
+      <h2>주제별 탐색</h2>
       <a
         href="/categories/"
         aria-current={isCategoriesPage ? "page" : undefined}
@@ -97,7 +97,7 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
     {
       tagSummary.length > 0 && (
         <>
-          <p class="category-panel__subhead">Tags</p>
+          <p class="category-panel__subhead">태그별 탐색</p>
           <nav class="topic-cloud topic-cloud--tags" aria-label="태그 탐색">
             {tagSummary.map(({ tag, name, count }) => {
               const isActive = currentTag === tag;

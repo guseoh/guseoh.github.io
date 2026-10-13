@@ -8,6 +8,8 @@ import { getPublishedPosts } from "../utils/content/posts";
 import { normalizeCategory } from "../utils/categories";
 import { buildArchiveTagSummary } from "../utils/tags";
 import { buildSidebarNavigation } from "../utils/navigation";
+import { buildBookSummaries } from "../utils/books";
+import { buildSeriesSummary } from "../utils/series";
 import {
   SIDEBAR_TAG_LIMIT,
   SITE_AUTHOR,
@@ -52,6 +54,8 @@ const {
 const posts = await getPublishedPosts();
 const sidebarNavigation = buildSidebarNavigation(posts);
 const tagSummary = buildArchiveTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
+const hasPublishedBooks = buildBookSummaries(posts).length > 0;
+const hasPublishedSeries = buildSeriesSummary(posts).length > 0;
 const siteUrl = Astro.site ?? new URL(SITE_URL);
 const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride, siteUrl).toString()
@@ -146,7 +150,11 @@ function serializeJsonLd(value: unknown) {
   <body class:list={[minimalHome && "page-home-simple"]}>
     <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
     <div class:list={["site-shell", wideContent && "site-shell--wide"]}>
-      <Header currentPath={currentPath} />
+      <Header
+        currentPath={currentPath}
+        hasPublishedBooks={hasPublishedBooks}
+        hasPublishedSeries={hasPublishedSeries}
+      />
 
       <div class:list={["site-layout", minimalHome && "site-layout--minimal", wideContent && "site-layout--wide"]}>
         {

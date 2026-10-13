@@ -4,15 +4,24 @@ import { SITE_TITLE } from "../../utils/posts";
 
 interface Props {
   currentPath?: string;
+  hasPublishedBooks?: boolean;
+  hasPublishedSeries?: boolean;
 }
 
-const { currentPath = "/" } = Astro.props as Props;
+const {
+  currentPath = "/",
+  hasPublishedBooks = false,
+  hasPublishedSeries = false
+} = Astro.props as Props;
+
+// Primary navigation contains public destinations with content. Individual
+// topics remain in the sidebar; empty library pages retain their routes.
 const navItems = [
   { href: "/blog/", label: "Posts" },
   { href: "/categories/", label: "Categories" },
   { href: "/tags/", label: "Tags" },
-  { href: "/books/", label: "Books" },
-  { href: "/series/", label: "Series" },
+  ...(hasPublishedBooks ? [{ href: "/books/", label: "Books" }] : []),
+  ...(hasPublishedSeries ? [{ href: "/series/", label: "Series" }] : []),
   { href: "/about/", label: "About" },
   { href: "/search/", label: "Search" }
 ];

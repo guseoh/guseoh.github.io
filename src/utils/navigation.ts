@@ -71,23 +71,29 @@ export function buildNavigationGroups(posts: CollectionEntry<"blog">[]): Navigat
 }
 
 export function buildSidebarNavigation(posts: CollectionEntry<"blog">[]): CategoryTreeGroup[] {
-  return buildNavigationGroups(posts).map((group) => ({
-    name: group.title,
-    slug: group.slug,
-    href: group.href,
-    count: group.count,
-    children: group.items.map((item) => ({
-      name: item.title,
-      slug: item.slug ?? item.title,
-      href: item.href,
-      count: item.count,
-      // CategoryIcon safely ignores unregistered keys, so both categories and
-      // technology tags can share this data path without placeholder spacing.
-      categoryIcon: item.icon ?? item.slug,
-      description: item.description,
-      planned: false
-    }))
-  }));
+  // Preserve planned navigation entries in data, but hide empty destinations
+  // from the reader-facing sidebar until a published post matches.
+  return buildNavigationGroups(posts)
+    .filter((group) => group.count > 0)
+    .map((group) => ({
+      name: group.title,
+      slug: group.slug,
+      href: group.href,
+      count: group.count,
+      children: group.items
+        .filter((item) => item.count > 0)
+        .map((item) => ({
+          name: item.title,
+          slug: item.slug ?? item.title,
+          href: item.href,
+          count: item.count,
+          // CategoryIcon ignores unregistered keys, so categories and tags
+          // can share this path without reserving placeholder icon space.
+          categoryIcon: item.icon ?? item.slug,
+          description: item.description,
+          planned: false
+        }))
+    }));
 }
 
 function filterPostsByNavigationItem(posts: CollectionEntry<"blog">[], item: NavigationItem) {
