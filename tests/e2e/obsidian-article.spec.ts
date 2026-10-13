@@ -117,3 +117,40 @@ test("Markdown 디자인이 헤더·홈·게시글 카드의 크기는 바꾸지
   expect(padding).toBeLessThan(16);
   expect(typeof articleStylesLoaded).toBe("boolean");
 });
+
+test("코드 언어 표시줄은 데스크톱·모바일에서 낮은 높이를 유지하며 Copy가 동작한다", async ({ page }) => {
+  for (const width of [375, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const mode of ["light", "dark", "planner"]) {
+      await page.goto("/blog/jpa/persistence-context/");
+      await page.evaluate((value) => localStorage.setItem("theme", value), mode);
+      await page.reload();
+
+      const block = page.locator(".post__content > .code-block").first();
+      const label = block.locator(".code-block__language");
+      const button = block.locator(".code-copy-button");
+      await expect(label).toHaveText("Java");
+      await expect(button).toBeVisible();
+
+      const metrics = await block.evaluate((element) => {
+        const header = element.querySelector(".code-block__header");
+        const button = element.querySelector(".code-copy-button");
+        if (!(header instanceof HTMLElement) || !(button instanceof HTMLButtonElement)) {
+          throw new Error("Code header or Copy button missing");
+        }
+        const headerRect = header.getBoundingClientRect();
+        const buttonRect = button.getBoundingClientRect();
+        return {
+          headerHeight: headerRect.height,
+          buttonHeight: buttonRect.height,
+          buttonWithinHeader: buttonRect.top >= headerRect.top && buttonRect.bottom <= headerRect.bottom
+        };
+      });
+      expect(metrics.headerHeight, `${mode} / ${width}px`).toBeLessThanOrEqual(36);
+      expect(metrics.buttonHeight).toBeGreaterThanOrEqual(24);
+      expect(metrics.buttonWithinHeader).toBe(true);
+      await button.click();
+      await expect(button).toHaveText(/Copied|Selected/);
+    }
+  }
+});

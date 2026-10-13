@@ -97,9 +97,19 @@
   border-color: var(--code-block-border);
 }
 
+/* Keep the language label and Copy in a low-profile metadata row.
+ * The Copy target remains keyboard operable and above WCAG's 24px minimum. */
 .post .post__content .code-block__header {
   border-bottom-color: color-mix(in srgb, var(--code-block-border) 80%, transparent);
-  padding: 0.34rem 0.6rem;
+  gap: 0.5rem;
+  padding: 0.16rem 0.55rem;
+}
+
+.post .post__content .code-copy-button {
+  min-width: 2.75rem;
+  min-height: max(1.8rem, 24px);
+  border-radius: 6px;
+  padding: 0.18rem 0.42rem;
 }
 
 .post .post__content :is(.code-block, pre) pre {
