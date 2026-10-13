@@ -372,6 +372,22 @@ html.left-sidebar-collapsed .post-toc,
   }
 }
 
+/* On medium-width desktops the Planner drawer is fixed. Reserve its
+ * real width while expanded, instead of letting it cover article text.
+ * Wide desktop (>=1600px) retains the existing centered three-rail layout. */
+@media (min-width: 981px) and (max-width: 1599px) {
+  html[data-theme-mode="planner"]:not(.left-sidebar-collapsed)
+    .site-shell:not(.sidebar-collapsed)
+    .site-layout--wide .post-view > .post-column {
+    position: relative;
+    left: 0;
+    width: min(var(--post-reading-width), calc(100vw - 25rem));
+    max-width: min(var(--post-reading-width), calc(100vw - 25rem));
+    margin-inline-start: max(23rem, calc((100vw - var(--post-reading-width)) / 2));
+    margin-inline-end: 0;
+  }
+}
+
 @media (max-width: 760px) {
   .post {
     padding: 0.45rem 0 0;
