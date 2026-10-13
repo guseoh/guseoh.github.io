@@ -21,8 +21,7 @@ const baseUrl = normalizeBaseUrl(process.env.SMOKE_BASE_URL ?? "http://127.0.0.1
 const canonicalSiteUrl = normalizeBaseUrl(process.env.SMOKE_CANONICAL_URL ?? "https://guseoh.github.io");
 const retries = Number(process.env.SMOKE_RETRIES ?? 3);
 const retryDelayMs = Number(process.env.SMOKE_RETRY_DELAY_MS ?? 1500);
-const paths = (process.env.SMOKE_PATHS ?? DEFAULT_PATHS.join(","))
-  .split(",")
+const configuredPaths = process.env.SMOKE_PATHS?.split(",")
   .map((item) => item.trim())
   .filter(Boolean);
 const expectedDeploySha = process.env.SMOKE_EXPECTED_SHA?.trim();
@@ -38,6 +37,12 @@ const publishedPosts = localPosts
     return a.sourcePath.localeCompare(b.sourcePath);
   });
 const draftPosts = localPosts.filter((post) => post.draft);
+
+// Check every published article in addition to the index routes. The explicit
+// SMOKE_PATHS override still supports targeted checks when needed.
+const paths = configuredPaths ?? [
+  ...new Set([...DEFAULT_PATHS, ...publishedPosts.map((post) => post.path)])
+];
 
 for (const checkPath of paths) {
   const url = buildCheckUrl(checkPath);
