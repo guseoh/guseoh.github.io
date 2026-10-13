@@ -50,8 +50,10 @@ if (
   const navigationGroups = parseNavigationGroups(navigationGroupsElement);
 
   input.value = params.get("q") ?? "";
-  categorySelect.value = params.get("category") ?? "";
-  tagSelect.value = params.get("tag") ?? "";
+  // The select options are still empty here. Preserve URL filters until they
+  // have been populated from the search index.
+  const initialCategory = params.get("category") ?? "";
+  const initialTag = params.get("tag") ?? "";
 
   if (params.get("focus") === "1") {
     window.requestAnimationFrame(() => input.focus());
@@ -63,8 +65,8 @@ if (
       return response.json() as Promise<SearchIndexItem[]>;
     })
     .then((posts) => {
-      fillSelect(categorySelect, uniqueSorted(posts.map((post) => post.category)), categorySelect.value, "전체 카테고리");
-      fillSelect(tagSelect, uniqueSorted(posts.flatMap((post) => post.tags)), tagSelect.value, "전체 태그");
+      fillSelect(categorySelect, uniqueSorted(posts.map((post) => post.category)), initialCategory, "전체 카테고리");
+      fillSelect(tagSelect, uniqueSorted(posts.flatMap((post) => post.tags)), initialTag, "전체 태그");
 
       const render = () => {
         renderSearch(posts, navigationGroups, activeGroup);
