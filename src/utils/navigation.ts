@@ -94,7 +94,7 @@ export function buildSidebarNavigation(posts: CollectionEntry<"blog">[]): Catego
           planned: false
         }))
     }));
-
+}
 
 function filterPostsByNavigationItem(posts: CollectionEntry<"blog">[], item: NavigationItem) {
   if (item.type === "category") {
