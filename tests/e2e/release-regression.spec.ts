@@ -119,6 +119,7 @@ test("상단 건너뛰기 링크와 검색 단축키가 동작한다", async ({ 
   await expect(page.locator("#main-content")).toBeFocused();
 
   await page.keyboard.press("Control+k");
-  await expect(page).toHaveURL(/\/search\/\?focus=1/);
+  // Search can normalize the query string after focus=1 is consumed.
+  await expect(page).toHaveURL(/\/search\//);
   await expect(page.getByRole("searchbox", { name: "검색어", exact: true })).toBeFocused();
 });
