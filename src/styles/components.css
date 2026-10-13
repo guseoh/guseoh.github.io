@@ -1133,8 +1133,13 @@
     flex-direction: column;
   }
 
+  /* Keep the query prominent without stacking every control on tablets/phones. */
   .search-page-form {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-page-form input {
+    grid-column: 1 / -1;
   }
 
   .blog-list-head {
@@ -1145,5 +1150,24 @@
 
   .project-card__actions {
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  /* Filter archives can contain many items: avoid multi-row pills on phones. */
+  .archive-filter-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 0.4rem;
+    scrollbar-width: thin;
+    padding-bottom: 0.55rem;
+  }
+
+  .archive-filter-pill {
+    min-height: 2.75rem;
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 }
