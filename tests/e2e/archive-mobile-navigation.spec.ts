@@ -89,7 +89,7 @@ test("카테고리의 일반 태그는 존재하지 않는 태그 URL 대신 검
   await expect(hibernate).toHaveAttribute("href", "/search/?tag=Hibernate");
   await hibernate.click();
 
-  await expect(page).toHaveURL(/\\/search\\/\\?tag=Hibernate$/);
+  await expect(page).toHaveURL(/\/search\/\?tag=Hibernate$/);
   await expect(page.locator("[data-search-meta]")).toContainText("결과");
   await expect(page.locator("[data-search-list] .post-card").first()).toBeVisible();
 });
