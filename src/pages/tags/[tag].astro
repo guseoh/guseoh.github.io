@@ -91,9 +91,9 @@ const tagSummary = buildArchiveTagSummary(allPosts);
       <p>{posts.length}개의 게시글이 이 핵심 태그에 연결되어 있습니다.</p>
     </section>
 
-    <nav class="archive-filter-list" aria-label="Tag filters">
+    <nav class="archive-filter-list" aria-label="태그 선택">
       {tagSummary.map(({ tag: tagSlug, name, count }) => (
-        <a class:list={["archive-filter-pill", tagSlug === tag && "is-active"]} href={`/tags/${tagSlug}/`}>
+        <a class:list={["archive-filter-pill", tagSlug === tag && "is-active"]} href={`/tags/${tagSlug}/`} aria-current={tagSlug === tag ? "page" : undefined}>
           <span>#{name}</span>
           <strong>{count}</strong>
         </a>
