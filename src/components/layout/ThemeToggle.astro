@@ -95,9 +95,7 @@
     applyThemeMode(getStoredThemeMode(), { persist: false, notify: false });
 
     if (themeButton instanceof HTMLButtonElement) {
-      themeButton.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
+      themeButton.addEventListener("click", () => {
         const mode = root.getAttribute("data-theme-mode") || getStoredThemeMode();
         const index = Math.max(0, themeModes.indexOf(mode));
         applyThemeMode(themeModes[(index + 1) % themeModes.length]);
@@ -116,15 +114,6 @@
       }
     });
 
-    const compatibilityObserver = new MutationObserver(() => {
-      if (getStoredThemeMode() !== "planner") return;
-      if (root.getAttribute("data-theme-mode") === "planner") return;
-      applyThemeMode("planner", { persist: false, notify: false });
-    });
-
-    compatibilityObserver.observe(root, {
-      attributes: true,
-      attributeFilter: ["data-theme-mode"]
-    });
+    // All theme changes are handled here; no cross-script repair observer is needed.
   })();
 </script>

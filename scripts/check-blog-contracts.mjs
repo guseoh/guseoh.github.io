@@ -359,6 +359,7 @@ async function checkSourceContracts() {
   const comments = await readRepoFile("src/components/PostComments.astro");
   const baseLayout = await readRepoFile("src/layouts/BaseLayout.astro");
   const layoutScripts = await readRepoFile("src/components/layout/LayoutScripts.astro");
+  const themeToggle = await readRepoFile("src/components/layout/ThemeToggle.astro");
   const smokeTest = await readRepoFile("scripts/smoke-test.mjs");
   const sitemap = await readRepoFile("src/pages/sitemap.xml.ts");
 
@@ -369,7 +370,8 @@ async function checkSourceContracts() {
   assert(comments.includes("10000"), "댓글 로딩 timeout 10초 계약이 없습니다.");
   assert(comments.includes("themeObserver?.disconnect()"), "댓글 테마 MutationObserver 정리가 없습니다.");
   assert(baseLayout.includes("data-theme-mode"), "초기 테마 스크립트가 theme mode를 설정하지 않습니다.");
-  assert(layoutScripts.includes('"system"'), "System 테마 모드가 런타임 스크립트에 없습니다.");
+  assert(themeToggle.includes('["system", "light", "dark", "planner"]'), "System·Light·Dark·Planner 테마 모드가 정의되지 않았습니다.");
+  assert(!layoutScripts.includes("const themeModes ="), "테마 상태 처리 코드가 여러 컴포넌트에 중복되어 있습니다.");
   assert(layoutScripts.includes('event.key.toLowerCase() === "k"'), "Ctrl/Command+K 검색 단축키가 없습니다.");
   assert(smokeTest.includes("data-published-post-count"), "smoke test가 /blog/ 공개 글 개수 표식을 검사하지 않습니다.");
   assert(smokeTest.includes("search index published post count"), "smoke test가 검색 인덱스 공개 글 개수를 검사하지 않습니다.");

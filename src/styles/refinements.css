@@ -4,12 +4,13 @@
  * to compare and roll back through the backup branch created for this work.
  */
 
-@media (min-width: 981px) {
-  html {
-    /* Match the denser desktop scale requested without shrinking mobile text. */
-    font-size: 90%;
-  }
+/* Keep the global reading scale continuous across the desktop breakpoint.
+ * Percentage bounds respect browser font-size preferences. */
+html {
+  font-size: clamp(93.75%, calc(100% - 0.05vw), 100%);
+}
 
+@media (min-width: 981px) {
   .site-header__inner {
     min-height: 58px;
   }
