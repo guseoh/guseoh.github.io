@@ -13,7 +13,7 @@ const { posts, limit = HOME_POST_LIMIT } = Astro.props as Props;
 const visiblePosts = posts.slice(0, limit);
 ---
 
-<section class="home-section home-latest-posts" aria-label="Recent posts">
+<section id="home-latest-posts" class="home-section home-latest-posts" aria-label="Recent posts">
   <div class="home-section__head home-section__head--inline">
     <h2 class="home-section__title">최근 글</h2>
     <div class="home-section__actions">

@@ -384,6 +384,7 @@
 
 .home-latest-posts {
   min-width: 0;
+  scroll-margin-top: 6rem;
 }
 
 .home-latest-posts .home-section__title {
