@@ -1261,23 +1261,23 @@ html[data-theme="dark"] .post img[data-theme-safe="true"] {
 }
 
 html[data-theme="dark"] .post .markdown-alert a:not(.tag):not(.link-mention) {
-  color: #90caf9;
-  text-decoration-color: color-mix(in srgb, #90caf9 64%, transparent);
+  color: var(--post-link);
+  text-decoration-color: color-mix(in srgb, var(--post-link) 64%, transparent);
 }
 
 html[data-theme="dark"] .post .markdown-alert a:not(.tag):not(.link-mention):hover,
 html[data-theme="dark"] .post .markdown-alert a:not(.tag):not(.link-mention):focus-visible {
-  color: #bbdefb;
+  color: var(--post-link-hover);
 }
 
 html[data-theme="dark"] .post .markdown-alert a:not(.tag):not(.link-mention):focus-visible {
-  outline-color: #90caf9;
+  outline-color: var(--post-link-focus);
 }
 
 html[data-theme="dark"] .post .markdown-alert :not(pre) > code {
-  border-color: #36516d;
-  background: #1b2d42;
-  color: #edf4fb;
+  border-color: var(--code-inline-border);
+  background: var(--code-inline-bg);
+  color: var(--code-inline-text);
 }
 
 .post-toc {
