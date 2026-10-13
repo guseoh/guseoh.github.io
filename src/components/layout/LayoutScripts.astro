@@ -329,6 +329,19 @@
       });
     }
 
+    // Preserve the selected category/tag pill in view on narrow scrollable filters.
+    // Adjust only the filter's horizontal scroll; never jump the whole page.
+    for (const filters of document.querySelectorAll(".archive-filter-list")) {
+      if (!(filters instanceof HTMLElement) || filters.scrollWidth <= filters.clientWidth) continue;
+      const activeFilter = filters.querySelector('[aria-current="page"]');
+      if (!(activeFilter instanceof HTMLElement)) continue;
+
+      const containerRect = filters.getBoundingClientRect();
+      const activeRect = activeFilter.getBoundingClientRect();
+      filters.scrollLeft += activeRect.left - containerRect.left
+        - (containerRect.width - activeRect.width) / 2;
+    }
+
     const sidebarSearchInput = document.getElementById("sidebar-search-input");
     if (sidebarSearchInput instanceof HTMLInputElement && window.location.pathname.startsWith("/search")) {
       sidebarSearchInput.value = new URLSearchParams(window.location.search).get("q") ?? "";
