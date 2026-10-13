@@ -4,15 +4,22 @@
  * to compare and roll back through the backup branch created for this work.
  */
 
-/* Keep the global reading scale continuous across the desktop breakpoint.
- * Percentage bounds respect browser font-size preferences. */
+/* Approximate the compact density of a desktop browser at 90% zoom.
+ * A fluid root scale keeps the 980/981px breakpoint continuous while limiting
+ * reduction on narrow screens. Rem-based type, icons, gaps and TOC scale together.
+ * This is an intentional visual density setting, not a browser zoom override. */
 html {
-  font-size: clamp(93.75%, calc(100% - 0.05vw), 100%);
+  font-size: clamp(84.375%, calc(100% - 0.15vw), 96%);
 }
 
 @media (min-width: 981px) {
+  /* Fixed-pixel desktop dimensions do not follow rem; match their density too. */
+  .site-layout:not(.site-layout--minimal) {
+    --site-sidebar-width: clamp(234px, 17.1vw, 270px);
+  }
+
   .site-header__inner {
-    min-height: 58px;
+    min-height: 52px;
   }
 
   .site-layout {
