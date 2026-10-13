@@ -90,6 +90,16 @@ test("카테고리의 일반 태그는 존재하지 않는 태그 URL 대신 검
   await hibernate.click();
 
   await expect(page).toHaveURL(/\/search\/\?tag=Hibernate$/);
+  await expect(page.locator("#search-tag-filter")).toHaveValue("Hibernate");
   await expect(page.locator("[data-search-meta]")).toContainText("결과");
   await expect(page.locator("[data-search-list] .post-card").first()).toBeVisible();
+});
+
+test("검색 페이지는 URL로 전달된 카테고리와 태그 필터를 초기 로딩 후에도 유지한다", async ({ page }) => {
+  await page.goto("/search/?category=JPA&tag=Hibernate");
+
+  await expect(page.locator("#search-category-filter")).toHaveValue("JPA");
+  await expect(page.locator("#search-tag-filter")).toHaveValue("Hibernate");
+  await expect(page.locator("[data-search-list] .post-card")).toHaveCount(2);
+  await expect(page).toHaveURL(/category=JPA&tag=Hibernate/);
 });
