@@ -124,11 +124,6 @@
   margin-top: 0.25rem;
 }
 
-.post .post__content > :is(.code-block, pre) + :is(h2, h3) {
-  /* New topic, not part of the preceding code explanation. */
-  margin-top: revert-layer;
-}
-
 /* Native HTML tables are wrapped by rehypeTableScroll.
  * Obsidian's auto-sized columns are restored while horizontal overflow remains. */
 .post .post__content > .table-scroll {
