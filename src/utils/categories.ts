@@ -1,5 +1,5 @@
 import type { CollectionEntry } from "astro:content";
-import { formatTagName, normalizeTag } from "./tags";
+import { formatTagName, getTagHref, resolveTagSlug } from "./tags";
 
 export type CategorySummary = {
   slug: string;
@@ -75,7 +75,7 @@ export function buildCategoryHierarchy(posts: CollectionEntry<"blog">[]): Catego
 
     for (const post of categoryPosts) {
       for (const rawTag of post.data.tags) {
-        const tagSlug = normalizeTag(rawTag);
+        const tagSlug = resolveTagSlug(rawTag);
         if (!tagSlug || tagSlug === slug) continue;
 
         const entry = tagCounts.get(tagSlug);
@@ -88,7 +88,7 @@ export function buildCategoryHierarchy(posts: CollectionEntry<"blog">[]): Catego
         tagCounts.set(tagSlug, {
           name: formatTagName(rawTag),
           slug: tagSlug,
-          href: `/tags/${tagSlug}/`,
+          href: getTagHref(rawTag),
           count: 1,
           // CategoryIcon renders only keys registered in its icon map. Unknown
           // tags therefore remain text-only without reserving icon space.
