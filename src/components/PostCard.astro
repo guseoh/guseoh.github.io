@@ -6,9 +6,10 @@ import { formatPostDate, getPostDescription, getPostPath, getPostSlug, getReadin
 interface Props {
   post: CollectionEntry<"blog">;
   variant?: "default" | "latest" | "updated";
+  featured?: boolean;
 }
 
-const { post, variant = "default" } = Astro.props as Props;
+const { post, variant = "default", featured = false } = Astro.props as Props;
 const isLatest = variant === "latest";
 const isUpdated = variant === "updated";
 const readingTime = getReadingTime(post);
@@ -18,7 +19,8 @@ const postSlug = getPostSlug(post);
 const displayDate = isUpdated && post.data.updated ? post.data.updated : post.data.date;
 ---
 
-<article class:list={["card", "post-card", isLatest && "post-card--latest", isUpdated && "post-card--updated"]} data-post-slug={postSlug}>
+<article class:list={["card", "post-card", isLatest && "post-card--latest", isUpdated && "post-card--updated", featured && "post-card--featured"]} data-post-slug={postSlug}>
+  {featured && <span class="post-card__eyebrow">최근 발행</span>}
   <header class="post-card__header">
     <h2><a href={postPath}>{post.data.title}</a></h2>
   </header>
