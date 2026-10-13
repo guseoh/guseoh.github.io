@@ -107,7 +107,7 @@
 
 .post .post__content .code-copy-button {
   min-width: 2.75rem;
-  min-height: 1.65rem;
+  min-height: max(1.8rem, 24px);
   border-radius: 6px;
   padding: 0.18rem 0.42rem;
 }
