@@ -840,10 +840,10 @@ html[data-theme="dark"] .post > :where(h1, h2, h3, h4, p, ul, ol, .table-scroll,
 html[data-theme="dark"] .post > :where(h1, h2, h3, h4, p, ul, ol, .table-scroll, blockquote) :not(pre) > code,
 html[data-theme="dark"] .post__content > :where(h1, h2, h3, h4, p, ul, ol, .table-scroll, blockquote) > code,
 html[data-theme="dark"] .post__content > :where(h1, h2, h3, h4, p, ul, ol, .table-scroll, blockquote) :not(pre) > code {
-  border-color: rgba(125, 211, 252, 0.12);
-  background: rgba(30, 41, 59, 0.75);
+  border-color: color-mix(in srgb, var(--code-inline-border) 80%, transparent);
+  background: var(--code-inline-bg);
   box-shadow: none;
-  color: #7dd3fc;
+  color: var(--code-inline-text);
   padding: 0.1rem 0.34rem;
 }
 

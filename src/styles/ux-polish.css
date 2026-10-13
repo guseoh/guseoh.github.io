@@ -15,8 +15,11 @@ html[data-theme="dark"] .post {
   text-wrap: balance;
 }
 
-.post__description {
-  max-width: 72ch;
+.post__header > .post__description {
+  max-width: 100%;
+  margin-inline: 0;
+  justify-self: start;
+  text-align: left;
   text-wrap: pretty;
 }
 

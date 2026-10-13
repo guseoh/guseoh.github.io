@@ -1,21 +1,44 @@
 ---
 import { SITE_TITLE } from "../../utils/posts";
+import type { CategorySummary } from "../../utils/categories";
 
 interface Props {
   title?: string;
+  topics?: CategorySummary[];
 }
 
-const { title = SITE_TITLE } = Astro.props as Props;
+const { title = SITE_TITLE, topics = [] } = Astro.props as Props;
 ---
 
 <section class="archive-hero archive-hero--simple" aria-label="Blog intro">
-  <p class="archive-hero__eyebrow">{title}</p>
-  <h1>문제가 발생한 이유를 찾고 직접 검증하며 개선하는 과정을 좋아합니다.</h1>
-  <p class="archive-hero__lead">
-    Java와 Spring을 중심으로 백엔드 개발을 공부하고 있습니다.
-  </p>
-  <div class="archive-hero__actions">
-    <a href="#home-latest-posts">최근 글 읽기</a>
-    <a href="/about/">소개</a>
+  <div class="archive-hero__intro">
+    <p class="archive-hero__eyebrow">{title}</p>
+    <h1>문제가 발생한 이유를 찾고 직접 검증하며 개선하는 과정을 좋아합니다.</h1>
+    <p class="archive-hero__lead">
+      Java와 Spring을 중심으로 백엔드 개발을 공부하고 있습니다.
+    </p>
+    <div class="archive-hero__actions">
+      <a href="#home-latest-posts">최근 글 읽기</a>
+      <a href="/about/">소개</a>
+    </div>
   </div>
+  {topics.length > 0 && (
+    <nav class="archive-hero__topics" aria-label="주제 바로가기">
+      <div class="archive-hero__topics-head">
+        <p class="archive-hero__topics-kicker">Explore topics</p>
+        <p class="archive-hero__topics-title">관심 있는 주제부터 읽기</p>
+      </div>
+      <ul class="archive-hero__topic-list">
+        {topics.map((topic) => (
+          <li>
+            <a class="archive-hero__topic-link" href={`/categories/${topic.slug}/`}>
+              <span class="archive-hero__topic-name">{topic.name}</span>
+              <span class="archive-hero__topic-count">{topic.count}개 <span aria-hidden="true">↗</span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a class="archive-hero__topics-all" href="/categories/">모든 주제 보기 <span aria-hidden="true">→</span></a>
+    </nav>
+  )}
 </section>
