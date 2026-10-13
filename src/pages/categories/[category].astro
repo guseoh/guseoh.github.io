@@ -58,9 +58,9 @@ const categorySummary = Array.from(visibleCategorySummary.values());
     <p>{posts.length}개의 게시글이 이 카테고리에 연결되어 있습니다.</p>
   </section>
 
-  <nav class="archive-filter-list" aria-label="Category filters">
+  <nav class="archive-filter-list" aria-label="카테고리 선택">
     {categorySummary.map(({ slug, name, count }) => (
-      <a class:list={["archive-filter-pill", categorySlug === slug && "is-active"]} href={`/categories/${slug}/`}>
+      <a class:list={["archive-filter-pill", categorySlug === slug && "is-active"]} href={`/categories/${slug}/`} aria-current={categorySlug === slug ? "page" : undefined}>
         <CategoryIcon category={name} />
         <span>{name}</span>
         <strong>{count}</strong>
