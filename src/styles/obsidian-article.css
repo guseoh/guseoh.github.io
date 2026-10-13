@@ -1,0 +1,282 @@
+/*
+ * Obsidian-inspired Markdown article rhythm.
+ * Scoped to rendered post content; unrelated site chrome is unaffected.
+ * The user's existing 90%-like UI scale and Light/Dark/Planner palettes stay intact.
+ * Values and spacing relationships are based on the supplied Obsidian CSS.
+ */
+
+.post .post__content {
+  --article-paragraph-leading: 1.7;
+  --article-list-leading: 1.58;
+  --article-paragraph-gap: 1em;
+  --article-paragraph-list-gap: 0.2em;
+  --article-list-paragraph-gap: 0.9em;
+  --article-list-item-gap: 0.16em;
+}
+
+/* One prose rhythm for paragraphs and lists, including mobile.
+ * Do not alter the global root font size or article reading width. */
+.post .post__content > :is(p, ul, ol, blockquote) {
+  line-height: var(--article-paragraph-leading);
+}
+
+.post .post__content p {
+  line-height: var(--article-paragraph-leading);
+}
+
+.post .post__content > p + p {
+  margin-top: var(--article-paragraph-gap);
+}
+
+.post .post__content > p + :is(ul, ol) {
+  margin-top: var(--article-paragraph-list-gap);
+}
+
+.post .post__content > :is(ul, ol) + p {
+  margin-top: var(--article-list-paragraph-gap);
+}
+
+.post .post__content :is(ul, ol) li {
+  line-height: var(--article-list-leading);
+}
+
+.post .post__content :is(ul, ol) li + li {
+  margin-top: var(--article-list-item-gap);
+}
+
+.post .post__content :is(ul, ol) :is(ul, ol) {
+  margin-top: 0.15em;
+  margin-bottom: 0.1em;
+}
+
+.post .post__content :is(ul, ol) li li::marker {
+  color: color-mix(in srgb, var(--muted-readable) 65%, transparent);
+}
+
+.post .post__content :is(p, li, blockquote, th, td) :is(strong, b) {
+  color: var(--article-strong-color);
+  font-weight: 700;
+}
+
+.post .post__content :is(h2, h3) {
+  scroll-margin-top: 5.8rem;
+}
+
+.post .post__content h2 {
+  margin-top: 34px;
+  margin-bottom: 14px;
+}
+
+.post .post__content h3 {
+  margin-top: 28px;
+  margin-bottom: 10px;
+}
+
+/* Inline expressions should read like quiet annotations, not colored badges. */
+.post .post__content :not(pre) > code {
+  border: 1px solid var(--code-inline-border);
+  border-radius: 4px;
+  background: var(--code-inline-bg);
+  color: var(--code-inline-text);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 500;
+  font-feature-settings: "calt" 1, "liga" 1;
+  padding: 0.06em 0.34em;
+}
+
+/* The fenced-code renderer is Shiki, not Obsidian's Prism.
+ * Preserve actual syntax colors, line numbers, highlights, titles and Copy. */
+.post .post__content > :is(.code-block, pre) {
+  border-radius: 6px;
+  margin-top: 1.25rem;
+  margin-bottom: 0.2rem;
+}
+
+.post .post__content .code-block {
+  border-color: var(--code-block-border);
+}
+
+.post .post__content .code-block__header {
+  border-bottom-color: color-mix(in srgb, var(--code-block-border) 80%, transparent);
+  padding: 0.34rem 0.6rem;
+}
+
+.post .post__content :is(.code-block, pre) pre {
+  line-height: 1.55;
+  padding-block: 0.8rem 0.9rem;
+}
+
+.post .post__content .code-block pre > code {
+  line-height: 1.55;
+}
+
+.post .post__content .code-block pre code .line {
+  min-height: 1.55em;
+  line-height: 1.55;
+}
+
+.post .post__content > :is(.code-block, pre) + p {
+  margin-top: 0.18rem;
+}
+
+.post .post__content > :is(.code-block, pre) + :is(ul, ol) {
+  margin-top: 0.25rem;
+}
+
+.post .post__content > :is(.code-block, pre) + :is(h2, h3) {
+  /* New topic, not part of the preceding code explanation. */
+  margin-top: revert-layer;
+}
+
+/* Native HTML tables are wrapped by rehypeTableScroll.
+ * Obsidian's auto-sized columns are restored while horizontal overflow remains. */
+.post .post__content > .table-scroll {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  background: var(--post-bg);
+}
+
+.post .post__content .table-scroll > table {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.94em;
+  line-height: 1.4;
+}
+
+.post .post__content .table-scroll :is(th, td) {
+  width: auto;
+  min-width: 0;
+  height: auto;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+  white-space: normal;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.post .post__content .table-scroll thead th {
+  padding: 8px 10px;
+  background: var(--table-head-bg);
+  color: var(--heading);
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.post .post__content .table-scroll tbody td {
+  padding: 8px 10px;
+  line-height: 1.45;
+}
+
+.post .post__content .table-scroll :is(th, td):first-child {
+  width: auto;
+  text-align: left;
+  white-space: normal;
+}
+
+.post .post__content .table-scroll :is(th, td):last-child {
+  border-right: 0;
+}
+
+.post .post__content .table-scroll tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.post .post__content .table-scroll tbody tr:hover td {
+  background: color-mix(in srgb, var(--surface-hover) 45%, transparent);
+}
+
+.post .post__content .table-scroll :is(th, td) > p {
+  margin: 0;
+  padding: 0;
+}
+
+.post .post__content .table-scroll :is(th, td) code {
+  overflow-wrap: anywhere;
+  white-space: normal;
+  font-size: 0.92em;
+  padding-inline: 0.38em;
+}
+
+/* Images retain intrinsic proportions, the existing full-width opt-in,
+ * dark-filter opt-outs and lightbox keyboard/click controls. */
+.post .post__content > figure {
+  margin-top: 1.1rem;
+  margin-bottom: 1.2rem;
+}
+
+.post .post__content > figure.post-figure--captioned figcaption {
+  margin-top: 0.42rem;
+  color: var(--muted-readable);
+  font-size: 0.82em;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.post .post__content > figure.post-figure--captioned img {
+  border-radius: 6px;
+}
+
+.post .post__content > p:has(> img:only-child),
+.post .post__content > p:has(> a:only-child > img:only-child) {
+  margin-top: 1.1rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Obsidian's low-contrast callouts without losing Note/Tip/Warning semantics. */
+.post .post__content > .markdown-alert {
+  margin-top: 0.85rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--alert-color) 18%, var(--alert-border-base));
+  border-left: 2px solid color-mix(in srgb, var(--alert-color) 55%, var(--alert-border-base));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--alert-background) 56%, var(--post-bg));
+  box-shadow: none;
+  padding: 0.65rem 0.78rem;
+}
+
+.post .post__content .markdown-alert-title {
+  gap: 0.44rem;
+  line-height: 1.5;
+  font-size: 0.93em;
+  font-weight: 650;
+}
+
+.post .post__content .markdown-alert p:not(.markdown-alert-title) {
+  margin-top: 0.3rem;
+  line-height: var(--article-paragraph-leading);
+}
+
+.post .post__content .markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+
+/* A link preview is a separate object: refine its frame only. */
+.post .post__content .link-mention {
+  border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+  .post .post__content > :is(p, ul, ol, blockquote) {
+    line-height: var(--article-paragraph-leading);
+  }
+
+  .post .post__content > :is(.code-block, pre) {
+    margin-top: 1.15rem;
+    margin-bottom: 0.18rem;
+  }
+
+  .post .post__content .table-scroll :is(th, td) {
+    padding: 7px 9px;
+  }
+}
