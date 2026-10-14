@@ -167,7 +167,7 @@ function extractSearchableContent(source: string) {
   // Inline code is searchable even when the token never appears in prose.
   const withoutInlineCode = withoutFences.replace(/(`+)([^\n]*?)\1/g, (_whole, _ticks: string, code: string) => {
     codeFragments.push(code);
-    return " ";
+    return code;
   });
 
   const bodyText = withoutInlineCode

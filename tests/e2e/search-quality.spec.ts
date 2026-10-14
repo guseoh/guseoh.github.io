@@ -77,3 +77,13 @@ test("메타정보만 일치하는 경우에도 설명을 유지하며 HTML을 �
   await expect(page.locator("[data-search-meta]")).toContainText("0개 결과");
   await expect(page.locator('[data-search-list] img')).toHaveCount(0);
 });
+test("인라인 코드 검색 결과에 주변 문맥을 표시한다", async ({ page }) => {
+  await page.goto("/search/?q=detach%28%29");
+  const card = page.locator('[data-search-list] [data-post-slug="jpa/persistence-context"]');
+  await expect(card).toBeVisible();
+
+  const snippet = card.locator('[data-search-snippet-source="body"]');
+  await expect(snippet).toContainText("특정 엔티티만 분리");
+  const highlightedText = await snippet.locator("mark").allTextContents();
+  expect(highlightedText).toContain("detach()");
+});

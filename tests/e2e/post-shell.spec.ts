@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("planner wide post keeps left sidebar, centered article, and right TOC separated", async ({ page }, testInfo) => {
+test("Planner post centers the article in the available content area with the right TOC separated", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
   await page.setViewportSize({ width: 1800, height: 1000 });
   await page.goto("/blog/jpa/persistence-context/");
@@ -22,13 +22,20 @@ test("planner wide post keeps left sidebar, centered article, and right TOC sepa
     const geometry = await page.evaluate(() => {
       const sidebarElement = document.querySelector("#site-sidebar");
       const articleElement = document.querySelector(".post-column");
+      const contentElement = document.querySelector(".site-content");
       const tocElement = document.querySelector(".post-view > .post-toc");
-      if (!(sidebarElement instanceof HTMLElement) || !(articleElement instanceof HTMLElement) || !(tocElement instanceof HTMLElement)) {
+      if (
+        !(sidebarElement instanceof HTMLElement) ||
+        !(articleElement instanceof HTMLElement) ||
+        !(contentElement instanceof HTMLElement) ||
+        !(tocElement instanceof HTMLElement)
+      ) {
         throw new Error("post shell elements are missing");
       }
 
       const sidebarRect = sidebarElement.getBoundingClientRect();
       const articleRect = articleElement.getBoundingClientRect();
+      const contentRect = contentElement.getBoundingClientRect();
       const tocRect = tocElement.getBoundingClientRect();
       return {
         viewportWidth: window.innerWidth,
@@ -36,12 +43,13 @@ test("planner wide post keeps left sidebar, centered article, and right TOC sepa
         articleLeft: articleRect.left,
         articleRight: articleRect.right,
         articleCenter: articleRect.left + articleRect.width / 2,
+        contentCenter: contentRect.left + contentRect.width / 2,
         tocLeft: tocRect.left
       };
     });
 
     expect(geometry.sidebarRight).toBeLessThanOrEqual(geometry.articleLeft + 1);
-    expect(Math.abs(geometry.articleCenter - geometry.viewportWidth / 2)).toBeLessThanOrEqual(2);
+    expect(Math.abs(geometry.articleCenter - geometry.contentCenter)).toBeLessThanOrEqual(2);
     expect(geometry.tocLeft).toBeGreaterThan(geometry.articleRight);
   };
 
@@ -58,17 +66,18 @@ test("planner wide post keeps left sidebar, centered article, and right TOC sepa
   await assertDesktopRails();
 });
 
-test("post images use the standard centered width unless marked full-width", async ({ page }, testInfo) => {
+test("post images preserve intrinsic size and aspect ratio; full-width remains explicit", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
   await page.setViewportSize({ width: 1800, height: 1000 });
   await page.goto("/blog/jpa/persistence-context/");
 
-  const image = page.locator(".post__content > p > img:not(.full-width)").first();
+  const image = page.locator(".post__content img:not(.full-width)").first();
   const content = page.locator(".post__content");
   await expect(image).toBeVisible();
+  await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
 
   const standard = await page.evaluate(() => {
-    const imageElement = document.querySelector(".post__content > p > img:not(.full-width)");
+    const imageElement = document.querySelector(".post__content img:not(.full-width)");
     const contentElement = document.querySelector(".post__content");
     if (!(imageElement instanceof HTMLImageElement) || !(contentElement instanceof HTMLElement)) {
       throw new Error("post image or content is missing");
@@ -79,17 +88,25 @@ test("post images use the standard centered width unless marked full-width", asy
     const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
     return {
       imageWidth: imageRect.width,
-      expectedWidth: Math.min(contentRect.width, rootFontSize * 48),
+      imageHeight: imageRect.height,
+      maxWidth: Math.min(contentRect.width, rootFontSize * 48, imageElement.naturalWidth),
+      maxHeight: rootFontSize * 30,
+      naturalWidth: imageElement.naturalWidth,
+      naturalHeight: imageElement.naturalHeight,
       imageCenter: imageRect.left + imageRect.width / 2,
       contentCenter: contentRect.left + contentRect.width / 2
     };
   });
 
-  expect(Math.abs(standard.imageWidth - standard.expectedWidth)).toBeLessThanOrEqual(2);
+  expect(standard.imageWidth).toBeGreaterThan(0);
+  expect(standard.imageHeight).toBeGreaterThan(0);
+  expect(standard.imageWidth).toBeLessThanOrEqual(standard.maxWidth + 2);
+  expect(standard.imageHeight).toBeLessThanOrEqual(standard.maxHeight + 2);
+  expect(Math.abs(standard.imageWidth / standard.imageHeight - standard.naturalWidth / standard.naturalHeight)).toBeLessThanOrEqual(0.02);
   expect(Math.abs(standard.imageCenter - standard.contentCenter)).toBeLessThanOrEqual(2);
 
   await image.evaluate((element) => element.classList.add("full-width"));
-  const fullWidthImage = page.locator(".post__content > p > img.full-width").first();
+  const fullWidthImage = page.locator(".post__content img.full-width").first();
   await expect(fullWidthImage).toBeVisible();
 
   const [fullWidthBox, contentBox] = await Promise.all([fullWidthImage.boundingBox(), content.boundingBox()]);

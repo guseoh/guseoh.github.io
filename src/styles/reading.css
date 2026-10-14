@@ -169,28 +169,30 @@ html.left-sidebar-collapsed .post-view > .post-column,
 
 /*
  * Post image sizing contract:
- * - ordinary standalone images share the same readable display width and stay centered;
- * - `{full-width}` remains an explicit opt-in for large diagrams/screenshots.
+ * - preserve the source aspect ratio and never enlarge ordinary images beyond their intrinsic width;
+ * - cap standard diagrams to a consistent reading height; use {full-width} for wide diagrams.
  */
 .post__content > p:has(> img:only-child) > img:not(.full-width) {
   display: block;
-  width: min(100%, 48rem) !important;
-  max-width: 100% !important;
+  width: auto !important;
+  max-width: min(100%, 48rem) !important;
+  max-height: 30rem;
   height: auto !important;
   margin-inline: auto;
 }
 
 .post__content > p:has(> a:only-child > img:only-child) > a {
   display: block;
-  width: min(100%, 48rem);
-  max-width: 100%;
+  width: fit-content;
+  max-width: min(100%, 48rem);
   margin-inline: auto;
 }
 
 .post__content > p:has(> a:only-child > img:only-child) > a > img:not(.full-width) {
   display: block;
-  width: 100% !important;
-  max-width: 100% !important;
+  width: auto !important;
+  max-width: min(100%, 48rem) !important;
+  max-height: 30rem;
   height: auto !important;
   margin: 0;
 }
@@ -203,8 +205,9 @@ html.left-sidebar-collapsed .post-view > .post-column,
 
 .post__content > figure:has(img:not(.full-width)) img:not(.full-width) {
   display: block;
-  width: 100% !important;
-  max-width: 100% !important;
+  width: auto !important;
+  max-width: min(100%, 48rem) !important;
+  max-height: 30rem;
   height: auto !important;
   margin-inline: auto;
 }
@@ -226,6 +229,7 @@ html.left-sidebar-collapsed .post-view > .post-column,
   display: block;
   width: 100% !important;
   max-width: 100% !important;
+  max-height: none;
   height: auto !important;
   margin-inline: auto;
 }
