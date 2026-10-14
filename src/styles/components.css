@@ -1171,3 +1171,14 @@
     white-space: nowrap;
   }
 }
+
+/* Search-only snippet context: preserve post-card layouts outside search. */
+.search-results .post-card__description {
+  -webkit-line-clamp: 3;
+  overflow-wrap: anywhere;
+}
+
+.search-result__context-label {
+  color: var(--link);
+  font-weight: 750;
+}
