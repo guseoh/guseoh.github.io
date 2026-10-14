@@ -235,11 +235,11 @@ html[data-theme="dark"] {
     grid-row: 1;
   }
 
-  /* A collapsed Planner drawer keeps a small rail for its toggle. */
+  /* Balanced gutters keep the collapsed toggle clear without shifting centered content. */
   html[data-theme-mode="planner"].left-sidebar-collapsed .site-layout:not(.site-layout--minimal),
   html[data-theme-mode="planner"] .site-shell.sidebar-collapsed .site-layout:not(.site-layout--minimal) {
     --site-sidebar-rail-width: calc(2rem + 2.8rem);
-    grid-template-columns: minmax(var(--site-sidebar-rail-width), var(--site-sidebar-rail-width)) minmax(0, 1fr);
+    grid-template-columns: minmax(var(--site-sidebar-rail-width), var(--site-sidebar-rail-width)) minmax(0, 1fr) minmax(var(--site-sidebar-rail-width), var(--site-sidebar-rail-width));
     gap: var(--site-layout-collapsed-gap);
   }
 
