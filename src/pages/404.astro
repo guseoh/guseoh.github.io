@@ -1,6 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { GITHUB_URL, SITE_DESCRIPTION } from "../utils/posts";
+import { getPublishedPosts } from "../utils/content/posts";
+import { buildBookSummaries } from "../utils/books";
+import { buildSeriesSummary } from "../utils/series";
+
+const posts = await getPublishedPosts();
+const hasPublishedBooks = buildBookSummaries(posts).length > 0;
+const hasPublishedSeries = buildSeriesSummary(posts).length > 0;
 ---
 
 <BaseLayout
@@ -20,8 +27,9 @@ import { GITHUB_URL, SITE_DESCRIPTION } from "../utils/posts";
       <div class="about-actions">
         <a href="/">Home</a>
         <a href="/blog/">Posts</a>
-        <a href="/books/">Books</a>
-        <a href="/series/">Series</a>
+        <a href="/categories/">Categories</a>
+        {hasPublishedBooks && <a href="/books/">Books</a>}
+        {hasPublishedSeries && <a href="/series/">Series</a>}
         <a href="/search/">Search</a>
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a>
       </div>
