@@ -109,15 +109,6 @@ test("20줄 초과 코드만 접고 펼치며 복사 버튼은 전체 코드를 
 
 test("Spring Security의 학습 경로는 상세 글에서도 명시된 순서로 존재한다", async ({ page }) => {
   await page.goto("/blog/security/basic1/");
-  const diagnostic = await page.evaluate(() => ({
-    url: location.href,
-    title: document.title,
-    article: Boolean(document.querySelector(".post")),
-    content: Boolean(document.querySelector(".post__content")),
-    footer: document.querySelector(".post-footer")?.outerHTML.slice(0, 2800) ?? null,
-    hasPathHTML: document.documentElement.outerHTML.includes("post-learning-path")
-  }));
-  console.log("[phase6-browser-diagnostic]", JSON.stringify(diagnostic));
   const path = page.locator(".post-learning-path");
   await expect(path).toBeVisible();
   await expect(path.locator(".post-series__list li")).toHaveCount(3);
