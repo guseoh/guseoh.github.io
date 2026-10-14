@@ -84,5 +84,6 @@ test("인라인 코드 검색 결과에 주변 문맥을 표시한다", async ({
 
   const snippet = card.locator('[data-search-snippet-source="body"]');
   await expect(snippet).toContainText("특정 엔티티만 분리");
-  await expect(snippet.locator("mark")).toContainText("detach()");
+  const highlightedText = await snippet.locator("mark").allTextContents();
+  expect(highlightedText).toContain("detach()");
 });
