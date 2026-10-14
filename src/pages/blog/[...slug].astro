@@ -94,7 +94,11 @@ const seriesName = post.data.series?.trim();
 const seriesMetadata = seriesName ? getSeriesMetadata(seriesName) : undefined;
 const seriesTitle = seriesMetadata?.title ?? seriesName;
 const seriesContinuationMessage = seriesName ? getSeriesContinuationMessage(seriesName) : "";
-const learningPathPosts = getLearningPathPosts(allPosts, post);
+// Look up the canonical collection entry when the current post is delivered
+// through getStaticPaths props. This keeps Learning Path chapter metadata in
+// sync with the published collection used by the category page.
+const canonicalLearningPost = allPosts.find((entry) => getPostSlug(entry) === getPostSlug(post)) ?? post;
+const learningPathPosts = getLearningPathPosts(allPosts, canonicalLearningPost);
 const learningPathIndex = learningPathPosts.findIndex((entry) => entry.id === post.id);
 const learningPathTitle = seriesTitle ?? `${categoryName} 학습 경로`;
 const showLearningPath = Boolean(seriesName) || learningPathPosts.length > 1;
@@ -269,6 +273,14 @@ const breadcrumbStructuredData = {
           </div>
         )}
       </header>
+
+      <aside class="post-reading-resume" data-reading-resume hidden aria-label="이어 읽기">
+        <p><strong>이어서 읽기</strong> <span data-reading-resume-label></span><small>이 브라우저에만 기록됩니다.</small></p>
+        <div class="post-reading-resume__actions">
+          <button type="button" data-reading-resume-action>저장한 위치로</button>
+          <button type="button" data-reading-resume-clear>기록 삭제</button>
+        </div>
+      </aside>
 
       {isStalePost && (
         <aside class="post-freshness-note" aria-label="게시글 검증 안내">

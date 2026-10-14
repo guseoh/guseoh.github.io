@@ -419,6 +419,7 @@ html.left-sidebar-collapsed .post-toc,
 
 /* Explicit reading resume; no automatic scroll or global settings. */
 .post-reading-resume {
+  width: min(100%, var(--post-text-width));
   display: flex;
   flex-wrap: wrap;
   align-items: center;
