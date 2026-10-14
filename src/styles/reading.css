@@ -167,71 +167,36 @@ html.left-sidebar-collapsed .post-view > .post-column,
   max-width: 100%;
 }
 
-/*
- * Post image sizing contract:
- * - preserve the source aspect ratio and never enlarge ordinary images beyond their intrinsic width;
- * - cap standard diagrams to a consistent reading height; use {full-width} for wide diagrams.
- */
-.post__content > p:has(> img:only-child) > img:not(.full-width) {
-  display: block;
-  width: auto !important;
-  max-width: min(100%, 48rem) !important;
-  max-height: 30rem;
-  height: auto !important;
-  margin-inline: auto;
-}
-
-.post__content > p:has(> a:only-child > img:only-child) > a {
-  display: block;
-  width: fit-content;
-  max-width: min(100%, 48rem);
-  margin-inline: auto;
-}
-
-.post__content > p:has(> a:only-child > img:only-child) > a > img:not(.full-width) {
-  display: block;
-  width: auto !important;
-  max-width: min(100%, 48rem) !important;
-  max-height: 30rem;
-  height: auto !important;
-  margin: 0;
-}
-
-.post__content > figure:has(img:not(.full-width)) {
-  width: min(100%, 48rem);
-  max-width: 100%;
-  margin-inline: auto;
-}
-
-.post__content > figure:has(img:not(.full-width)) img:not(.full-width) {
-  display: block;
-  width: auto !important;
-  max-width: min(100%, 48rem) !important;
-  max-height: 30rem;
-  height: auto !important;
-  margin-inline: auto;
-}
-
-.post__content > p:has(img.full-width),
-.post__content > figure:has(img.full-width) {
+/* Standalone article images share the prose width. Preserve proportions, not intrinsic size.
+ * Keep {full-width} compatible; it is no longer required to fill the article.
+ * Scope these rules to content images so link icons and the lightbox stay unchanged. */
+.post__content > p:has(> img:only-child),
+.post__content > p:has(> a:only-child > img:only-child),
+.post__content > figure:has(img) {
   width: 100%;
   max-width: 100%;
   margin-inline: 0;
 }
 
-.post__content > p:has(> a:only-child > img.full-width:only-child) > a {
+.post__content > p:has(> a:only-child > img:only-child) > a,
+.post__content > figure > a:has(> img:only-child) {
   display: block;
   width: 100%;
   max-width: 100%;
+  margin-inline: 0;
 }
 
+.post__content > p > img:only-child,
+.post__content > p > a:only-child > img:only-child,
+.post__content > figure img,
 .post__content img.full-width {
   display: block;
+  box-sizing: border-box;
   width: 100% !important;
   max-width: 100% !important;
   max-height: none;
   height: auto !important;
-  margin-inline: auto;
+  margin-inline: 0;
 }
 
 .post-footer {
