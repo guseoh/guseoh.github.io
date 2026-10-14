@@ -1,4 +1,4 @@
-import { normalizeSearchText, scoreSearchItem, sortSearchResults, type SearchIndexItem } from "../utils/search";
+import { getSearchSnippet, normalizeSearchText, scoreSearchItem, sortSearchResults, type SearchIndexItem } from "../utils/search";
 
 type NavigationItem = {
   planned?: boolean;
@@ -154,7 +154,7 @@ function renderSearch(posts: SearchIndexItem[], navigationGroups: NavigationGrou
       if (item.type === "category") return normalizeSlug(post.category) === item.slug;
       if (item.type === "tag") return post.tags.some((postTag) => normalizeSlug(postTag) === item.slug);
       if (item.type === "series") return normalizeSlug(post.series || "") === item.slug;
-      if (item.type === "search") return post.searchText.includes(normalizeSearchText(item.query || item.title));
+      if (item.type === "search") return scoreSearchItem(post, item.query || item.title).score > 0;
 
       return false;
     });
@@ -196,7 +196,15 @@ function renderPost(post: SearchIndexItem, reasons: string[], query: string) {
 
   const description = document.createElement("p");
   description.className = "post-card__description";
-  appendHighlightedText(description, post.description || post.excerpt, query);
+  const snippet = getSearchSnippet(post, query);
+  description.dataset.searchSnippetSource = snippet.source;
+  if (snippet.source !== "description") {
+    const contextLabel = document.createElement("span");
+    contextLabel.className = "search-result__context-label";
+    contextLabel.textContent = snippet.source === "code" ? "코드 · " : "본문 · ";
+    description.append(contextLabel);
+  }
+  appendHighlightedText(description, snippet.text, query);
 
   const footer = document.createElement("div");
   footer.className = "post-card__footer";
