@@ -1182,3 +1182,103 @@
   color: var(--link);
   font-weight: 750;
 }
+
+/* Category reading order shares the detail page Learning Path rules. */
+.category-reading-path {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+}
+
+.category-reading-path__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.category-reading-path__head h2 { font-size: 1.04rem; }
+
+.category-reading-path__head p {
+  margin-top: 0.25rem;
+  color: var(--muted-readable);
+  font-size: 0.82rem;
+}
+
+.category-reading-path__start {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  padding: 0.55rem 0.72rem;
+  color: var(--link);
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.category-reading-path__start:hover,
+.category-reading-path__start:focus-visible,
+.category-reading-path__list a:hover,
+.category-reading-path__list a:focus-visible {
+  border-color: var(--link);
+  background: var(--surface-hover);
+  color: var(--link-hover);
+}
+
+.category-reading-path__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.category-reading-path__list li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.45rem;
+}
+
+.category-reading-path__step {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 1.6rem;
+  min-height: 1.6rem;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--muted-readable);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.category-reading-path__list a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 2.5rem;
+  flex: 1;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0.35rem 0.48rem;
+  color: var(--ink);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .category-reading-path { padding: 0.85rem; }
+  .category-reading-path__head { align-items: flex-start; flex-direction: column; }
+  .category-reading-path__list { grid-template-columns: minmax(0, 1fr); }
+}

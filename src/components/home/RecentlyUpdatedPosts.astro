@@ -5,11 +5,12 @@ import PostCard from "../PostCard.astro";
 interface Props {
   posts: CollectionEntry<"blog">[];
   limit?: number;
+  excludePostIds?: ReadonlySet<string>;
 }
 
-const { posts, limit = 4 } = Astro.props as Props;
+const { posts, limit = 4, excludePostIds = new Set<string>() } = Astro.props as Props;
 const visiblePosts = posts
-  .filter((post) => post.data.updated && post.data.updated.valueOf() > post.data.date.valueOf())
+  .filter((post) => !excludePostIds.has(post.id) && post.data.updated && post.data.updated.valueOf() > post.data.date.valueOf())
   .sort((a, b) => (b.data.updated?.valueOf() ?? 0) - (a.data.updated?.valueOf() ?? 0))
   .slice(0, limit);
 ---

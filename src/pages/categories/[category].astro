@@ -6,7 +6,8 @@ import PostCard from "../../components/PostCard.astro";
 import { buildCategorySummary, filterPostsByCategory } from "../../utils/categories";
 import { getPublishedPosts } from "../../utils/content/posts";
 import { getNavigationItemsByType } from "../../utils/navigation";
-import { SITE_DESCRIPTION, sortPostsByDate } from "../../utils/posts";
+import { getLearningPathPosts } from "../../utils/postNavigation";
+import { SITE_DESCRIPTION, getPostPath, sortPostsByDate } from "../../utils/posts";
 
 export async function getStaticPaths() {
   const posts = await getPublishedPosts();
@@ -50,6 +51,14 @@ for (const entry of buildCategorySummary(allPosts)) {
 }
 
 const categorySummary = Array.from(visibleCategorySummary.values());
+// 상세 화면 Learning Path와 동일한 chapter 규칙을 따릅니다.
+// chapter가 충돌하면 임의로 순서를 생성하지 않습니다.
+const readingPathCandidate = posts.find(
+  (post) => !post.data.series && typeof post.data.chapter === "number"
+);
+const readingPath = readingPathCandidate
+  ? getLearningPathPosts(posts, readingPathCandidate)
+  : [];
 ---
 
 <BaseLayout title={`devjune.dev | ${categoryName}`} description={`${categoryName} 카테고리 글 목록 - ${SITE_DESCRIPTION}`}>
@@ -67,6 +76,26 @@ const categorySummary = Array.from(visibleCategorySummary.values());
       </a>
     ))}
   </nav>
+
+  {readingPath.length > 1 && (
+    <section class="category-reading-path" aria-labelledby="category-reading-path-title">
+      <div class="category-reading-path__head">
+        <div>
+          <h2 id="category-reading-path-title">이 주제 처음부터 읽기</h2>
+          <p>게시글에 지정된 학습 순서대로 이어서 읽을 수 있습니다.</p>
+        </div>
+        <a class="category-reading-path__start" href={getPostPath(readingPath[0])}>첫 글부터 읽기 <span aria-hidden="true">→</span></a>
+      </div>
+      <ol class="category-reading-path__list">
+        {readingPath.map((post, index) => (
+          <li>
+            <span class="category-reading-path__step" aria-hidden="true">{index + 1}</span>
+            <a href={getPostPath(post)}>{post.data.title}</a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
 
   {posts.length > 0 ? (
     <ul class="post-list" style="margin-top: 1rem;">
