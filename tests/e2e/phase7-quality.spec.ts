@@ -12,7 +12,8 @@ test("홈 공유 이미지는 1200×630 PNG로 제공하며 OG/Twitter 메타가
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
 
-  const response = await request.get(og!);
+  // The production canonical URL points at GitHub Pages; test the same path on the local preview.
+  const response = await request.get(new URL(og!).pathname);
   expect(response.ok()).toBe(true);
   expect(response.headers()["content-type"]).toContain("image/png");
   const bytes = await response.body();
@@ -29,7 +30,7 @@ test("게시글마다 제목에 맞는 PNG OG 이미지와 기존 SVG 주소를 
   await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute("content", /인증과 인가는 무엇일까/);
   await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute("content", "image/png");
 
-  const png = await request.get(og!);
+  const png = await request.get(new URL(og!).pathname);
   expect(png.ok()).toBe(true);
   const bytes = await png.body();
   expect([...bytes.subarray(0, 8)]).toEqual(pngMagic);
@@ -51,8 +52,10 @@ test("본문 이미지에는 지연 로딩과 비동기 디코딩을 적용하�
   for (const image of await images.all()) {
     await expect(image).toHaveAttribute("loading", "lazy");
     await expect(image).toHaveAttribute("decoding", "async");
-    await expect(image).toHaveAttribute("alt", /.+/);
+    // Decorative external favicons intentionally have alt="".
+    await expect(image).toHaveAttribute("alt", /.*/);
   }
+  expect(await page.locator('.post__content img[alt]:not([alt=""])').count()).toBeGreaterThan(0);
   const first = images.first();
   await first.scrollIntoViewIfNeeded();
   await expect(first).toBeVisible();
