@@ -6,7 +6,7 @@ export const SITE = {
   githubUrl: "https://github.com/guseoh",
   repositoryUrl: "https://github.com/guseoh/guseoh.github.io",
   repositoryName: "guseoh/guseoh.github.io",
-  defaultOgImage: "/og-image.svg",
+  defaultOgImage: "/og-image.png",
   commentRepository: "guseoh/guseoh.github.io",
   locale: "ko_KR",
   language: "ko",

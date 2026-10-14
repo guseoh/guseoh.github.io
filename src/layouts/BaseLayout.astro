@@ -61,7 +61,15 @@ const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride, siteUrl).toString()
   : new URL(Astro.url.pathname, siteUrl).toString();
 const ogImageUrl = new URL(image, siteUrl).toString();
-const imageType = ogImageUrl.endsWith(".svg") ? "image/svg+xml" : ogImageUrl.endsWith(".png") ? "image/png" : "image/jpeg";
+const imageType = /\.svg(?:\?|$)/i.test(ogImageUrl)
+  ? "image/svg+xml"
+  : /\.png(?:\?|$)/i.test(ogImageUrl)
+    ? "image/png"
+    : /\.(?:jpe?g)(?:\?|$)/i.test(ogImageUrl)
+      ? "image/jpeg"
+      : undefined;
+const isStandardOgImage = image === SITE_OG_IMAGE || /^\/og\/.+\.png$/.test(image);
+const ogAltText = type === "article" ? `${title} 공유 이미지` : `${SITE_TITLE} 대표 이미지`;
 
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const routeCategory = currentPath.startsWith("/categories/") ? currentPath.split("/")[2] ?? "" : "";
@@ -95,10 +103,10 @@ function serializeJsonLd(value: unknown) {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
-    <meta property="og:image:alt" content={`${SITE_TITLE} 대표 이미지`} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content={imageType} />
+    <meta property="og:image:alt" content={ogAltText} />
+    {isStandardOgImage && <meta property="og:image:width" content="1200" />}
+    {isStandardOgImage && <meta property="og:image:height" content="630" />}
+    {imageType && <meta property="og:image:type" content={imageType} />}
     {type === "article" && <meta property="article:author" content={SITE_AUTHOR} />}
     {type === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {type === "article" && updatedTime && <meta property="article:modified_time" content={updatedTime} />}
@@ -107,7 +115,7 @@ function serializeJsonLd(value: unknown) {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content={`${SITE_TITLE} 대표 이미지`} />
+    <meta name="twitter:image:alt" content={ogAltText} />
     <title>{title}</title>
     <script is:inline>
       (() => {
