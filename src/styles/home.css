@@ -35,22 +35,6 @@
   text-transform: uppercase;
 }
 
-.archive-hero--simple h1 {
-  max-width: 100%;
-  margin-top: 0.58rem;
-  font-size: 2rem;
-  line-height: 1.18;
-  overflow-wrap: keep-all;
-  word-break: keep-all;
-}
-
-.archive-hero__lead {
-  max-width: 68ch;
-  margin-top: 0.85rem;
-  color: var(--muted-readable);
-  font-size: 1rem;
-}
-
 .home-section {
   display: grid;
   gap: 0.82rem;
@@ -482,12 +466,18 @@
 
 .archive-hero--simple h1 {
   max-width: 23ch;
+  margin-top: 0.58rem;
   font-size: clamp(1.85rem, 1.53rem + 0.7vw, 2.42rem);
   line-height: 1.22;
+  overflow-wrap: keep-all;
+  word-break: keep-all;
 }
 
 .archive-hero__lead {
   max-width: 49ch;
+  margin-top: 0.85rem;
+  color: var(--muted-readable);
+  font-size: 1rem;
   line-height: 1.62;
 }
 
