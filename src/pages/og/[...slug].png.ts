@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 
 export async function GET(context: APIContext) {
   const { post } = context.props as { post: CollectionEntry<"blog"> };
-  const png = await sharp(Buffer.from(renderPostOgSvg(post)))
+  const png = await sharp(new TextEncoder().encode(renderPostOgSvg(post)))
     .png({ compressionLevel: 9 })
     .toBuffer();
   return new Response(new Uint8Array(png), {
