@@ -74,7 +74,7 @@ for (const post of posts) {
 const sitemapPaths = buildSitemapPaths(publishedPosts);
 for (const post of publishedPosts) {
   assert(sitemapPaths.has(post.path), `${post.relativePath} 공개 게시글 URL이 sitemap 경로에 없습니다.`);
-  assert(getPostOgImagePath(post).endsWith(".svg"), `${post.relativePath} 자동 OG 이미지 경로가 SVG가 아닙니다.`);
+  assert(getPostOgImagePath(post).endsWith(".png"), `${post.relativePath} 자동 OG 이미지 경로가 PNG가 아닙니다.`);
 }
 for (const post of draftPosts) {
   assert(!sitemapPaths.has(post.path), `${post.relativePath} draft URL이 sitemap 경로에 포함되었습니다.`);
@@ -247,7 +247,7 @@ function latestPostDate(sourcePosts) {
 }
 
 function getPostOgImagePath(post) {
-  return `/og/${encodeURIComponent(post.slug).replace(/%2F/g, "/")}.svg`;
+  return `/og/${encodeURIComponent(post.slug).replace(/%2F/g, "/")}.png`;
 }
 
 function checkSearchScoringContracts() {
