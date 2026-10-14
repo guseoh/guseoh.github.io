@@ -235,6 +235,19 @@ html[data-theme="dark"] {
     grid-row: 1;
   }
 
+  /* A collapsed Planner drawer keeps a small rail for its toggle. */
+  html[data-theme-mode="planner"].left-sidebar-collapsed .site-layout:not(.site-layout--minimal),
+  html[data-theme-mode="planner"] .site-shell.sidebar-collapsed .site-layout:not(.site-layout--minimal) {
+    grid-template-columns: minmax(var(--site-sidebar-rail-width), var(--site-sidebar-rail-width)) minmax(0, 1fr);
+    gap: var(--site-layout-collapsed-gap);
+  }
+
+  html[data-theme-mode="planner"].left-sidebar-collapsed .site-layout:not(.site-layout--minimal) .site-content,
+  html[data-theme-mode="planner"] .site-shell.sidebar-collapsed .site-layout:not(.site-layout--minimal) .site-content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   html[data-theme-mode="planner"] .site-sidebar {
     position: fixed;
     inset: 64px auto 0 0;
