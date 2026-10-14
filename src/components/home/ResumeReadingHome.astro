@@ -1,0 +1,50 @@
+<section class="home-reading-resume" data-home-reading-resume hidden aria-label="최근 읽던 글">
+  <div class="home-reading-resume__details">
+    <span class="home-reading-resume__eyebrow">최근 읽던 글</span>
+    <a data-home-reading-link href="/blog/"></a>
+    <span class="home-reading-resume__progress" data-home-reading-progress></span>
+  </div>
+  <button type="button" data-home-reading-clear aria-label="최근 읽던 글 기록 삭제">기록 삭제</button>
+</section>
+
+<script is:inline>
+  (() => {
+    const section = document.querySelector("[data-home-reading-resume]");
+    const link = section?.querySelector("[data-home-reading-link]");
+    const progress = section?.querySelector("[data-home-reading-progress]");
+    const clear = section?.querySelector("[data-home-reading-clear]");
+    if (!(section instanceof HTMLElement) || !(link instanceof HTMLAnchorElement)
+      || !(progress instanceof HTMLElement)) return;
+    const key = "guseo:reading:last";
+    try {
+      const entry = JSON.parse(window.localStorage.getItem(key) || "null");
+      const valid = entry && typeof entry.url === "string"
+        && /^\/blog\/[a-z0-9가-힣/_-]+\/$/i.test(entry.url)
+        && typeof entry.title === "string" && entry.title.trim().length > 0
+        && Number.isFinite(entry.fraction) && entry.fraction >= 0.08 && entry.fraction < 0.97
+        && Number.isFinite(entry.updatedAt)
+        && entry.updatedAt > Date.now() - 30 * 24 * 60 * 60 * 1000
+        && entry.updatedAt <= Date.now();
+      if (!valid) return;
+      link.href = entry.url;
+      link.textContent = entry.title.slice(0, 150);
+      progress.textContent = `약 ${Math.round(entry.fraction * 100)}% 읽음 · 이어 읽기`;
+      section.hidden = false;
+    } catch {
+      return;
+    }
+
+    if (clear instanceof HTMLButtonElement) {
+      clear.addEventListener("click", () => {
+        try {
+          const url = link.getAttribute("href");
+          window.localStorage.removeItem(key);
+          if (url) window.localStorage.removeItem(`guseo:reading:position:${url}`);
+        } catch {
+          // Keep the page usable when storage is unavailable.
+        }
+        section.hidden = true;
+      });
+    }
+  })();
+</script>

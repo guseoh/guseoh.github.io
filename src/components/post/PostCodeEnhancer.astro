@@ -136,7 +136,33 @@
       status.setAttribute("aria-atomic", "true");
       button.setAttribute("aria-describedby", status.id);
 
-      header.append(meta, button, status);
+      const lineElements = code?.querySelectorAll(":scope > .line");
+      const lineCount = lineElements?.length || (code?.textContent ?? pre.textContent ?? "").split(/\r?\n/).length;
+      if (lineCount > 20) {
+        wrapper.classList.add("code-block--collapsible", "is-collapsed");
+        if (!pre.id) pre.id = `code-content-${index}`;
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "code-block__expand";
+        toggle.setAttribute("aria-controls", pre.id);
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.textContent = "전체 보기";
+        toggle.addEventListener("click", () => {
+          const expanding = wrapper.classList.contains("is-collapsed");
+          wrapper.classList.toggle("is-collapsed", !expanding);
+          toggle.setAttribute("aria-expanded", String(expanding));
+          toggle.textContent = expanding ? "접기" : "전체 보기";
+        });
+
+        const actions = document.createElement("div");
+        actions.className = "code-block__actions";
+        actions.append(toggle, button);
+        header.append(meta, actions, status);
+      } else {
+        header.append(meta, button, status);
+      }
+
       wrapper.append(header, pre);
       applyLineMetadata(wrapper, pre, code, metaMarker);
       metaMarker?.remove();

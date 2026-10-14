@@ -586,3 +586,39 @@
     transition: none;
   }
 }
+
+/* Small, optional local-only continuation link beneath the homepage intro. */
+.home-reading-resume {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.68rem 0.86rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+}
+.home-reading-resume[hidden] { display: none; }
+.home-reading-resume__details { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem 0.75rem; min-width: 0; }
+.home-reading-resume__eyebrow { font-size: 0.73rem; color: var(--muted-readable); font-weight: 800; }
+.home-reading-resume__details a { color: var(--link); text-decoration: none; font-weight: 750; font-size: 0.84rem; overflow-wrap: anywhere; }
+.home-reading-resume__details a:hover,
+.home-reading-resume__details a:focus-visible { color: var(--link-hover); text-decoration: underline; }
+.home-reading-resume__progress { color: var(--muted-readable); font-size: 0.76rem; }
+.home-reading-resume > button {
+  min-height: 2.55rem;
+  flex: 0 0 auto;
+  border: 1px solid var(--control-border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--muted-readable);
+  font-size: 0.75rem;
+  padding: 0.44rem 0.65rem;
+  cursor: pointer;
+}
+.home-reading-resume > button:hover,
+.home-reading-resume > button:focus-visible {
+  border-color: var(--link);
+  color: var(--link-hover);
+}

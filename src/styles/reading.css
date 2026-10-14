@@ -416,3 +416,79 @@ html.left-sidebar-collapsed .post-toc,
     width: 100%;
   }
 }
+
+/* Explicit reading resume; no automatic scroll or global settings. */
+.post-reading-resume {
+  width: min(100%, var(--post-text-width));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  margin: 0 auto 1rem;
+  padding: 0.72rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--ink);
+}
+.post-reading-resume[hidden] { display: none; }
+.post-reading-resume p { display: grid; gap: 0.12rem; margin: 0; font-size: 0.82rem; }
+.post-reading-resume small { color: var(--muted-readable); font-size: 0.73rem; }
+.post-reading-resume__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
+.post-reading-resume__actions button {
+  min-height: 2.55rem;
+  border: 1px solid var(--control-border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--link);
+  font-weight: 700;
+  font-size: 0.79rem;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+}
+.post-reading-resume__actions button:hover,
+.post-reading-resume__actions button:focus-visible {
+  border-color: var(--link);
+  background: var(--surface-hover);
+  color: var(--link-hover);
+}
+
+/* Only code blocks longer than 20 lines are initially collapsed. */
+.code-block--collapsible { position: relative; }
+.code-block--collapsible.is-collapsed pre {
+  max-height: 20rem;
+  overflow-y: hidden;
+}
+.code-block--collapsible.is-collapsed::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 2.4rem;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--code-block-bg));
+}
+.code-block__actions { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 0.3rem; margin-left: auto; }
+.code-block__actions .code-copy-button { margin-left: 0; }
+.code-block__expand {
+  min-height: 2.15rem;
+  border: 1px solid var(--control-border);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--code-copy-text);
+  font-size: 0.7rem;
+  font-weight: 650;
+  padding: 0.34rem 0.5rem;
+  cursor: pointer;
+}
+.code-block__expand:hover,
+.code-block__expand:focus-visible {
+  background: var(--surface-hover);
+  color: var(--link-hover);
+}
+@media print {
+  .code-block--collapsible.is-collapsed pre { max-height: none; overflow: visible; }
+  .code-block--collapsible.is-collapsed::after,
+  .code-block__expand,
+  .post-reading-resume { display: none; }
+}

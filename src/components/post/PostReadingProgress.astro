@@ -57,6 +57,89 @@
         return clamp((window.scrollY - start) / (maxScroll - start), 0, 1);
       };
 
+      // Reading locations are opt-in to restore (never auto-jump). Store only
+      // position metadata on this device; no external service or account.
+      const positionKey = `guseo:reading:position:${window.location.pathname}`;
+      const lastKey = "guseo:reading:last";
+      const maxAge = 30 * 24 * 60 * 60 * 1000;
+      const panel = document.querySelector("[data-reading-resume]");
+      const resumeLabel = panel?.querySelector("[data-reading-resume-label]");
+      const resumeAction = panel?.querySelector("[data-reading-resume-action]");
+      const clearAction = panel?.querySelector("[data-reading-resume-clear]");
+      const title = document.querySelector(".post__header h1")?.textContent?.trim() ?? "";
+
+      const clearPosition = () => {
+        try {
+          window.localStorage.removeItem(positionKey);
+          const last = JSON.parse(window.localStorage.getItem(lastKey) || "null");
+          if (last?.url === window.location.pathname) window.localStorage.removeItem(lastKey);
+        } catch {
+          // Storage may be disabled by browser privacy settings.
+        }
+      };
+
+      const readPosition = () => {
+        try {
+          const saved = JSON.parse(window.localStorage.getItem(positionKey) || "null");
+          if (saved && Number.isFinite(saved.fraction) && saved.fraction >= 0.08
+            && saved.fraction < 0.97 && Number.isFinite(saved.updatedAt)
+            && saved.updatedAt > Date.now() - maxAge && saved.updatedAt <= Date.now()) {
+            return saved;
+          }
+        } catch {
+          // Ignore invalid or unavailable saved state.
+        }
+        return null;
+      };
+
+      const stored = readPosition();
+      if (stored && panel instanceof HTMLElement
+        && resumeLabel instanceof HTMLElement && resumeAction instanceof HTMLButtonElement) {
+        resumeAction.addEventListener("click", () => {
+          panel.hidden = true;
+          const { start, maxScroll } = getBounds();
+          window.scrollTo({
+            top: start + (maxScroll - start) * stored.fraction,
+            behavior: prefersReducedMotion() ? "auto" : "smooth"
+          });
+        });
+
+        // Let the browser restore session history or an anchor first.
+        window.setTimeout(() => {
+          if (!window.location.hash && window.scrollY < getBounds().start + 40) {
+            resumeLabel.textContent = `약 ${Math.round(stored.fraction * 100)}% 읽은 위치가 있습니다.`;
+            panel.hidden = false;
+          }
+        }, 160);
+      }
+
+      if (clearAction instanceof HTMLButtonElement && panel instanceof HTMLElement) {
+        clearAction.addEventListener("click", () => {
+          clearPosition();
+          panel.hidden = true;
+        });
+      }
+
+      const savePosition = () => {
+        const fraction = readProgress();
+        if (fraction >= 0.97) {
+          clearPosition();
+          return;
+        }
+        if (fraction < 0.08 || !title) return;
+        const entry = { fraction: Math.round(fraction * 1000) / 1000, updatedAt: Date.now() };
+        try {
+          window.localStorage.setItem(positionKey, JSON.stringify(entry));
+          window.localStorage.setItem(lastKey, JSON.stringify({
+            ...entry,
+            url: window.location.pathname,
+            title
+          }));
+        } catch {
+          // Private browsing or storage quotas must not break the page.
+        }
+      };
+
       const update = () => {
         frame = 0;
         if (frameFallback) {
@@ -97,7 +180,20 @@
         event.preventDefault();
         scrollToTop();
       });
-      window.addEventListener("scroll", scheduleUpdate, { passive: true });
+      let saveTimer = 0;
+      window.addEventListener("scroll", () => {
+        scheduleUpdate();
+        if (!saveTimer) {
+          saveTimer = window.setTimeout(() => {
+            saveTimer = 0;
+            savePosition();
+          }, 650);
+        }
+      }, { passive: true });
+      window.addEventListener("pagehide", () => {
+        if (saveTimer) window.clearTimeout(saveTimer);
+        savePosition();
+      });
       window.addEventListener("resize", scheduleUpdate);
       window.addEventListener("load", scheduleUpdate);
       window.setInterval(pollScrollPosition, 300);
