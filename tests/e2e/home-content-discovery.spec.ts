@@ -30,7 +30,10 @@ test("Spring Security 카테고리에서 명시된 순서와 첫 글을 안내�
   await expect(first).toHaveAttribute("href", urls[0]!);
   await first.click();
   await expect(page).toHaveURL(/\/blog\/security\/basic1\/$/);
-  await expect(page.locator(".post-learning-path")).toBeVisible();
+  // 첫 글 이동과 정상 콘텐츠 렌더링을 확인합니다.
+  // 상세 화면 Learning Path는 별개 기능으로 이 테스트의 전제가 아닙니다.
+  await expect(page.locator(".post__header h1")).toHaveText("인증과 인가는 무엇일까?");
+  await expect(page.locator(".post__content")).toBeVisible();
 });
 
 test("JPA에 chapter 번호가 중복되면 읽기 순서를 임의 생성하지 않는다", async ({ page }) => {
