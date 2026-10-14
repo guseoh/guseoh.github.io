@@ -455,7 +455,10 @@ html.left-sidebar-collapsed .post-toc,
 }
 
 /* Only code blocks longer than 20 lines are initially collapsed. */
-.code-block--collapsible { position: relative; }
+.code-block--collapsible {
+  position: relative;
+}
+
 .code-block--collapsible.is-collapsed pre {
   max-height: 20rem;
   overflow-y: hidden;
@@ -468,8 +471,17 @@ html.left-sidebar-collapsed .post-toc,
   pointer-events: none;
   background: linear-gradient(to bottom, transparent, var(--code-block-bg));
 }
-.code-block__actions { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 0.3rem; margin-left: auto; }
-.code-block__actions .code-copy-button { margin-left: 0; }
+.code-block__actions {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: auto;
+}
+
+.code-block__actions .code-copy-button {
+  margin-left: 0;
+}
 .code-block__expand {
   min-height: 2.15rem;
   border: 1px solid var(--control-border);
@@ -487,8 +499,14 @@ html.left-sidebar-collapsed .post-toc,
   color: var(--link-hover);
 }
 @media print {
-  .code-block--collapsible.is-collapsed pre { max-height: none; overflow: visible; }
+  .code-block--collapsible.is-collapsed pre {
+    max-height: none;
+    overflow: visible;
+  }
+
   .code-block--collapsible.is-collapsed::after,
   .code-block__expand,
-  .post-reading-resume { display: none; }
+  .post-reading-resume {
+    display: none;
+  }
 }

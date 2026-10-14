@@ -71,6 +71,11 @@ function visit(node, state) {
   for (const child of node.children) {
     if (child?.type === "element" && child.tagName === "img") {
       applyImageFlags(child);
+      // Article screenshots and diagrams are typically below the heading.
+      // Explicit eager/decoding metadata always wins when author-provided.
+      child.properties ??= {};
+      child.properties.loading ??= "lazy";
+      child.properties.decoding ??= "async";
     }
 
     visit(child, state);

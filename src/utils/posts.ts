@@ -79,11 +79,15 @@ export function getPostActivityDate(post: CollectionEntry<"blog">) {
 }
 
 export function getPostOgImagePath(post: CollectionEntry<"blog">) {
-  if (post.data.heroImage && post.data.heroImage !== SITE_OG_IMAGE) {
+  // Existing Markdown uses /og-image.svg as a legacy default.
+  // Preserve genuinely custom hero images without redirecting old metadata.
+  if (post.data.heroImage
+    && post.data.heroImage !== SITE_OG_IMAGE
+    && post.data.heroImage !== "/og-image.svg") {
     return post.data.heroImage;
   }
 
-  return `/og/${encodeURIComponent(getPostSlug(post)).replace(/%2F/g, "/")}.svg`;
+  return `/og/${encodeURIComponent(getPostSlug(post)).replace(/%2F/g, "/")}.png`;
 }
 
 export function sortPostsByDate(posts: CollectionEntry<"blog">[]) {

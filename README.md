@@ -77,7 +77,7 @@ Astro가 콘텐츠를 정적 페이지로 생성하며,
 GitHub Actions에서 검증과 빌드를 수행한 뒤 **GitHub Pages**에 배포합니다.
 
 GitHub 활동 데이터는 빌드 과정에서 반영하고,  
-댓글은 **Giscus**를 통해 GitHub Discussions와 연결합니다.
+댓글은 **Utterances**를 통해 이 저장소의 GitHub Issues와 연결합니다.
 
 <br />
 
@@ -102,7 +102,7 @@ GitHub 활동 데이터는 빌드 과정에서 반영하고,
 
 ### Integration
 
-![Giscus](https://img.shields.io/badge/Giscus-181717?style=flat&logo=github&logoColor=white)
+![Utterances](https://img.shields.io/badge/Utterances-181717?style=flat&logo=github&logoColor=white)
 ![RSS](https://img.shields.io/badge/RSS-F26522?style=flat&logo=rss&logoColor=white)
 ![GitHub API](https://img.shields.io/badge/GitHub_API-181717?style=flat&logo=github&logoColor=white)
 
