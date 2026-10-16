@@ -25,12 +25,12 @@ const hasPublishedSeries = buildSeriesSummary(posts).length > 0;
     <section class="about-panel about-panel--wide" aria-label="다시 탐색하기">
       <h2>다시 탐색하기</h2>
       <div class="about-actions">
-        <a href="/">Home</a>
-        <a href="/blog/">Posts</a>
-        <a href="/categories/">Categories</a>
-        {hasPublishedBooks && <a href="/books/">Books</a>}
-        {hasPublishedSeries && <a href="/series/">Series</a>}
-        <a href="/search/">Search</a>
+        <a href="/">홈</a>
+        <a href="/blog/">글</a>
+        <a href="/categories/">카테고리</a>
+        {hasPublishedBooks && <a href="/books/">책</a>}
+        {hasPublishedSeries && <a href="/series/">연재</a>}
+        <a href="/search/">검색</a>
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a>
       </div>
     </section>

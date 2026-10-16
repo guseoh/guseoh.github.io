@@ -1,7 +1,7 @@
 ---
 import CategoryIcon from "./CategoryIcon.astro";
 import { normalizeCategory } from "../utils/categories";
-import { formatTagName, getTagHref } from "../utils/tags";
+import { formatTagName, getTagHref, resolveTagSlug } from "../utils/tags";
 
 interface Props {
   category?: string;
@@ -11,8 +11,10 @@ interface Props {
 
 const { category = "Uncategorized", tags = [], maxTags = tags.length } = Astro.props as Props;
 const categoryName = category.trim() || "Uncategorized";
-const visibleTags = tags.slice(0, maxTags);
-const hiddenTagCount = Math.max(0, tags.length - visibleTags.length);
+const categorySlug = normalizeCategory(categoryName);
+const uniqueTags = tags.filter((tag) => resolveTagSlug(tag) !== categorySlug);
+const visibleTags = uniqueTags.slice(0, maxTags);
+const hiddenTagCount = Math.max(0, uniqueTags.length - visibleTags.length);
 ---
 
 <div class="badge-group">

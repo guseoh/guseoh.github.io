@@ -43,6 +43,20 @@
       return figureCaption || target.alt?.trim() || "";
     };
 
+    const setAspectMode = (width, height) => {
+      if (!(width > 0) || !(height > 0)) {
+        dialog.dataset.aspect = "square";
+        return;
+      }
+
+      const ratio = width / height;
+      dialog.dataset.aspect = ratio >= 1.6 ? "wide" : ratio <= 0.8 ? "tall" : "square";
+    };
+
+    image.addEventListener("load", () => {
+      setAspectMode(image.naturalWidth, image.naturalHeight);
+    });
+
     const lockScroll = () => {
       lockedScrollY = window.scrollY;
       document.documentElement.classList.add("post-lightbox-open");
@@ -67,6 +81,8 @@
       opener = target;
       const src = target.currentSrc || target.src;
       const label = getCaption(target);
+      const targetBounds = target.getBoundingClientRect();
+      setAspectMode(target.naturalWidth || targetBounds.width, target.naturalHeight || targetBounds.height);
 
       image.src = src;
       image.alt = target.alt || "";
@@ -121,6 +137,7 @@
     dialog.addEventListener("close", () => {
       unlockScroll();
       image.removeAttribute("src");
+      dialog.removeAttribute("data-aspect");
       if (opener instanceof HTMLElement) {
         opener.focus();
       }

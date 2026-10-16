@@ -1,4 +1,6 @@
 import { getSearchSnippet, normalizeSearchText, scoreSearchItem, sortSearchResults, type SearchIndexItem } from "../utils/search";
+import { normalizeCategory } from "../utils/categories";
+import { formatTagName, getTagHref, resolveTagSlug } from "../utils/tags";
 
 type NavigationItem = {
   planned?: boolean;
@@ -50,6 +52,8 @@ if (
   const navigationGroups = parseNavigationGroups(navigationGroupsElement);
 
   input.value = params.get("q") ?? "";
+  form.setAttribute("aria-busy", "true");
+  if (status) status.textContent = "검색 데이터를 불러오는 중입니다.";
   // The select options are still empty here. Preserve URL filters until they
   // have been populated from the search index.
   const initialCategory = params.get("category") ?? "";
@@ -65,6 +69,7 @@ if (
       return response.json() as Promise<SearchIndexItem[]>;
     })
     .then((posts) => {
+      form.setAttribute("aria-busy", "false");
       fillSelect(categorySelect, uniqueSorted(posts.map((post) => post.category)), initialCategory, "전체 카테고리");
       fillSelect(tagSelect, uniqueSorted(posts.flatMap((post) => post.tags)), initialTag, "전체 태그");
 
@@ -90,6 +95,7 @@ if (
       render();
     })
     .catch(() => {
+      form.setAttribute("aria-busy", "false");
       meta.hidden = false;
       meta.textContent = "검색 데이터를 불러오지 못했습니다. 페이지를 새로고침해 다시 시도해 주세요.";
       empty.hidden = true;
@@ -220,9 +226,11 @@ function renderPost(post: SearchIndexItem, reasons: string[], query: string) {
 
   const badges = document.createElement("div");
   badges.className = "badge-group";
-  badges.append(createBadge(`/categories/${encodeURIComponent(normalizeSlug(post.category))}/`, post.category, "badge badge--category"));
-  for (const tag of post.tags.slice(0, 4)) {
-    badges.append(createBadge(`/search/?tag=${encodeURIComponent(tag)}`, `#${tag}`, "badge"));
+  const categorySlug = normalizeCategory(post.category);
+  badges.append(createBadge(`/categories/${categorySlug}/`, post.category, "badge badge--category"));
+  const uniqueTags = post.tags.filter((tag) => resolveTagSlug(tag) !== categorySlug);
+  for (const tag of uniqueTags.slice(0, 4)) {
+    badges.append(createBadge(getTagHref(tag), `#${formatTagName(tag)}`, "badge badge--tag"));
   }
   footer.append(metaGroup, badges);
 

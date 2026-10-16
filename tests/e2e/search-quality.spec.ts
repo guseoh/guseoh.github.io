@@ -95,4 +95,44 @@ test("검색 색인 로드 실패는 결과 없음 상태와 구분해 안내한
   await expect(page.locator("[data-search-meta]")).toContainText("검색 데이터를 불러오지 못했습니다");
   await expect(page.locator("[data-search-empty]")).toBeHidden();
   await expect(page.locator("#search-status")).toContainText("검색 결과를 표시할 수 없습니다");
+  await expect(page.locator("[data-search-form]")).toHaveAttribute("aria-busy", "false");
+});
+
+
+test("검색 결과에서 현재 카테고리와 같은 태그를 중복 노출하지 않는다", async ({ page }) => {
+  await page.goto("/search/?q=JPA");
+  const card = page.locator('[data-search-list] [data-post-slug="jpa/persistence-context"]');
+  await expect(card).toBeVisible();
+  await expect(card.locator(".badge--category")).toContainText("JPA");
+  await expect(card.locator(".badge--tag").filter({ hasText: /^#?JPA$/i })).toHaveCount(0);
+});
+
+
+test("검색 로딩 상태와 실제 공개 주제 예시를 알려준다", async ({ page }) => {
+  await page.route("**/search-index.json", async (route) => {
+    const response = await route.fetch();
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await route.fulfill({ response });
+  });
+  await page.goto("/search/");
+  const form = page.locator("[data-search-form]");
+  const input = page.getByRole("searchbox", { name: "검색어", exact: true });
+  await expect(input).toHaveAttribute("placeholder", "예: JPA, Spring Security, Flyway");
+  await expect(page.locator("#search-status")).toHaveText("검색 데이터를 불러오는 중입니다.");
+  await expect(form).toHaveAttribute("aria-busy", "true");
+  await expect(page.locator("[data-search-meta]")).toBeHidden();
+  await expect(form).toHaveAttribute("aria-busy", "false");
+  await expect(page.locator("[data-search-meta]")).toBeVisible();
+});
+
+test("검색 결과가 없으면 구체적인 안내와 탐색 경로를 보여준다", async ({ page }) => {
+  await page.goto("/search/");
+  await page.getByRole("searchbox", { name: "검색어", exact: true }).fill("no-results-token-xyz");
+  const empty = page.locator("[data-search-empty]");
+  await expect(page.locator("[data-search-meta]")).toContainText("0개 결과");
+  await expect(empty).toBeVisible();
+  await expect(empty.locator(".search-empty__title")).toHaveText("조건에 맞는 글이 없습니다.");
+  await expect(empty.getByRole("link", { name: "조건 초기화" })).toHaveAttribute("href", "/search/");
+  await expect(empty.getByRole("link", { name: "카테고리별 탐색" })).toHaveAttribute("href", "/categories/");
+  await expect(empty.getByRole("link", { name: "태그별 탐색" })).toHaveAttribute("href", "/tags/");
 });

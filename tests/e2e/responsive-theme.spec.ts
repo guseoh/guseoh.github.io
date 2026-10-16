@@ -10,18 +10,17 @@ test("980px와 981px 경계에서 기본 글자 크기가 갑자기 바뀌지 �
       () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize)
     );
 
-    // Dense desktop targets about 90% of the former 15px baseline;
-    // mobile remains closer to its previous reading scale.
-    expect(measurements[width]).toBeGreaterThanOrEqual(13.45);
-    expect(measurements[width]).toBeLessThanOrEqual(15.55);
+    // Desktop stays at or above 15px while mobile remains close to 16px.
+    expect(measurements[width]).toBeGreaterThanOrEqual(14.95);
+    expect(measurements[width]).toBeLessThanOrEqual(16.05);
   }
 
   expect(Math.abs(measurements[980] - measurements[981])).toBeLessThan(0.25);
-  expect(measurements[375]).toBeGreaterThan(measurements[981]);
-  expect(measurements[1920]).toBeCloseTo(13.5, 1);
+  expect(measurements[375]).toBeGreaterThan(measurements[1920]);
+  expect(measurements[1920]).toBeCloseTo(15, 1);
 });
 
-test("테마 전환은 한 번 클릭에 한 번만 발생하고 Planner 설정을 유지한다", async ({ page }) => {
+test("테마 메뉴에서 네 모드를 직접 선택하고 키보드·Planner 설정을 유지한다", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => localStorage.setItem("theme", "system"));
   await page.reload();
@@ -35,29 +34,41 @@ test("테마 전환은 한 번 클릭에 한 번만 발생하고 Planner 설정�
 
   const root = page.locator("html");
   const toggle = page.locator("#theme-toggle");
+  const menu = page.getByRole("menu", { name: "테마 선택" });
 
-  for (const [index, mode, resolvedTheme] of [
-    [1, "light", "light"],
-    [2, "dark", "dark"],
-    [3, "planner", "dark"],
-    [4, "system", null]
+  for (const [index, mode, resolvedTheme, label] of [
+    [1, "light", "light", "라이트"],
+    [2, "dark", "dark", "다크"],
+    [3, "planner", "dark", "플래너"],
+    [4, "system", null, "시스템"]
   ] as const) {
     await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await menu.getByRole("menuitemradio", { name: label, exact: true }).click();
     await expect(root).toHaveAttribute("data-theme-mode", mode);
     if (resolvedTheme) {
       await expect(root).toHaveAttribute("data-theme", resolvedTheme);
+    } else {
+      expect(["light", "dark"]).toContain(await root.getAttribute("data-theme"));
     }
     await expect(page.locator("body")).toHaveAttribute("data-theme-events", String(index));
-    await expect(toggle.locator(".theme-toggle__label")).toHaveText(
-      mode === "system" ? "System" : mode === "planner" ? "Planner" : mode === "dark" ? "Dark" : "Light"
-    );
+    await expect(toggle.locator(".theme-toggle__label")).toHaveText(label);
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
   }
+
+  await toggle.click();
+  await page.keyboard.press("ArrowDown");
+  await expect(menu.getByRole("menuitemradio", { name: "라이트", exact: true })).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await expect(root).toHaveAttribute("data-theme-mode", "dark");
+  await expect(page.locator("body")).toHaveAttribute("data-theme-events", "5");
 
   await page.evaluate(() => localStorage.setItem("theme", "planner"));
   await page.reload();
   await expect(root).toHaveAttribute("data-theme-mode", "planner");
   await expect(root).toHaveAttribute("data-theme", "dark");
-  await expect(toggle.locator(".theme-toggle__label")).toHaveText("Planner");
+  await expect(toggle.locator(".theme-toggle__label")).toHaveText("플래너");
 });
 
 test("좁은 화면에서 메뉴와 본문 목차의 접기 동작이 유지된다", async ({ page }) => {

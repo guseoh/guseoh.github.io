@@ -11,3 +11,25 @@ test("댓글 외부 스크립트가 차단되면 GitHub 대체 경로를 안내�
   await expect(comments.locator("#utterances-comments")).not.toHaveAttribute("aria-busy", "true");
   await expect(comments.getByRole("link", { name: "GitHub에서 확인하기" })).toBeVisible();
 });
+
+
+test("댓글 iframe이 도착하지 않으면 10초 뒤 로딩 표시를 GitHub 대체 경로로 바꾼다", async ({ page }) => {
+  await page.route("https://utteranc.es/client.js", (route) =>
+    route.fulfill({ status: 200, contentType: "application/javascript", body: "/* iframe intentionally omitted */" })
+  );
+  const clientRequest = page.waitForRequest("https://utteranc.es/client.js");
+  await page.goto("/blog/security/basic1/");
+  const comments = page.locator(".comments-wrap");
+  await comments.scrollIntoViewIfNeeded();
+  await clientRequest;
+  await expect(comments.locator("[data-comments-loading]")).toBeVisible();
+  await expect(comments.locator("[data-comments-fallback]")).toBeHidden();
+
+  await page.waitForTimeout(8_000);
+  await expect(comments.locator("[data-comments-loading]")).toBeVisible();
+  await page.waitForTimeout(3_000);
+  await expect(comments.locator("[data-comments-fallback]")).toBeVisible();
+  await expect(comments.locator("[data-comments-loading]")).toBeHidden();
+  await expect(comments.locator("#utterances-comments")).not.toHaveAttribute("aria-busy", "true");
+  await expect(comments.getByRole("link", { name: "GitHub에서 확인하기" })).toBeVisible();
+});

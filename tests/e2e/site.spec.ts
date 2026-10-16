@@ -35,24 +35,23 @@ test("검색어와 필터가 결과에 반영된다", async ({ page }) => {
   await expect(page.locator("[data-search-list] .post-card").first()).toBeVisible();
 });
 
-test("테마 전환에 Planner 모드가 포함된다", async ({ page }) => {
+test("테마 선택 메뉴에 Planner 모드가 포함된다", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => localStorage.setItem("theme", "system"));
   await page.reload();
 
   const root = page.locator("html");
   const toggle = page.locator("#theme-toggle");
+  const menu = page.getByRole("menu", { name: "테마 선택" });
 
   await expect(root).toHaveAttribute("data-theme-mode", "system");
   await toggle.click();
-  await expect(root).toHaveAttribute("data-theme-mode", "light");
-  await toggle.click();
-  await expect(root).toHaveAttribute("data-theme-mode", "dark");
-  await toggle.click();
+  await menu.getByRole("menuitemradio", { name: "플래너", exact: true }).click();
   await expect(root).toHaveAttribute("data-theme-mode", "planner");
   await expect(root).toHaveAttribute("data-theme", "dark");
-  await expect(toggle.locator(".theme-toggle__label")).toHaveText("Planner");
+  await expect(toggle.locator(".theme-toggle__label")).toHaveText("플래너");
   await toggle.click();
+  await menu.getByRole("menuitemradio", { name: "시스템", exact: true }).click();
   await expect(root).toHaveAttribute("data-theme-mode", "system");
 });
 

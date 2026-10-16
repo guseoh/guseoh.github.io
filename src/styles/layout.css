@@ -152,6 +152,11 @@
   color: var(--link);
 }
 
+.theme-picker {
+  position: relative;
+  flex: 0 0 auto;
+}
+
 .theme-toggle {
   flex: 0 0 auto;
   min-height: 2.2rem;
@@ -159,7 +164,7 @@
   align-items: center;
   gap: 0.45rem;
   border: 1px solid var(--control-border);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--muted-readable);
   font-size: 0.84rem;
@@ -174,6 +179,81 @@
 .theme-toggle:focus-visible {
   border-color: color-mix(in srgb, var(--accent) 54%, var(--border));
   color: var(--link-hover);
+}
+
+.theme-menu {
+  position: absolute;
+  z-index: 90;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: min(18rem, calc(100vw - 1rem));
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-surface);
+  background: var(--surface);
+  box-shadow: 0 18px 36px -24px var(--shadow);
+}
+
+.theme-menu[hidden] {
+  display: none;
+}
+
+.theme-menu__option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1rem;
+  align-items: center;
+  gap: 0.08rem 0.6rem;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius-control) - 0.1rem);
+  padding: 0.5rem 0.6rem;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.theme-menu__option:hover,
+.theme-menu__option:focus-visible,
+.theme-menu__option[aria-checked="true"] {
+  border-color: color-mix(in srgb, var(--accent) 26%, var(--border));
+  background: var(--surface-hover);
+  color: var(--heading);
+}
+
+.theme-menu__name {
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.theme-menu__description {
+  grid-column: 1;
+  color: var(--muted-readable);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.theme-menu__check {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 0.85rem;
+  height: 0.85rem;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  color: var(--accent-strong);
+}
+
+.theme-menu__option[aria-checked="true"] .theme-menu__check::after {
+  width: 0.3rem;
+  height: 0.52rem;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  content: "";
+  transform: rotate(45deg) translate(-1px, -1px);
 }
 
 .theme-toggle__icon,

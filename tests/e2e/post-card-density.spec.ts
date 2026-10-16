@@ -30,13 +30,13 @@ test("그리드와 리스트 전환 상태는 카드 디자인 조정 후에도 
 
   const list = page.locator("#blog-post-list");
   const switcher = page.locator('[data-view-list-id="blog-post-list"]');
-  await switcher.getByRole("button", { name: "List view" }).click();
+  await switcher.getByRole("button", { name: "목록 보기" }).click();
   await expect(list).toHaveAttribute("data-view", "list");
-  await expect(switcher.getByRole("button", { name: "List view" })).toHaveAttribute("aria-pressed", "true");
+  await expect(switcher.getByRole("button", { name: "목록 보기" })).toHaveAttribute("aria-pressed", "true");
 
   await page.reload();
   await expect(list).toHaveAttribute("data-view", "list");
-  await switcher.getByRole("button", { name: "Grid view" }).click();
+  await switcher.getByRole("button", { name: "그리드 보기" }).click();
   await expect(list).toHaveAttribute("data-view", "grid");
 });
 
@@ -47,4 +47,13 @@ test("검색 결과에도 동일한 카드 밀도가 적용된다", async ({ pag
   const padding = await card.evaluate((element) => parseFloat(getComputedStyle(element).paddingTop));
   expect(padding).toBeGreaterThan(0);
   expect(padding).toBeLessThan(15);
+});
+
+
+test("게시글 카드에서 현재 카테고리와 같은 태그를 중복 노출하지 않는다", async ({ page }) => {
+  await page.goto("/blog/");
+  const card = page.locator('#blog-post-list [data-post-slug="jpa/persistence-context"]');
+  await expect(card).toBeVisible();
+  await expect(card.locator(".badge--category")).toContainText("JPA");
+  await expect(card.locator(".badge--tag").filter({ hasText: /^#?JPA$/i })).toHaveCount(0);
 });

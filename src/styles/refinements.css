@@ -4,12 +4,11 @@
  * to compare and roll back through the backup branch created for this work.
  */
 
-/* Approximate the compact density of a desktop browser at 90% zoom.
- * A fluid root scale keeps the 980/981px breakpoint continuous while limiting
- * reduction on narrow screens. Rem-based type, icons, gaps and TOC scale together.
- * This is an intentional visual density setting, not a browser zoom override. */
+/* Keep the Korean UI readable at desktop widths without an abrupt breakpoint.
+ * Rem-based type, spacing, icons and TOC share one fluid scale; this is not
+ * a browser-zoom override. */
 html {
-  font-size: clamp(84.375%, calc(100% - 0.15vw), 96%);
+  font-size: clamp(93.75%, calc(100% - 0.05vw), 100%);
 }
 
 @media (min-width: 981px) {

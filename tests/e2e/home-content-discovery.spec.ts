@@ -18,6 +18,18 @@ test("홈 최근 발행 글과 최근 수정 글은 중복되지 않고 발행�
   await expect(page.locator(".home-updated-posts")).toHaveCount(updatedSlugs.length > 0 ? 1 : 0);
 });
 
+test("빈 카테고리와 태그 탐색에는 0건 배지를 노출하지 않고 대체 경로를 제공한다", async ({ page }) => {
+  await page.goto("/categories/daily/");
+  await expect(page.locator(".archive-empty")).toContainText("아직 등록된 게시글이 없습니다.");
+  await expect(page.locator(".archive-empty a")).toHaveAttribute("href", "/categories/");
+  await expect(page.locator(".archive-filter-pill strong").filter({ hasText: /^0$/ })).toHaveCount(0);
+
+  await page.goto("/tags/architecture/");
+  await expect(page.locator(".archive-empty")).toContainText("아직 등록된 게시글이 없습니다.");
+  await expect(page.locator(".archive-empty a")).toHaveAttribute("href", "/tags/");
+  await expect(page.locator(".archive-filter-pill strong").filter({ hasText: /^0$/ })).toHaveCount(0);
+});
+
 test("Spring Security 카테고리에서 명시된 순서와 첫 글을 안내한다", async ({ page }) => {
   await page.goto("/categories/spring-security/");
   const reading = page.getByRole("region", { name: "이 주제 처음부터 읽기" });
@@ -49,9 +61,9 @@ test("404에서는 공개 Book·Series만 노출하고 다른 탐색 경로를 �
   const hasSeries = await page.locator(".library-series-grid .library-series-card").count() > 0;
   await page.goto("/404.html");
   const actions = page.locator(".about-actions");
-  await expect(actions.getByRole("link", { name: "Home" })).toBeVisible();
-  await expect(actions.getByRole("link", { name: "Categories" })).toBeVisible();
-  await expect(actions.getByRole("link", { name: "Search" })).toBeVisible();
+  await expect(actions.getByRole("link", { name: "홈" })).toBeVisible();
+  await expect(actions.getByRole("link", { name: "카테고리" })).toBeVisible();
+  await expect(actions.getByRole("link", { name: "검색" })).toBeVisible();
   await expect(actions.locator('a[href="/books/"]')).toHaveCount(hasBooks ? 1 : 0);
   await expect(actions.locator('a[href="/series/"]')).toHaveCount(hasSeries ? 1 : 0);
 });

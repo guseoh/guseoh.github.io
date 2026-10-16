@@ -167,3 +167,67 @@ test("JPA 텍스트 개념도를 코드와 구별하면서 텍스트 복사를 �
   await expect(realCode.first().locator(".code-block__language")).toHaveText("Java");
   await expect(realCode.first().getByRole("button", { name: "코드 블록 복사" })).toBeVisible();
 });
+
+
+test("JPA 개념도는 네 테마의 표면·텍스트 토큰을 따른다", async ({ page }) => {
+  for (const mode of ["system", "light", "dark", "planner"]) {
+    await page.goto("/blog/jpa/relationship-mapping/");
+    await page.evaluate((value) => localStorage.setItem("theme", value), mode);
+    await page.reload();
+    const diagram = page.locator(".post__content .code-block--diagram").first();
+    await expect(diagram).toBeVisible();
+    const colors = await diagram.evaluate((element) => {
+      const code = element.querySelector("pre code");
+      if (!(code instanceof HTMLElement)) throw new Error("Diagram text missing");
+      const probe = document.createElement("span");
+      probe.style.backgroundColor = "var(--surface-2)";
+      document.body.append(probe);
+      const expectedBackground = getComputedStyle(probe).backgroundColor;
+      probe.style.backgroundColor = "transparent";
+      probe.style.color = "var(--ink)";
+      const expectedText = getComputedStyle(probe).color;
+      probe.remove();
+      return {
+        background: getComputedStyle(element).backgroundColor,
+        expectedBackground,
+        text: getComputedStyle(code).color,
+        expectedText
+      };
+    });
+    expect(colors.background, mode).toBe(colors.expectedBackground);
+    expect(colors.text, mode).toBe(colors.expectedText);
+  }
+});
+
+test("이미지 확대 보기의 여백은 가로·세로 비율에 맞춰 달라진다", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(article);
+  const image = page.locator(".post__content img.post-lightbox-trigger").first();
+  await expect(image).toBeVisible();
+
+  const wideSvg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400"><rect width="1200" height="400" fill="#e6e9ed"/></svg>')}`;
+  await page.evaluate((src) => {
+    const target = document.querySelector(".post__content img.post-lightbox-trigger");
+    if (!(target instanceof HTMLImageElement)) throw new Error("Article image missing");
+    target.src = src;
+  }, wideSvg);
+  await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBe(1200);
+  await image.click();
+  const dialog = page.locator("#post-image-lightbox");
+  await expect(dialog).toHaveAttribute("data-aspect", "wide");
+  const wideMinHeight = await dialog.locator(".post-lightbox__frame").evaluate((element) => parseFloat(getComputedStyle(element).minHeight));
+  await page.keyboard.press("Escape");
+  await expect(image).toBeFocused();
+
+  const tallSvg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="1200"><rect width="400" height="1200" fill="#e6e9ed"/></svg>')}`;
+  await page.evaluate((src) => {
+    const target = document.querySelector(".post__content img.post-lightbox-trigger");
+    if (!(target instanceof HTMLImageElement)) throw new Error("Article image missing");
+    target.src = src;
+  }, tallSvg);
+  await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalHeight)).toBe(1200);
+  await image.click();
+  await expect(dialog).toHaveAttribute("data-aspect", "tall");
+  const tallMinHeight = await dialog.locator(".post-lightbox__frame").evaluate((element) => parseFloat(getComputedStyle(element).minHeight));
+  expect(tallMinHeight).toBeGreaterThan(wideMinHeight);
+});

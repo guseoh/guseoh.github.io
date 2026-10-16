@@ -17,13 +17,13 @@ const {
 // Primary navigation contains public destinations with content. Individual
 // topics remain in the sidebar; empty library pages retain their routes.
 const navItems = [
-  { href: "/blog/", label: "Posts" },
-  { href: "/categories/", label: "Categories" },
-  { href: "/tags/", label: "Tags" },
-  ...(hasPublishedBooks ? [{ href: "/books/", label: "Books" }] : []),
-  ...(hasPublishedSeries ? [{ href: "/series/", label: "Series" }] : []),
-  { href: "/about/", label: "About" },
-  { href: "/search/", label: "Search" }
+  { href: "/blog/", label: "글" },
+  { href: "/categories/", label: "카테고리" },
+  { href: "/tags/", label: "태그" },
+  ...(hasPublishedBooks ? [{ href: "/books/", label: "책" }] : []),
+  ...(hasPublishedSeries ? [{ href: "/series/", label: "연재" }] : []),
+  { href: "/about/", label: "소개" },
+  { href: "/search/", label: "검색" }
 ];
 
 function isActive(href: string) {
@@ -52,7 +52,7 @@ function isActive(href: string) {
         <span class="header-menu-toggle__line"></span>
       </button>
 
-      <nav id="top-nav" class="top-nav" aria-label="Primary navigation">
+      <nav id="top-nav" class="top-nav" aria-label="주요 메뉴">
         {
           navItems.map(({ href, label }) => (
             <a
