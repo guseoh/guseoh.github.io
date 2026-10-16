@@ -23,6 +23,7 @@ const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
       <div>
         <h1 class="blog-list-head__title">전체 글 ({posts.length})</h1>
         <p class="blog-list-head__description">{SITE_DESCRIPTION}</p>
+        <p class="blog-list-head__sort">정렬 기준: 최근 수정일순</p>
       </div>
 
       <PostViewSwitch listId="blog-post-list" storageKey="guseo:blog-list-view" />
@@ -31,7 +32,7 @@ const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
     <ul id="blog-post-list" class="post-list post-list--switch" data-post-list>
       {pagePosts.map((post) => (
         <li>
-          <PostCard post={post} />
+          <PostCard post={post} variant="updated" />
         </li>
       ))}
     </ul>

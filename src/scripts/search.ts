@@ -1,6 +1,7 @@
 import { getSearchSnippet, normalizeSearchText, scoreSearchItem, sortSearchResults, type SearchIndexItem } from "../utils/search";
 import { normalizeCategory } from "../utils/categories";
 import { formatTagName, getTagHref, resolveTagSlug } from "../utils/tags";
+import { formatPostDate } from "../utils/posts";
 
 type NavigationItem = {
   planned?: boolean;
@@ -19,11 +20,6 @@ type NavigationGroup = {
 const recentSearchKey = "guseo:recent-searches";
 const recentSearchLimit = 5;
 const collator = new Intl.Collator("ko-KR");
-const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit"
-});
 
 const form = document.querySelector("[data-search-form]");
 const input = document.getElementById("search-page-input");
@@ -218,10 +214,13 @@ function renderPost(post: SearchIndexItem, reasons: string[], query: string) {
   footer.className = "post-card__footer";
   const metaGroup = document.createElement("div");
   metaGroup.className = "post-card__meta";
-  metaGroup.append(textSpan("작성"));
+  const publishedDate = new Date(post.date);
+  const updatedDate = post.updated ? new Date(post.updated) : undefined;
+  const displayDate = updatedDate && updatedDate.valueOf() > publishedDate.valueOf() ? updatedDate : publishedDate;
+  metaGroup.append(textSpan(displayDate === updatedDate ? "수정" : "작성"));
   const time = document.createElement("time");
-  time.dateTime = post.date;
-  time.textContent = dateFormatter.format(new Date(post.date));
+  time.dateTime = displayDate.toISOString();
+  time.textContent = formatPostDate(displayDate);
   metaGroup.append(time, separator(), textSpan(post.readingTime));
 
   const badges = document.createElement("div");

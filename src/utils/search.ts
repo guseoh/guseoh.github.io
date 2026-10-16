@@ -8,6 +8,7 @@ export type SearchIndexItem = {
   tags: string[];
   series: string;
   date: string;
+  updated?: string;
   slug: string;
   url: string;
   readingTime: string;
@@ -40,6 +41,7 @@ export function buildSearchIndex(posts: CollectionEntry<"blog">[]): SearchIndexI
       tags: post.data.tags,
       series,
       date: post.data.date.toISOString(),
+      updated: post.data.updated?.toISOString(),
       slug: getPostSlug(post),
       url: getPostPath(post),
       readingTime: getReadingTime(post),
@@ -145,7 +147,7 @@ export function sortSearchResults(posts: SearchIndexItem[], query: string) {
     .filter(({ match }) => !normalizedQuery || match.score > 0)
     .sort((a, b) => {
       if (b.match.score !== a.match.score) return b.match.score - a.match.score;
-      return new Date(b.post.date).valueOf() - new Date(a.post.date).valueOf();
+      return new Date(b.post.updated ?? b.post.date).valueOf() - new Date(a.post.updated ?? a.post.date).valueOf();
     });
 
   return scored;

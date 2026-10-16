@@ -731,6 +731,14 @@
   font-size: 0.94rem;
 }
 
+.blog-list-head__sort,
+.search-sort-note {
+  margin-top: 0.35rem;
+  color: var(--muted-readable);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
 .view-switch {
   display: inline-flex;
   gap: 0.35rem;

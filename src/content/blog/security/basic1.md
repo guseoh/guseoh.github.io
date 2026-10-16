@@ -2,8 +2,8 @@
 title: "인증과 인가는 무엇일까?"
 description: "인증은 사용자의 신원을 확인하는 과정이고, 인가는 확인된 사용자가 어떤 리소스와 동작에 접근할 수 있는지 판단하는 과정이다."
 date: 2026-08-04
-updated: 2026-08-06
-lastVerified: 2026-08-05
+updated: 2026-10-17
+lastVerified: 2026-10-17
 slug: "security/basic1"
 aliases:
     - "/blog/spring-security/"
@@ -131,11 +131,11 @@ Authentication
 
 예를 들어:
 
-- 로그인하지 않는 사용자가 회원 전용 API를 요청한다.
+- 로그인하지 않은 사용자가 회원 전용 API를 요청한다.
 - 만료되거나 잘못된 인증 정보를 전송한다.
 - 서버가 요구하는 인증 방식을 사용하지 않았다.
 
-HTTP 표준에서 401은 유효한 인증 자격 증명이 없다는 의미다. 이름에 Unauthorized가 들어가지만, 실제로는 인증이 필요하거나 제공된 인증 정보가 유효하지 않은 상황에 가깝다.
+HTTP 표준에서 401은 유효한 인증 자격 증명이 없다는 의미다. 이름에 Unauthorized가 들어가지만, 실제로는 인증이 필요하거나 제공된 인증 정보가 유효하지 않은 상황에 가깝다. RFC 9110은 401 응답을 생성하는 서버가 대상 리소스에 적용되는 인증 challenge를 하나 이상 `WWW-Authenticate` 응답 헤더에 포함하도록 요구한다.
 
 자세한 정의는 [RFC 9110의 401 Unauthorized](https://www.rfc-editor.org/rfc/rfc9110.html#name-401-unauthorized)에서 확인할 수 있다.
 
