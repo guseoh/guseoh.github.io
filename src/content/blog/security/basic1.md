@@ -184,5 +184,5 @@ Spring Security에서 흔히 볼 수 있는 상황은 인증된 사용자가 필
 - [RFC 9110 — HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110.html)
 - [MDN — 401 Unauthorized](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401)
 - [MDN — 403 Forbidden](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403)
-- [[Spring Security] 인증(Authentication), 인가(Authorization)](https://jaykaybaek.tistory.com/30)
+- [Spring Security 인증(Authentication), 인가(Authorization)](https://jaykaybaek.tistory.com/30)
 - [Spring Security, 직접 구현하면서 이해해보자! — 인증과 인가](https://alstn113.tistory.com/50)

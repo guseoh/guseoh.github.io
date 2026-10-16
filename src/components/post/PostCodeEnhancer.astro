@@ -116,12 +116,11 @@
 
       const codeTitle = getMetaValue(pre, code, metaMarker, "codeTitle").trim();
       // Text diagrams opt into a semantic presentation without changing Shiki or code copy.
-      const isDiagram = ["text", "plaintext"].includes(getLanguageKey(pre).trim().toLowerCase())
-        && codeTitle.startsWith("그림: ");
+      const isDiagram = getLanguageKey(pre).trim().toLowerCase() === "diagram";
       if (isDiagram) {
         wrapper.classList.add("code-block--diagram");
         wrapper.setAttribute("role", "group");
-        wrapper.setAttribute("aria-label", codeTitle.slice(4));
+        wrapper.setAttribute("aria-label", "본문 개념도");
         language.textContent = "개념도";
         button.setAttribute("aria-label", "개념도 텍스트 복사");
       }

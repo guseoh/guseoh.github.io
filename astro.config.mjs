@@ -46,7 +46,7 @@ export default defineConfig({
     }),
     syntaxHighlight: {
       type: "shiki",
-      excludeLangs: ["math"]
+      excludeLangs: ["math", "diagram"]
     },
     shikiConfig: {
       themes: {
