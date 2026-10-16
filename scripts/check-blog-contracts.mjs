@@ -22,7 +22,7 @@ for (const file of files) {
 
   const slug = normalizePostSlug(readScalar(frontmatter, "slug"));
   const aliases = readList(frontmatter, "aliases").map(normalizeBlogPath);
-  const commentKey = normalizeBlogPath(readScalar(frontmatter, "commentKey"));
+  const commentKey = normalizeBlogPath(readScalar(frontmatter, "commentKey") || slug);
   const legacyPath = normalizeBlogPath(legacySlugFor(file));
   const draftValue = readScalar(frontmatter, "draft");
   const draft = draftValue === "true";

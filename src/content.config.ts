@@ -22,7 +22,7 @@ const blogSchema = z.object({
   tags: z.array(z.string()).default([]),
   slug: z.string().trim().min(1),
   aliases: z.array(z.string().trim().min(1)).default([]),
-  commentKey: z.string().trim().min(1),
+  commentKey: z.string().trim().min(1).optional(),
   book: z.string().trim().optional().refine(
     (bookId) => !bookId || configuredBookIds.has(bookId),
     {
