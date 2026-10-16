@@ -7,17 +7,20 @@ import ActivitySection from "../components/home/ActivitySection.astro";
 import ArchiveHero from "../components/home/ArchiveHero.astro";
 import { buildCategorySummary } from "../utils/categories";
 import LatestPosts from "../components/home/LatestPosts.astro";
+import FeaturedPosts from "../components/home/FeaturedPosts.astro";
 import RecentlyUpdatedPosts from "../components/home/RecentlyUpdatedPosts.astro";
 import ResumeReadingHome from "../components/home/ResumeReadingHome.astro";
 
 const posts = await getPublishedPostsSorted();
 // "최근 글"은 수정일이 아닌 최초 발행일로 정렬합니다.
 // 별도의 최근 수정 글 영역에 같은 글이 반복되지 않게 합니다.
-const latestPosts = [...posts].sort(
+const featuredPosts = posts.filter((post) => post.data.featured);
+const featuredIds = new Set(featuredPosts.map((post) => post.id));
+const latestPosts = [...posts].filter((post) => !featuredIds.has(post.id)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
     || getPostPath(a).localeCompare(getPostPath(b))
 );
-const latestPostIds = new Set(latestPosts.slice(0, BLOG_LIMITS.homePostLimit).map((post) => post.id));
+const latestPostIds = new Set([...featuredIds, ...latestPosts.slice(0, BLOG_LIMITS.homePostLimit).map((post) => post.id)]);
 const topics = buildCategorySummary(posts).slice(0, 3);
 const structuredData = {
   "@context": "https://schema.org",
@@ -42,6 +45,7 @@ const structuredData = {
 >
   <ArchiveHero topics={topics} />
   <ResumeReadingHome />
+  <FeaturedPosts posts={featuredPosts} />
   <LatestPosts posts={latestPosts} />
   <RecentlyUpdatedPosts posts={posts} excludePostIds={latestPostIds} />
   <ActivitySection posts={posts} username={SITE.githubActivityUsername} />

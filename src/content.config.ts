@@ -38,6 +38,7 @@ const blogSchema = z.object({
   chapter: z.number().int().positive().optional(),
   seriesOrder: z.number().optional(),
   heroImage: z.string().optional(),
+  featured: z.boolean().default(false),
   testedWith: z.record(z.string().trim().min(1), z.string().trim().min(1)).optional(),
   draft: z.boolean()
 }).superRefine((data, context) => {

@@ -17,6 +17,7 @@ testedWith: {}
 book: ""
 series: ""
 heroImage: "/og-image.svg"
+featured: true
 draft: false
 ---
 
