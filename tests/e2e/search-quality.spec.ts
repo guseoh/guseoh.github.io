@@ -87,3 +87,12 @@ test("인라인 코드 검색 결과에 주변 문맥을 표시한다", async ({
   const highlightedText = await snippet.locator("mark").allTextContents();
   expect(highlightedText).toContain("detach()");
 });
+
+
+test("검색 색인 로드 실패는 결과 없음 상태와 구분해 안내한다", async ({ page }) => {
+  await page.route("**/search-index.json", (route) => route.abort());
+  await page.goto("/search/?q=Spring");
+  await expect(page.locator("[data-search-meta]")).toContainText("검색 데이터를 불러오지 못했습니다");
+  await expect(page.locator("[data-search-empty]")).toBeHidden();
+  await expect(page.locator("#search-status")).toContainText("검색 결과를 표시할 수 없습니다");
+});
