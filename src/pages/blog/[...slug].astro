@@ -327,7 +327,7 @@ const breadcrumbStructuredData = {
               <p class="post-series__empty">{seriesContinuationMessage}</p>
             )}
 
-            {learningPathPosts.length > 3 && (previousLearningPost || nextLearningPost) && (
+            {learningPathPosts.length > 1 && (previousLearningPost || nextLearningPost) && (
               <nav class="post-learning-path__nav" aria-label="학습 경로 이전과 다음 글">
                 {previousLearningPost ? (
                   <a href={getPostPath(previousLearningPost)}>
@@ -348,10 +348,11 @@ const breadcrumbStructuredData = {
 
         <PostRelatedPosts relatedPosts={relatedPosts} />
 
-        <nav class="post-adjacent" aria-label="Previous and next posts">
+        <p class="post-adjacent-context">전체 글 탐색 · 최근 수정일 순서</p>
+        <nav class="post-adjacent" aria-label="전체 게시글의 이전 글과 다음 글">
           {olderPost ? (
             <a class="post-adjacent__card" href={getPostPath(olderPost)}>
-              <span>이전 글</span>
+              <span>전체 글 · 이전</span>
               <strong>{olderPost.data.title}</strong>
             </a>
           ) : (
@@ -360,7 +361,7 @@ const breadcrumbStructuredData = {
 
           {newerPost ? (
             <a class="post-adjacent__card post-adjacent__card--next" href={getPostPath(newerPost)}>
-              <span>다음 글</span>
+              <span>전체 글 · 다음</span>
               <strong>{newerPost.data.title}</strong>
             </a>
           ) : (

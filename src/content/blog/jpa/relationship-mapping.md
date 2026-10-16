@@ -16,7 +16,6 @@ tags:
 testedWith: {}
 book: ""
 series: ""
-chapter: 1
 heroImage: "/og-image.svg"
 draft: false
 ---

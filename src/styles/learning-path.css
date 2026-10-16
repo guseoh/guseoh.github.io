@@ -75,3 +75,11 @@
     text-align: left;
   }
 }
+
+/* Explain that archive adjacency differs from an authored learning path. */
+.post-adjacent-context {
+  margin: 1.7rem 0 0.6rem;
+  color: var(--muted-readable);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
