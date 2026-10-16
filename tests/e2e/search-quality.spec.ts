@@ -25,6 +25,27 @@ test("검색 색인은 본문과 코드만 별도로 담고 중복된 전체 sea
   expect(flyway?.bodyText).not.toContain("V2_1__create_member_email_index.sql");
 });
 
+test("글 목록과 기본 검색은 수정일순으로 정렬하고 수정 날짜를 일관되게 표시한다", async ({ page }) => {
+  await page.goto("/blog/");
+  await expect(page.locator(".blog-list-head__sort")).toHaveText("정렬 기준: 최근 수정일순");
+
+  const blogCards = page.locator("#blog-post-list [data-post-slug]");
+  await expect(blogCards.first()).toHaveAttribute("data-post-slug", "security/basic1");
+  const blogCardMeta = page.locator('#blog-post-list [data-post-slug="security/basic1"] .post-card__meta');
+  await expect(blogCardMeta).toContainText("수정");
+  await expect(blogCardMeta).toContainText("2026.10.17");
+
+  await page.goto("/search/");
+  await expect(page.locator(".search-sort-note")).toContainText("최근 수정일순");
+  await expect(page.locator("[data-search-meta]")).toHaveText(/^총 \d+개 결과$/);
+
+  const searchCards = page.locator("[data-search-list] [data-post-slug]");
+  await expect(searchCards.first()).toHaveAttribute("data-post-slug", "security/basic1");
+  const searchCardMeta = page.locator('[data-search-list] [data-post-slug="security/basic1"] .post-card__meta');
+  await expect(searchCardMeta).toContainText("수정");
+  await expect(searchCardMeta).toContainText("2026.10.17");
+});
+
 test("본문 일치는 해당 문맥을 보여주며 원문 검색어를 강조한다", async ({ page }) => {
   await page.goto("/search/?q=비영속");
   const jpa = page.locator('[data-search-list] [data-post-slug="jpa/persistence-context"]');

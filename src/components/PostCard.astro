@@ -16,7 +16,9 @@ const readingTime = getReadingTime(post);
 const description = getPostDescription(post);
 const postPath = getPostPath(post);
 const postSlug = getPostSlug(post);
-const displayDate = isUpdated && post.data.updated ? post.data.updated : post.data.date;
+const hasMeaningfulUpdate = Boolean(post.data.updated && post.data.updated.valueOf() > post.data.date.valueOf());
+const showUpdatedDate = isUpdated && hasMeaningfulUpdate;
+const displayDate = showUpdatedDate ? post.data.updated! : post.data.date;
 ---
 
 <article class:list={["card", "post-card", isLatest && "post-card--latest", isUpdated && "post-card--updated", featured && "post-card--featured"]} data-post-slug={postSlug}>
@@ -29,7 +31,7 @@ const displayDate = isUpdated && post.data.updated ? post.data.updated : post.da
 
   <div class="post-card__footer">
     <div class="post-card__meta">
-      <span>{isUpdated ? "수정" : "작성"}</span>
+      <span>{showUpdatedDate ? "수정" : "작성"}</span>
       <time datetime={displayDate.toISOString()}>{formatPostDate(displayDate)}</time>
       <span aria-hidden="true">·</span>
       <span>{readingTime}</span>

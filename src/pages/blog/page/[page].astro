@@ -44,6 +44,7 @@ const { pagePosts, currentPage, totalPages, postCount } = Astro.props as {
       <div>
         <h1 class="blog-list-head__title">All Posts ({postCount})</h1>
         <p class="blog-list-head__description">{SITE_DESCRIPTION}</p>
+        <p class="blog-list-head__sort">정렬 기준: 최근 수정일순</p>
       </div>
 
       <PostViewSwitch listId={`blog-post-list-${currentPage}`} storageKey="guseo:blog-list-view" />
@@ -52,7 +53,7 @@ const { pagePosts, currentPage, totalPages, postCount } = Astro.props as {
     <ul id={`blog-post-list-${currentPage}`} class="post-list post-list--switch" data-post-list>
       {pagePosts.map((post) => (
         <li>
-          <PostCard post={post} />
+          <PostCard post={post} variant="updated" />
         </li>
       ))}
     </ul>

@@ -9,6 +9,7 @@ const navigationGroupsJson = JSON.stringify(navigationData);
 <BaseLayout title="devjune.dev | 검색" description={`검색과 필터 - ${SITE_DESCRIPTION}`}>
   <section class="hero search-hero">
     <h1>검색</h1>
+    <p class="search-sort-note">검색어가 없으면 최근 수정일순, 검색어를 입력하면 일치도가 높은 순서로 표시합니다.</p>
     <p id="search-status" role="status" aria-live="polite" aria-atomic="true">검색 데이터를 불러오는 중입니다.</p>
 
     <form class="search-page-form" action="/search/" method="get" role="search" data-search-form aria-busy="true">
