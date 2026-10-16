@@ -93,3 +93,13 @@ test("홈 대표 글과 최근 발행 글은 중복되지 않고 활동 그래�
   await expect(details).toHaveAttribute("open", "");
   await expect(details.locator(".activity-panel")).toHaveCount(2);
 });
+
+
+test("홈의 RSS 구독 진입점은 공개 피드와 연결된다", async ({ page, request }) => {
+  await page.goto("/");
+  const link = page.getByRole("link", { name: "새 글 RSS 구독" });
+  await expect(link).toHaveAttribute("href", "/rss.xml");
+  const response = await request.get("/rss.xml");
+  expect(response.ok()).toBe(true);
+  expect(await response.text()).toContain("<rss");
+});
