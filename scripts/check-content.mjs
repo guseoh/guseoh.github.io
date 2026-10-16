@@ -187,7 +187,7 @@ function checkDates(relativePath, frontmatter) {
 }
 
 function checkRequiredFrontmatter(relativePath, lines, frontmatter) {
-  for (const key of ["title", "description", "date", "category", "slug", "commentKey", "draft"]) {
+  for (const key of ["title", "description", "date", "category", "slug", "draft"]) {
     const entry = frontmatter.get(key);
     if (!entry || String(entry.value ?? "").trim().length === 0) {
       fail(relativePath, 1, `frontmatter에 \`${key}\`가 필요합니다.`);
