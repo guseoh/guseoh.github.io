@@ -12,7 +12,7 @@
     post.dataset.headingAnchorsReady = "true";
 
     const ensureHeadingActions = () => {
-      const headings = Array.from(post.querySelectorAll("h2[id], h3[id], h4[id]"));
+      const headings = Array.from(post.querySelectorAll(".post__content h2[id], .post__content h3[id], .post__content h4[id]"));
 
       for (const heading of headings) {
         if (!(heading instanceof HTMLElement)) continue;
