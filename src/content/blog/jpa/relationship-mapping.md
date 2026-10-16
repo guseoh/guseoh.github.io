@@ -38,7 +38,7 @@ public class Order {
 
 테이블은 객체 참조 대신 **외래 키(Foreign Key)** 를 사용한다.
 
-```text
+```text title="그림: 외래 키 컬럼"
 orders
 ----------------
 id
@@ -74,7 +74,7 @@ ORM을 사용하면 객체 모델에서는 객체 참조를 유지하면서, JPA
 
 한 명의 회원이 여러 주문을 만들 수 있다고 가정 해보면, 데이터베이스에서는 여러 `orders` 행이 하나의 `members` 행을 참조한다.
 
-```text
+```text title="그림: 다대일 관계"
 Member 1 ───── N Order
 ```
 
@@ -112,7 +112,7 @@ private Member member;
 
 따라서 `Order.member`는 `orders.member_id`를 통해 `members.id`와 연결된다.
 
-```text
+```text title="그림: JPA 연관관계 매핑"
 Order.member
       │
       │ JPA 매핑
@@ -202,7 +202,7 @@ private Member member;
 
 Hibernate는 대표적으로 **프록시(Proxy)** 를 사용한다.
 
-```text
+```text title="그림: 주문과 회원의 식별자"
 Order
 id = 100
 member_id = 1
@@ -210,7 +210,7 @@ member_id = 1
 
 `Order`를 조회하면 `member_id = 1`이라는 외래 키 값은 알고 있다. 하지만 지연 로딩이 적용되어 있다면 이 시점에 `members` 테이블까지 조회하지 않고 실제 `Member`를 대신할 프록시 객체를 둘 수 있다.
 
-```text
+```text title="그림: 지연 로딩 프록시"
 Order
  ├─ id = 100
  └─ member
@@ -245,7 +245,7 @@ String memberName = order.getMember().getName();
 
 프록시가 초기화되지 않은 상태에서 실제 엔티티의 값이 필요해지면 Hibernate가 프록시를 초기화한다.
 
-```text
+```text title="그림: 프록시 초기화 과정"
 order.getMember().getName()
         ↓
 Member Proxy
@@ -259,7 +259,7 @@ Member Proxy
 
 초기화 과정에서 필요한 `Member`의 상태가 아직 로딩되지 않았다면 Hibernate는 데이터베이스에서 해당 엔티티를 조회하고 영속성 컨텍스트에서 관리한다.
 
-```text
+```text title="그림: 데이터 조회 흐름"
 프록시 초기화
       ↓
 Member 상태가 필요한가?

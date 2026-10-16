@@ -289,3 +289,18 @@
     padding: 7px 9px;
   }
 }
+
+/* Explicit text diagrams are visual explanations, not executable code. */
+.post .post__content .code-block--diagram {
+  background: var(--surface-2);
+  border-style: dashed;
+}
+.post .post__content .code-block--diagram .code-block__header {
+  background: var(--surface-2);
+}
+.post .post__content .code-block--diagram pre {
+  background: transparent !important;
+}
+.post .post__content .code-block--diagram pre code {
+  color: var(--ink);
+}

@@ -154,3 +154,16 @@ test("코드 언어 표시줄은 데스크톱·모바일에서 낮은 높이를 
     }
   }
 });
+
+
+test("JPA 텍스트 개념도를 코드와 구별하면서 텍스트 복사를 유지한다", async ({ page }) => {
+  await page.goto("/blog/jpa/relationship-mapping/");
+  const diagrams = page.locator(".post__content .code-block--diagram");
+  await expect(diagrams).toHaveCount(7);
+  await expect(diagrams.first().locator(".code-block__language")).toHaveText("개념도");
+  await expect(diagrams.first().getByRole("button", { name: "개념도 텍스트 복사" })).toBeVisible();
+  const realCode = page.locator(".post__content .code-block:not(.code-block--diagram)");
+  expect(await realCode.count()).toBeGreaterThan(0);
+  await expect(realCode.first().locator(".code-block__language")).toHaveText("Java");
+  await expect(realCode.first().getByRole("button", { name: "코드 블록 복사" })).toBeVisible();
+});
