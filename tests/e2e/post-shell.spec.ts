@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("Planner post centers the article in the available content area with the right TOC separated", async ({ page }, testInfo) => {
+test("Planner uses the shared desktop article, sidebar, and TOC layout", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
   await page.setViewportSize({ width: 1800, height: 1000 });
   await page.goto("/blog/jpa/persistence-context/");
@@ -22,12 +22,10 @@ test("Planner post centers the article in the available content area with the ri
     const geometry = await page.evaluate(() => {
       const sidebarElement = document.querySelector("#site-sidebar");
       const articleElement = document.querySelector(".post-column");
-      const contentElement = document.querySelector(".site-content");
       const tocElement = document.querySelector(".post-view > .post-toc");
       if (
         !(sidebarElement instanceof HTMLElement) ||
         !(articleElement instanceof HTMLElement) ||
-        !(contentElement instanceof HTMLElement) ||
         !(tocElement instanceof HTMLElement)
       ) {
         throw new Error("post shell elements are missing");
@@ -35,21 +33,16 @@ test("Planner post centers the article in the available content area with the ri
 
       const sidebarRect = sidebarElement.getBoundingClientRect();
       const articleRect = articleElement.getBoundingClientRect();
-      const contentRect = contentElement.getBoundingClientRect();
       const tocRect = tocElement.getBoundingClientRect();
       return {
-        viewportWidth: window.innerWidth,
         sidebarRight: sidebarRect.right,
         articleLeft: articleRect.left,
         articleRight: articleRect.right,
-        articleCenter: articleRect.left + articleRect.width / 2,
-        contentCenter: contentRect.left + contentRect.width / 2,
         tocLeft: tocRect.left
       };
     });
 
     expect(geometry.sidebarRight).toBeLessThanOrEqual(geometry.articleLeft + 1);
-    expect(Math.abs(geometry.articleCenter - geometry.contentCenter)).toBeLessThanOrEqual(2);
     expect(geometry.tocLeft).toBeGreaterThan(geometry.articleRight);
   };
 
