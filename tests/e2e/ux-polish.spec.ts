@@ -13,7 +13,7 @@ test("홈의 최근 글 강조와 주요 CTA가 정상적으로 보인다", asyn
   expect(bg).not.toBe("rgba(0, 0, 0, 0)");
 });
 
-test("넓은 화면에서는 게시글 카드가 읽기 편한 3열로 정렬된다", async ({ page }, testInfo) => {
+test("홈 최근 글은 균형 잡힌 2열, 전체 글은 3열 그리드를 사용한다", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const route of ["/", "/blog/"]) {
@@ -22,10 +22,10 @@ test("넓은 화면에서는 게시글 카드가 읽기 편한 3열로 정렬된
     const toggle = route === "/"
       ? page.locator('[data-view-list-id="home-latest-post-list"]')
       : page.locator('[data-view-list-id="blog-post-list"]');
-    await toggle.getByRole("button", { name: "Grid view" }).click();
+    await toggle.getByRole("button", { name: "그리드 보기" }).click();
     await expect(grid).toHaveAttribute("data-view", "grid");
     const widths = await grid.evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
-    expect(widths).toBe(3);
+    expect(widths).toBe(route === "/" ? 2 : 3);
   }
 });
 
@@ -33,7 +33,7 @@ test("데스크톱 목록 보기는 제목과 메타 정보의 두 영역으로 
   test.skip(!testInfo.project.name.startsWith("desktop"));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/blog/");
-  await page.locator('[data-view-list-id="blog-post-list"]').getByRole("button", { name: "List view" }).click();
+  await page.locator('[data-view-list-id="blog-post-list"]').getByRole("button", { name: "목록 보기" }).click();
   const list = page.locator("#blog-post-list");
   await expect(list).toHaveAttribute("data-view", "list");
   const card = list.locator(".post-card").first();

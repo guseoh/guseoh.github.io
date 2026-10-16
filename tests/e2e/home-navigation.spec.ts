@@ -58,6 +58,6 @@ test("사이드바에는 글이 있는 주제만 표시하고 카테고리 목�
   await expect(sidebar.getByRole("link", { name: /전체 글/ })).toBeVisible();
   await page.locator("#sidebar-collapse-toggle").click();
   await page.goto("/categories/");
-  await expect(page.locator("main h1")).toHaveText("Categories");
+  await expect(page.locator("main h1")).toHaveText("카테고리");
   await expect(page.locator(".category-menu--page .category-menu__group").first()).toBeVisible();
 });

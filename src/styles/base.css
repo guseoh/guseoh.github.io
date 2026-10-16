@@ -21,7 +21,8 @@ body {
     radial-gradient(circle at top left, var(--page-glow), transparent 28rem),
     linear-gradient(180deg, var(--bg), var(--bg-deep));
   font-family: var(--font-ui);
-  line-height: 1.68;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-ui);
   transition: color 160ms ease, background-color 160ms ease;
 }
 
@@ -90,7 +91,7 @@ h4 {
   color: var(--heading);
   font-family: var(--font-heading);
   font-weight: 750;
-  line-height: 1.25;
+  line-height: var(--line-height-heading);
   letter-spacing: 0;
 }
 

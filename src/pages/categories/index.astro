@@ -9,9 +9,9 @@ const posts = await getPublishedPosts();
 const categoryHierarchy = buildCategoryHierarchy(posts);
 ---
 
-<BaseLayout title="devjune.dev | Categories" description={SITE_DESCRIPTION}>
+<BaseLayout title="devjune.dev | 카테고리" description={SITE_DESCRIPTION}>
   <section class="hero">
-    <h1>Categories</h1>
+    <h1>카테고리</h1>
     <p>게시글에 지정된 카테고리 기준으로 학습/개선 기록을 묶어둔 공간입니다.</p>
   </section>
 
@@ -22,7 +22,7 @@ const categoryHierarchy = buildCategoryHierarchy(posts);
     totalCount={posts.length}
     currentPath={Astro.url.pathname}
     showAllLink={true}
-    label="Categories page menu"
+    label="카테고리 페이지 메뉴"
   />
 </BaseLayout>
 

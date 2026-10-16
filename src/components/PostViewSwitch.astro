@@ -9,7 +9,7 @@ interface Props {
 const {
   listId,
   storageKey,
-  ariaLabel = "Toggle post list view",
+  ariaLabel = "게시글 보기 방식",
   defaultView = "grid"
 } = Astro.props as Props;
 ---
@@ -23,7 +23,7 @@ const {
   data-view-storage-key={storageKey}
   data-view-default={defaultView}
 >
-  <button type="button" class="view-switch__button" data-view-button="grid" aria-label="Grid view">
+  <button type="button" class="view-switch__button" data-view-button="grid" aria-label="그리드 보기">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <rect x="4" y="4" width="6" height="6"></rect>
       <rect x="14" y="4" width="6" height="6"></rect>
@@ -31,7 +31,7 @@ const {
       <rect x="14" y="14" width="6" height="6"></rect>
     </svg>
   </button>
-  <button type="button" class="view-switch__button" data-view-button="list" aria-label="List view">
+  <button type="button" class="view-switch__button" data-view-button="list" aria-label="목록 보기">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M5 7h14M5 12h14M5 17h14"></path>
     </svg>

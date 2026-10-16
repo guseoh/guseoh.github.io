@@ -10,7 +10,7 @@ interface Props {
 const { title = SITE_TITLE, topics = [] } = Astro.props as Props;
 ---
 
-<section class="archive-hero archive-hero--simple" aria-label="Blog intro">
+<section class="archive-hero archive-hero--simple" aria-label="블로그 소개">
   <div class="archive-hero__intro">
     <p class="archive-hero__eyebrow">{title}</p>
     <h1>문제가 발생한 이유를 찾고 직접 검증하며 개선하는 과정을 좋아합니다.</h1>
@@ -25,7 +25,7 @@ const { title = SITE_TITLE, topics = [] } = Astro.props as Props;
   {topics.length > 0 && (
     <nav class="archive-hero__topics" aria-label="주제 바로가기">
       <div class="archive-hero__topics-head">
-        <p class="archive-hero__topics-kicker">Explore topics</p>
+        <p class="archive-hero__topics-kicker">주제 탐색</p>
         <p class="archive-hero__topics-title">관심 있는 주제부터 읽기</p>
       </div>
       <ul class="archive-hero__topic-list">

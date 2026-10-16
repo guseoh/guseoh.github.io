@@ -1820,7 +1820,7 @@ html[data-theme="dark"] .post .markdown-alert :not(pre) > code {
 }
 
 .post-lightbox__frame {
-  min-height: min(70vh, 42rem);
+  min-height: min(58vh, 36rem);
   display: grid;
   place-items: center;
   background: #0b0f14;
@@ -2122,6 +2122,22 @@ html.post-lightbox-open {
     min-height: 58vh;
     padding: 0.5rem;
   }
+}
+
+/* Let portrait, square and landscape images use different frame whitespace. */
+.post-lightbox[data-aspect="wide"] .post-lightbox__frame {
+  min-height: min(42vh, 28rem);
+  padding: clamp(0.4rem, 1vw, 0.85rem);
+}
+
+.post-lightbox[data-aspect="square"] .post-lightbox__frame {
+  min-height: min(58vh, 36rem);
+  padding: clamp(0.5rem, 1.2vw, 1rem);
+}
+
+.post-lightbox[data-aspect="tall"] .post-lightbox__frame {
+  min-height: min(74vh, 44rem);
+  padding: clamp(0.5rem, 1.2vw, 1rem);
 }
 
 @media print {

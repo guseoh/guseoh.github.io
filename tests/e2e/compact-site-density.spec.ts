@@ -33,8 +33,8 @@ test("90% 브라우저 축소에 가까운 화면 밀도를 기본 데스크톱�
       };
     });
 
-    expect(size.root).toBeGreaterThanOrEqual(13.45);
-    expect(size.root).toBeLessThanOrEqual(14.6);
+    expect(size.root).toBeGreaterThanOrEqual(14.95);
+    expect(size.root).toBeLessThanOrEqual(15.55);
     expect(size.sidebar).toBeGreaterThanOrEqual(233);
     expect(size.sidebar).toBeLessThanOrEqual(272);
     expect(size.articleLeft).toBeGreaterThanOrEqual(size.sidebarRight + 8);
@@ -58,6 +58,6 @@ test("모바일은 읽기 가능한 글자 크기를 유지하고 테마에 따�
       await expect(page.locator(".post__content")).toBeVisible();
     }
     expect(Math.max(...sizes) - Math.min(...sizes)).toBeLessThan(0.1);
-    expect(sizes[0]).toBeGreaterThanOrEqual(14.45);
+    expect(sizes[0]).toBeGreaterThanOrEqual(15.4);
   }
 });

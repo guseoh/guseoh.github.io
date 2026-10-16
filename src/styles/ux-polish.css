@@ -220,11 +220,12 @@ html[data-theme="dark"] .post {
   background: color-mix(in srgb, var(--accent-soft) 75%, var(--surface));
 }
 
-/* Responsive composition; avoid changing the user's preferred compact scale. */
-/* Three columns keep longer Korean titles readable on wide screens,
- * and avoid a half-empty last row for small article collections. */
+/* Keep the homepage's four recent posts balanced while archive grids use three columns. */
 @media (min-width: 1200px) {
-  .home-post-list.post-list--switch[data-view="grid"],
+  .home-post-list.post-list--switch[data-view="grid"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .post-list--switch:not(.home-post-list)[data-view="grid"] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

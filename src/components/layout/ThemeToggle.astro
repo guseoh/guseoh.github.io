@@ -1,35 +1,65 @@
 ---
 ---
 
-<button
-  id="theme-toggle"
-  class="theme-toggle"
-  type="button"
-  aria-label="현재 테마: System. 테마를 전환합니다."
-  data-theme="light"
-  data-theme-mode="system"
-  title="현재 테마: System"
->
-  <span class="theme-toggle__icon" aria-hidden="true">
-    <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" focusable="false">
-      <path d="M20 14.25A8.25 8.25 0 0 1 9.75 4a8.26 8.26 0 1 0 10.25 10.25Z"></path>
-    </svg>
-    <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" focusable="false">
-      <circle cx="12" cy="12" r="3.6"></circle>
-      <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"></path>
-    </svg>
-    <svg class="theme-icon theme-icon--planner" viewBox="0 0 24 24" focusable="false">
-      <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"></rect>
-      <path d="M8 2.8v3.4M16 2.8v3.4M3.5 8.7h17M8.2 14.2l2.1 2.1 5-5"></path>
-    </svg>
-  </span>
-  <span class="theme-toggle__label">System</span>
-</button>
+<div class="theme-picker" id="theme-picker">
+  <button
+    id="theme-toggle"
+    class="theme-toggle"
+    type="button"
+    aria-label="테마 선택. 현재 시스템"
+    aria-haspopup="menu"
+    aria-controls="theme-menu"
+    aria-expanded="false"
+    data-theme="light"
+    data-theme-mode="system"
+    title="테마 선택. 현재 시스템"
+  >
+    <span class="theme-toggle__icon" aria-hidden="true">
+      <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" focusable="false">
+        <path d="M20 14.25A8.25 8.25 0 0 1 9.75 4a8.26 8.26 0 1 0 10.25 10.25Z"></path>
+      </svg>
+      <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" focusable="false">
+        <circle cx="12" cy="12" r="3.6"></circle>
+        <path d="M12 2.5v2.2M12 19.3v2.2M21.5 12h-2.2M4.7 12H2.5M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6M18.7 18.7l-1.6-1.6M6.9 6.9L5.3 5.3"></path>
+      </svg>
+      <svg class="theme-icon theme-icon--planner" viewBox="0 0 24 24" focusable="false">
+        <rect x="3.5" y="4.5" width="17" height="16" rx="2.5"></rect>
+        <path d="M8 2.8v3.4M16 2.8v3.4M3.5 8.7h17M8.2 14.2l2.1 2.1 5-5"></path>
+      </svg>
+    </span>
+    <span class="theme-toggle__label">시스템</span>
+  </button>
+  <div id="theme-menu" class="theme-menu" role="menu" aria-label="테마 선택" hidden>
+    <button type="button" class="theme-menu__option" role="menuitemradio" data-theme-option="system" aria-label="시스템" aria-checked="true">
+      <span class="theme-menu__name">시스템</span>
+      <span class="theme-menu__description">기기 설정에 맞춥니다</span>
+      <span class="theme-menu__check" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="theme-menu__option" role="menuitemradio" data-theme-option="light" aria-label="라이트" aria-checked="false">
+      <span class="theme-menu__name">라이트</span>
+      <span class="theme-menu__description">밝은 배경으로 읽습니다</span>
+      <span class="theme-menu__check" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="theme-menu__option" role="menuitemradio" data-theme-option="dark" aria-label="다크" aria-checked="false">
+      <span class="theme-menu__name">다크</span>
+      <span class="theme-menu__description">어두운 배경으로 읽습니다</span>
+      <span class="theme-menu__check" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="theme-menu__option" role="menuitemradio" data-theme-option="planner" aria-label="플래너" aria-checked="false">
+      <span class="theme-menu__name">플래너</span>
+      <span class="theme-menu__description">집중형 파란색 테마</span>
+      <span class="theme-menu__check" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
 
 <script is:inline>
   (() => {
     const root = document.documentElement;
+    const picker = document.getElementById("theme-picker");
     const themeButton = document.getElementById("theme-toggle");
+    const menu = document.getElementById("theme-menu");
+    const themeOptions = Array.from(menu?.querySelectorAll("[data-theme-option]") ?? []);
     const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
     const label = themeButton?.querySelector(".theme-toggle__label");
     const themeModes = ["system", "light", "dark", "planner"];
@@ -49,27 +79,46 @@
       return themeMedia.matches ? "dark" : "light";
     };
 
-    const getThemeModeLabel = (mode) => {
-      if (mode === "light") return "Light";
-      if (mode === "dark") return "Dark";
-      if (mode === "planner") return "Planner";
-      return "System";
-    };
+    const getThemeModeLabel = (mode) => ({
+      system: "시스템",
+      light: "라이트",
+      dark: "다크",
+      planner: "플래너"
+    })[mode] ?? "시스템";
 
     const updateThemeButton = (mode, theme) => {
       if (!(themeButton instanceof HTMLButtonElement)) return;
 
       const current = getThemeModeLabel(mode);
-      const effective = mode === "system" ? ` (${theme === "dark" ? "Dark" : "Light"})` : "";
+      const effective = mode === "system" ? ` (현재 ${theme === "dark" ? "다크" : "라이트"})` : "";
       themeButton.dataset.theme = theme;
       themeButton.dataset.themeMode = mode;
       themeButton.removeAttribute("aria-pressed");
-      themeButton.setAttribute("aria-label", `현재 테마: ${current}${effective}. 테마를 전환합니다.`);
-      themeButton.title = `현재 테마: ${current}${effective}`;
+      themeButton.setAttribute("aria-label", `테마 선택. 현재 ${current}${effective}`);
+      themeButton.title = `테마 선택. 현재 ${current}${effective}`;
 
       if (label instanceof HTMLElement) {
         label.textContent = current;
       }
+
+      for (const option of themeOptions) {
+        if (!(option instanceof HTMLButtonElement)) continue;
+        option.setAttribute("aria-checked", option.dataset.themeOption === mode ? "true" : "false");
+      }
+    };
+
+    const setMenuOpen = (open, { focusSelected = false, restoreFocus = false } = {}) => {
+      if (!(menu instanceof HTMLElement) || !(themeButton instanceof HTMLButtonElement)) return;
+      menu.hidden = !open;
+      themeButton.setAttribute("aria-expanded", String(open));
+
+      if (focusSelected && open) {
+        const selected = themeOptions.find((option) => option instanceof HTMLButtonElement
+          && option.dataset.themeOption === root.getAttribute("data-theme-mode"));
+        (selected instanceof HTMLButtonElement ? selected : themeOptions[0])?.focus();
+      }
+
+      if (restoreFocus && !open) themeButton.focus();
     };
 
     const applyThemeMode = (mode, { persist = true, notify = true } = {}) => {
@@ -96,11 +145,52 @@
 
     if (themeButton instanceof HTMLButtonElement) {
       themeButton.addEventListener("click", () => {
-        const mode = root.getAttribute("data-theme-mode") || getStoredThemeMode();
-        const index = Math.max(0, themeModes.indexOf(mode));
-        applyThemeMode(themeModes[(index + 1) % themeModes.length]);
-      }, true);
+        const open = menu instanceof HTMLElement && menu.hidden;
+        setMenuOpen(open, { focusSelected: open });
+      });
     }
+
+    if (menu instanceof HTMLElement) {
+      menu.addEventListener("click", (event) => {
+        const target = event.target;
+        const option = target instanceof Element ? target.closest("[data-theme-option]") : null;
+        if (!(option instanceof HTMLButtonElement)) return;
+        applyThemeMode(option.dataset.themeOption);
+        setMenuOpen(false, { restoreFocus: true });
+      });
+
+      menu.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          setMenuOpen(false, { restoreFocus: true });
+          return;
+        }
+
+        const navigationKeys = ["ArrowDown", "ArrowUp", "Home", "End"];
+        if (!navigationKeys.includes(event.key)) return;
+        const currentIndex = themeOptions.indexOf(document.activeElement);
+        const lastIndex = themeOptions.length - 1;
+        const nextIndex = event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? lastIndex
+            : (currentIndex + (event.key === "ArrowDown" ? 1 : -1) + themeOptions.length) % themeOptions.length;
+        event.preventDefault();
+        themeOptions[nextIndex]?.focus();
+      });
+    }
+
+    document.addEventListener("pointerdown", (event) => {
+      if (picker instanceof HTMLElement && event.target instanceof Node && !picker.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    });
+
+    document.addEventListener("focusin", (event) => {
+      if (picker instanceof HTMLElement && event.target instanceof Node && !picker.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    });
 
     window.addEventListener("storage", (event) => {
       if (event.key !== "theme") return;

@@ -6,14 +6,14 @@ import navigationData from "../data/navigation.json";
 const navigationGroupsJson = JSON.stringify(navigationData);
 ---
 
-<BaseLayout title="devjune.dev | Search" description={`검색과 필터 - ${SITE_DESCRIPTION}`}>
+<BaseLayout title="devjune.dev | 검색" description={`검색과 필터 - ${SITE_DESCRIPTION}`}>
   <section class="hero search-hero">
-    <h1>Search</h1>
-    <p id="search-status" aria-live="polite">검색어를 입력하면 결과가 표시됩니다.</p>
+    <h1>검색</h1>
+    <p id="search-status" role="status" aria-live="polite" aria-atomic="true">검색 데이터를 불러오는 중입니다.</p>
 
-    <form class="search-page-form" action="/search/" method="get" role="search" data-search-form>
+    <form class="search-page-form" action="/search/" method="get" role="search" data-search-form aria-busy="true">
       <label class="sr-only" for="search-page-input">검색어</label>
-      <input id="search-page-input" name="q" type="search" placeholder="Spring, OS, Board" autocomplete="off" />
+      <input id="search-page-input" name="q" type="search" placeholder="예: JPA, Spring Security, Flyway" autocomplete="off" />
 
       <label class="sr-only" for="search-category-filter">카테고리</label>
       <select id="search-category-filter" name="category" data-search-category>
@@ -25,8 +25,8 @@ const navigationGroupsJson = JSON.stringify(navigationData);
         <option value="">전체 태그</option>
       </select>
 
-      <button type="submit">Search</button>
-      <a class="search-reset-link" href="/search/">Reset</a>
+      <button type="submit">검색</button>
+      <a class="search-reset-link" href="/search/">초기화</a>
     </form>
   </section>
 
@@ -38,9 +38,17 @@ const navigationGroupsJson = JSON.stringify(navigationData);
     <div class="search-recent__list" data-search-recent-list></div>
   </section>
 
-  <div class="search-results-meta" data-search-meta hidden></div>
+  <div class="search-results-meta" data-search-meta role="status" aria-live="polite" hidden></div>
   <ul class="post-list search-results" data-search-list aria-live="polite"></ul>
-  <p class="section-empty search-empty" data-search-empty hidden>조건에 맞는 글이 없습니다.</p>
+  <section class="section-empty search-empty" data-search-empty role="region" aria-label="검색 결과 없음" aria-live="polite" aria-atomic="true" hidden>
+    <h2 class="search-empty__title">조건에 맞는 글이 없습니다.</h2>
+    <p class="search-empty__description">검색어를 바꾸거나 필터를 초기화해 보세요.</p>
+    <div class="search-empty__actions">
+      <a href="/search/">조건 초기화</a>
+      <a href="/categories/">카테고리별 탐색</a>
+      <a href="/tags/">태그별 탐색</a>
+    </div>
+  </section>
   <script is:inline id="search-navigation-groups" type="application/json" set:html={navigationGroupsJson}></script>
 
   <script>

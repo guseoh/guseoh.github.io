@@ -74,7 +74,7 @@ const tagSummary = buildArchiveTagSummary(allPosts);
     robots="noindex,follow"
   >
     <section class="hero post-alias-notice" aria-labelledby="tag-alias-title">
-      <p class="library-hero__eyebrow">Moved</p>
+      <p class="library-hero__eyebrow">주소 변경</p>
       <h1 id="tag-alias-title">태그 주소가 변경되었습니다.</h1>
       <p>같은 주제의 한글·영문 주소를 하나로 통합했습니다.</p>
       <a href={canonicalPath}>#{tagName} 태그로 이동</a>
@@ -88,7 +88,7 @@ const tagSummary = buildArchiveTagSummary(allPosts);
   >
     <section class="hero">
       <h1>#{tagName}</h1>
-      <p>{posts.length}개의 게시글이 이 핵심 태그에 연결되어 있습니다.</p>
+      <p>{posts.length > 0 ? `${posts.length}개의 게시글이 이 핵심 태그에 연결되어 있습니다.` : "이 태그에는 아직 공개된 글이 없습니다."}</p>
     </section>
 
     <nav class="archive-filter-list" aria-label="태그 선택">
@@ -109,7 +109,7 @@ const tagSummary = buildArchiveTagSummary(allPosts);
         ))}
       </ul>
     ) : (
-      <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다.</p>
+      <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다. <a href="/tags/">다른 태그 보기</a></p>
     )}
   </BaseLayout>
 )}

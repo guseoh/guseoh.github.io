@@ -13,7 +13,7 @@ const { posts, limit = HOME_POST_LIMIT } = Astro.props as Props;
 const visiblePosts = posts.slice(0, limit);
 ---
 
-<section id="home-latest-posts" class="home-section home-latest-posts" aria-label="Recent posts">
+<section id="home-latest-posts" class="home-section home-latest-posts" aria-label="최근 글">
   <div class="home-section__head home-section__head--inline">
     <h2 class="home-section__title">최근 글</h2>
     <div class="home-section__actions">
@@ -22,7 +22,7 @@ const visiblePosts = posts.slice(0, limit);
       <PostViewSwitch
         listId="home-latest-post-list"
         storageKey="guseo:home-list-view"
-        ariaLabel="Toggle recent posts view"
+        ariaLabel="최근 글 보기 방식"
       />
     </div>
   </div>

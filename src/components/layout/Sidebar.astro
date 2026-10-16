@@ -31,7 +31,7 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
       <span class="sidebar-planner-brand__mark" aria-hidden="true">J</span>
       <span class="sidebar-planner-brand__text">
         <strong>DEVJUNE.DEV</strong>
-        <small>Backend Notes</small>
+        <small>백엔드 기록</small>
       </span>
     </a>
 
@@ -74,12 +74,12 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
         href="/categories/"
         aria-current={isCategoriesPage ? "page" : undefined}
         data-sidebar-current={isCategoriesPage ? "page" : undefined}
-      >Categories</a>
+      >카테고리</a>
     </div>
 
     {
       categoryHierarchy.length === 0 ? (
-        <p class="category-empty">No categories yet.</p>
+        <p class="category-empty">아직 등록된 카테고리가 없습니다.</p>
       ) : (
         <CategoryMenu
           groups={categoryHierarchy}
