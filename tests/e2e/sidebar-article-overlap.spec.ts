@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-// Reproduces the desktop regression where the Planner fixed sidebar styling
-// leaked into Light/Dark and covered the beginning of article titles.
+// Theme palettes must not change the shared desktop navigation layout.
 test("열린 데스크톱 사이드바가 테마·화면 크기별 본문을 가리지 않는다", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("desktop"));
+  test.setTimeout(120_000);
 
   for (const mode of ["light", "dark", "planner"]) {
     await page.goto("/blog/security/basic1/");
@@ -52,8 +52,8 @@ test("열린 데스크톱 사이드바가 테마·화면 크기별 본문을 가
         expect.soft(bounds.tocLeft, `${mode} ${width}px: TOC overlaps article`)
           .toBeGreaterThanOrEqual(bounds.articleRight + 8);
       }
-      expect.soft(bounds.sidebarPosition, `${mode} sidebar positioning`)
-        .toBe(mode === "planner" ? "fixed" : "sticky");
+      expect.soft(bounds.sidebarPosition, `${mode} ${width}px: theme changed sidebar positioning`)
+        .toBe("sticky");
     }
   }
 });

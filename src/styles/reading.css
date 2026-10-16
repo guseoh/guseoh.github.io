@@ -243,9 +243,8 @@ html.left-sidebar-collapsed .post-toc,
 }
 
 /*
- * Wide desktop shell: the article owns the viewport center, the site navigation
- * remains on the left, and the TOC is taken out of article flow on the right.
- * Planner already uses a fixed left drawer, so it needs no article offset.
+ * Wide desktop shell keeps the article centered while navigation and the TOC
+ * occupy their shared rails.
  */
 @media (min-width: 1480px) {
   .site-layout--wide .post-view:not(.post-view--single),
@@ -265,12 +264,6 @@ html.left-sidebar-collapsed .post-toc,
   html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column,
   .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column {
     left: -2.625rem;
-  }
-
-  html[data-theme-mode="planner"] .site-layout--wide .post-view:not(.post-view--single) > .post-column,
-  html[data-theme-mode="planner"].left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column,
-  html[data-theme-mode="planner"] .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column {
-    left: 0;
   }
 
   .site-layout--wide .post-view:not(.post-view--single) > .post-toc,
@@ -310,11 +303,6 @@ html.left-sidebar-collapsed .post-toc,
     margin-inline: auto;
   }
 
-  html[data-theme-mode="planner"].left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column,
-  html[data-theme-mode="planner"] .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-column {
-    left: 0;
-  }
-
   html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc,
   .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc {
     display: block;
@@ -331,22 +319,6 @@ html.left-sidebar-collapsed .post-toc,
   html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc-mobile,
   .site-shell.sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single) > .post-toc-mobile {
     display: none;
-  }
-}
-
-/* On medium-width desktops the Planner drawer is fixed. Reserve its
- * real width while expanded, instead of letting it cover article text.
- * Wide desktop (>=1600px) retains the existing centered three-rail layout. */
-@media (min-width: 981px) and (max-width: 1599px) {
-  html[data-theme-mode="planner"]:not(.left-sidebar-collapsed)
-    .site-shell:not(.sidebar-collapsed)
-    .site-layout--wide .post-view > .post-column {
-    position: relative;
-    left: 0;
-    width: min(var(--post-reading-width), calc(100vw - 25rem));
-    max-width: min(var(--post-reading-width), calc(100vw - 25rem));
-    margin-inline-start: max(23rem, calc((100vw - var(--post-reading-width)) / 2));
-    margin-inline-end: 0;
   }
 }
 
