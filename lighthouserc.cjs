@@ -8,6 +8,7 @@ module.exports = {
         "http://127.0.0.1:4323/",
         "http://127.0.0.1:4323/blog/",
         "http://127.0.0.1:4323/blog/security/basic1/",
+        "http://127.0.0.1:4323/blog/jpa/relationship-mapping/",
         "http://127.0.0.1:4323/search/"
       ],
       numberOfRuns: 1,

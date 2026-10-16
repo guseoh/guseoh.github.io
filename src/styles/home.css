@@ -718,3 +718,13 @@
   outline-offset: 2px;
 }
 .activity-section__details .activity-section__panels { margin-top: 0.9rem; }
+
+.home-featured-posts .home-section__subtitle {
+  margin: 0;
+  color: var(--muted-readable);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-featured-card { scroll-behavior: auto; }
+}
