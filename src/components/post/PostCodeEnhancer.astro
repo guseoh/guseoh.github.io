@@ -122,7 +122,6 @@
         wrapper.setAttribute("role", "group");
         wrapper.setAttribute("aria-label", "본문 개념도");
         language.textContent = "개념도";
-        button.setAttribute("aria-label", "개념도 텍스트 복사");
       }
       if (codeTitle.length > 0) {
         const title = document.createElement("span");
@@ -136,7 +135,7 @@
       button.type = "button";
       button.className = "code-copy-button";
       button.textContent = "Copy";
-      button.setAttribute("aria-label", "코드 블록 복사");
+      button.setAttribute("aria-label", isDiagram ? "개념도 텍스트 복사" : "코드 블록 복사");
 
       const status = document.createElement("span");
       status.id = `code-copy-status-${index}`;
