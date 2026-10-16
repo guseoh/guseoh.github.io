@@ -76,3 +76,30 @@ test("읽기 경로가 모바일·데스크톱, 라이트·다크 모드에서 �
     }
   }
 });
+
+
+test("홈 대표 글과 최근 발행 글은 중복되지 않고 활동 그래프는 필요할 때 펼친다", async ({ page }) => {
+  await page.goto("/");
+  const featured = page.locator(".home-featured-card");
+  await expect(featured).toHaveCount(2);
+  const urls = await featured.evaluateAll((items) => items.map((item) => item.getAttribute("href")));
+  expect(new Set(urls).size).toBe(urls.length);
+  const latestUrls = await page.locator("#home-latest-post-list .post-card__header a")
+    .evaluateAll((items) => items.map((item) => item.getAttribute("href")));
+  for (const url of urls) expect(latestUrls).not.toContain(url);
+  const details = page.locator(".activity-section__details");
+  await expect(details).not.toHaveAttribute("open", "");
+  await details.locator("summary").click();
+  await expect(details).toHaveAttribute("open", "");
+  await expect(details.locator(".activity-panel")).toHaveCount(2);
+});
+
+
+test("홈의 RSS 구독 진입점은 공개 피드와 연결된다", async ({ page, request }) => {
+  await page.goto("/");
+  const link = page.getByRole("link", { name: "새 글 RSS 구독" });
+  await expect(link).toHaveAttribute("href", "/rss.xml");
+  const response = await request.get("/rss.xml");
+  expect(response.ok()).toBe(true);
+  expect(await response.text()).toContain("<rss");
+});

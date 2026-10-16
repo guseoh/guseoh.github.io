@@ -41,3 +41,11 @@ test("mobile table of contents remains keyboard- and touch-operable", async ({ p
   await page.locator(".post-toc-mobile__panel a").first().click();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
+
+
+test("본문 소제목에만 앵커 복사를 표시하고 관련 글·신고 영역에는 중복하지 않는다", async ({ page }) => {
+  await page.goto("/blog/jpa/relationship-mapping/");
+  await expect(page.locator(".post__content h2 .post-heading-copy").first()).toBeVisible();
+  await expect(page.locator(".post-footer .post-heading-actions")).toHaveCount(0);
+  await expect(page.locator(".post-footer .post-heading-copy")).toHaveCount(0);
+});

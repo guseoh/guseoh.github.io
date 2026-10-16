@@ -91,8 +91,10 @@ if (
     })
     .catch(() => {
       meta.hidden = false;
-      meta.textContent = "검색 인덱스를 불러오지 못했습니다.";
-      empty.hidden = false;
+      meta.textContent = "검색 데이터를 불러오지 못했습니다. 페이지를 새로고침해 다시 시도해 주세요.";
+      empty.hidden = true;
+      list.replaceChildren();
+      if (status) status.textContent = "현재 검색 결과를 표시할 수 없습니다.";
     });
 
   recentClear?.addEventListener("click", () => {

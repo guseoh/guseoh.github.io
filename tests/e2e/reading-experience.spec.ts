@@ -114,3 +114,17 @@ test("Spring Security의 학습 경로는 상세 글에서도 명시된 순서�
   await expect(path.locator(".post-series__list li")).toHaveCount(3);
   await expect(path.locator(".post-learning-path__head")).toContainText("1 / 3");
 });
+
+
+test("학습 경로 이동과 전체 게시글 이동은 다른 탐색으로 구분된다", async ({ page }) => {
+  await page.goto("/blog/security/basic1/");
+  const learning = page.locator(".post-learning-path");
+  await expect(learning.locator(".post-learning-path__nav")).toBeVisible();
+  await expect(learning.getByRole("link", { name: /다음 단계/ })).toHaveAttribute("href", "/blog/security/basic2/");
+  await expect(page.locator(".post-adjacent-context")).toContainText("최근 수정일 순서");
+  await expect(page.getByRole("navigation", { name: "전체 게시글의 이전 글과 다음 글" })).toBeVisible();
+  await page.goto("/blog/security/basic3/");
+  await expect(page.locator(".post-learning-path__nav").getByRole("link", { name: /이전 단계/ }))
+    .toHaveAttribute("href", "/blog/security/basic2/");
+  await expect(page.locator(".post-learning-path__nav .post-learning-path__next")).toHaveCount(0);
+});

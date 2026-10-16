@@ -648,3 +648,83 @@
   border-color: var(--link);
   color: var(--link-hover);
 }
+
+/* Featured reading picks are independent from chronological recent posts. */
+.home-featured-posts .home-section__title { font-size: 1.18rem; }
+.home-featured-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.home-featured-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--card-bg);
+  color: var(--ink);
+  text-decoration: none;
+}
+.home-featured-card:hover,
+.home-featured-card:focus-visible {
+  border-color: var(--link);
+  background: var(--surface-hover);
+}
+.home-featured-card__category,
+.home-featured-card__footer {
+  color: var(--muted-readable);
+  font-size: 0.78rem;
+}
+.home-featured-card strong {
+  color: var(--heading);
+  font-size: 1.07rem;
+  line-height: 1.45;
+}
+.home-featured-card__description {
+  color: var(--muted-readable);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.home-featured-card__footer { margin-top: auto; }
+.activity-section__details {
+  margin-top: 0.9rem;
+}
+.activity-section__details summary {
+  width: fit-content;
+  min-height: 2.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--control-border);
+  border-radius: 7px;
+  color: var(--link);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  list-style: none;
+}
+.activity-section__details summary::-webkit-details-marker { display: none; }
+.activity-section__details summary::after { content: "▾"; font-size: 0.82rem; }
+.activity-section__details[open] summary::after { content: "▴"; }
+.activity-section__details summary:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+.activity-section__details .activity-section__panels { margin-top: 0.9rem; }
+
+.home-featured-posts .home-section__subtitle {
+  margin: 0;
+  color: var(--muted-readable);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-featured-card { scroll-behavior: auto; }
+}

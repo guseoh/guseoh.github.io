@@ -16,7 +16,6 @@ tags:
 testedWith: {}
 book: ""
 series: ""
-chapter: 1
 heroImage: "/og-image.svg"
 draft: false
 ---
@@ -39,7 +38,7 @@ public class Order {
 
 테이블은 객체 참조 대신 **외래 키(Foreign Key)** 를 사용한다.
 
-```text
+```diagram
 orders
 ----------------
 id
@@ -75,7 +74,7 @@ ORM을 사용하면 객체 모델에서는 객체 참조를 유지하면서, JPA
 
 한 명의 회원이 여러 주문을 만들 수 있다고 가정 해보면, 데이터베이스에서는 여러 `orders` 행이 하나의 `members` 행을 참조한다.
 
-```text
+```diagram
 Member 1 ───── N Order
 ```
 
@@ -113,7 +112,7 @@ private Member member;
 
 따라서 `Order.member`는 `orders.member_id`를 통해 `members.id`와 연결된다.
 
-```text
+```diagram
 Order.member
       │
       │ JPA 매핑
@@ -203,7 +202,7 @@ private Member member;
 
 Hibernate는 대표적으로 **프록시(Proxy)** 를 사용한다.
 
-```text
+```diagram
 Order
 id = 100
 member_id = 1
@@ -211,7 +210,7 @@ member_id = 1
 
 `Order`를 조회하면 `member_id = 1`이라는 외래 키 값은 알고 있다. 하지만 지연 로딩이 적용되어 있다면 이 시점에 `members` 테이블까지 조회하지 않고 실제 `Member`를 대신할 프록시 객체를 둘 수 있다.
 
-```text
+```diagram
 Order
  ├─ id = 100
  └─ member
@@ -246,7 +245,7 @@ String memberName = order.getMember().getName();
 
 프록시가 초기화되지 않은 상태에서 실제 엔티티의 값이 필요해지면 Hibernate가 프록시를 초기화한다.
 
-```text
+```diagram
 order.getMember().getName()
         ↓
 Member Proxy
@@ -260,7 +259,7 @@ Member Proxy
 
 초기화 과정에서 필요한 `Member`의 상태가 아직 로딩되지 않았다면 Hibernate는 데이터베이스에서 해당 엔티티를 조회하고 영속성 컨텍스트에서 관리한다.
 
-```text
+```diagram
 프록시 초기화
       ↓
 Member 상태가 필요한가?
@@ -274,7 +273,14 @@ Member 상태 로딩
 
 따라서 `LAZY`는 단순히 "`getMember()`를 호출하면 무조건 SQL이 실행된다"는 의미가 아닙니다. 실제 엔티티의 상태가 필요한 시점과 현재 영속성 컨텍스트의 상태에 따라 조회 여부가 결정된다.
 
-## 5. 참고 자료
+## 5. 정리
+
+- JPA 연관관계 매핑은 객체가 다른 엔티티를 참조하는 관계를 데이터베이스의 외래 키와 연결한다.
+- `@ManyToOne`은 관계의 다중성을 나타내며, 단방향과 양방향은 객체가 어느 방향으로 탐색할 수 있는지를 구분한다.
+- `FetchType.LAZY`는 연관된 엔티티의 실제 데이터를 필요한 순간에 조회하도록 지연한다.
+- 실제 SQL 실행 여부는 프록시 초기화와 영속성 컨텍스트의 상태에 따라 달라질 수 있다.
+
+## 6. 참고 자료
 
 - [꾸준히 성장하는 개발자스토리 - JPA 연관관계 매핑 기초](https://ssdragon.tistory.com/77)
 - [Jakarta Persistence 3.2 Specification](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2)

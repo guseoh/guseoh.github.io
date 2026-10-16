@@ -115,6 +115,14 @@
       meta.append(language);
 
       const codeTitle = getMetaValue(pre, code, metaMarker, "codeTitle").trim();
+      // Text diagrams opt into a semantic presentation without changing Shiki or code copy.
+      const isDiagram = getLanguageKey(pre).trim().toLowerCase() === "diagram";
+      if (isDiagram) {
+        wrapper.classList.add("code-block--diagram");
+        wrapper.setAttribute("role", "group");
+        wrapper.setAttribute("aria-label", "본문 개념도");
+        language.textContent = "개념도";
+      }
       if (codeTitle.length > 0) {
         const title = document.createElement("span");
         title.className = "code-block__title";
@@ -127,7 +135,7 @@
       button.type = "button";
       button.className = "code-copy-button";
       button.textContent = "Copy";
-      button.setAttribute("aria-label", "코드 블록 복사");
+      button.setAttribute("aria-label", isDiagram ? "개념도 텍스트 복사" : "코드 블록 복사");
 
       const status = document.createElement("span");
       status.id = `code-copy-status-${index}`;
