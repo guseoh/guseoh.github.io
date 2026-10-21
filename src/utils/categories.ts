@@ -1,5 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import { formatTagName, getTagHref, resolveTagSlug } from "./tags";
+import { normalizeTaxonomySlug } from "./taxonomySlug";
 
 export type CategorySummary = {
   slug: string;
@@ -26,11 +27,7 @@ export type CategoryTreeGroup = {
 };
 
 export function normalizeCategory(category: string): string {
-  return category
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣]+/gi, "-")
-    .replace(/^-+|-+$/g, "");
+  return normalizeTaxonomySlug(category);
 }
 
 export function getCategoryName(post: CollectionEntry<"blog">): string {
