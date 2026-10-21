@@ -10,11 +10,10 @@ export function collectImageReferences(source) {
   );
   const references = new Set();
 
-  for (const match of withoutFences.matchAll(/!\[[^\]]*]\(\s*(?:<([^>]+)>|([^)\s]+))/g)) {
-    references.add(match[1] ?? match[2]);
-  }
-  for (const match of withoutFences.matchAll(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi)) {
-    references.add(match[1]);
+  // One scan keeps Markdown and HTML image references in document order.
+  const imagePattern = /!\[[^\]]*]\(\s*(?:<([^>]+)>|([^)\s]+))|<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi;
+  for (const match of withoutFences.matchAll(imagePattern)) {
+    references.add(match[1] ?? match[2] ?? match[3]);
   }
 
   return [...references];
