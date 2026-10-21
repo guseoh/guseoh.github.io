@@ -353,9 +353,6 @@ html.left-sidebar-collapsed .post-toc,
     padding: 0.3rem 0.5rem;
   }
 
-  .comments-wrap {
-    width: 100%;
-  }
 }
 
 /* Explicit reading resume; no automatic scroll or global settings. */

@@ -12,7 +12,6 @@ export type SearchIndexItem = {
   slug: string;
   url: string;
   readingTime: string;
-  excerpt: string;
   bodyText: string;
   codeText: string;
 };
@@ -29,10 +28,9 @@ export function buildSearchIndex(posts: CollectionEntry<"blog">[]): SearchIndexI
     const description = getPostDescription(post);
     const category = post.data.category?.trim() || "Uncategorized";
     const series = post.data.series?.trim() || "";
-    // Keep prose and code separately: the result can show the actual matching
-    // passage without serializing the same article twice in the JSON index.
+    // Searchable prose and code are stored separately. An extra excerpt would
+    // duplicate the opening 280 characters of the already indexed bodyText.
     const { bodyText, codeText } = extractSearchableContent(post.body ?? "");
-    const excerpt = truncateText(bodyText || description, MAX_EXCERPT_LENGTH);
 
     return {
       title: post.data.title,
@@ -45,7 +43,6 @@ export function buildSearchIndex(posts: CollectionEntry<"blog">[]): SearchIndexI
       slug: getPostSlug(post),
       url: getPostPath(post),
       readingTime: getReadingTime(post),
-      excerpt,
       bodyText,
       codeText
     };
@@ -63,7 +60,7 @@ export function scoreSearchItem(post: SearchIndexItem, rawQuery: string): Search
   const reasons: string[] = [];
   let score = 0;
   const title = normalizeSearchText(post.title);
-  const description = normalizeSearchText(post.description || post.excerpt);
+  const description = normalizeSearchText(post.description);
   const category = normalizeSearchText(post.category);
   const series = normalizeSearchText(post.series);
   const tags = post.tags.map((tag) => ({ raw: tag, value: normalizeSearchText(tag) }));
@@ -115,7 +112,7 @@ export function scoreSearchItem(post: SearchIndexItem, rawQuery: string): Search
 // description > code > prose, with recent posts breaking ties.
 export function getSearchSnippet(post: SearchIndexItem, rawQuery: string) {
   const query = normalizeSearchText(rawQuery);
-  const description = post.description || post.excerpt;
+  const description = post.description;
 
   if (!query || normalizeSearchText(description).includes(query)) {
     return { source: "description" as const, text: description };

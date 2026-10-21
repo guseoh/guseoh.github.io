@@ -3,7 +3,7 @@ import navigationData from "../data/navigation.json";
 import type { CategoryTreeGroup } from "./categories";
 import { getCategorySlug } from "./categories";
 import { resolveSeriesId } from "./series";
-import { normalizeTag } from "./tags";
+import { resolveTagSlug } from "./tags";
 
 export type NavigationItemType = "category" | "tag" | "series" | "url" | "search";
 
@@ -45,8 +45,12 @@ export function getNavigationItemsByType(type: NavigationItemType) {
 
 export function buildNavigationGroups(posts: CollectionEntry<"blog">[]): NavigationGroupView[] {
   return NAVIGATION_GROUPS.map((group) => {
+    const groupPostIds = new Set<string>();
     const items = group.items.map((item) => {
       const matchingPosts = filterPostsByNavigationItem(posts, item);
+      for (const post of matchingPosts) {
+        groupPostIds.add(post.id);
+      }
 
       return {
         ...item,
@@ -56,10 +60,6 @@ export function buildNavigationGroups(posts: CollectionEntry<"blog">[]): Navigat
         count: matchingPosts.length
       };
     });
-
-    const groupPostIds = new Set(items.flatMap((item) =>
-      filterPostsByNavigationItem(posts, item).map((post) => post.id)
-    ));
 
     return {
       ...group,
@@ -102,7 +102,8 @@ function filterPostsByNavigationItem(posts: CollectionEntry<"blog">[], item: Nav
   }
 
   if (item.type === "tag") {
-    return posts.filter((post) => post.data.tags.some((tag) => normalizeTag(tag) === item.slug));
+    const slug = resolveTagSlug(item.slug ?? "");
+    return posts.filter((post) => post.data.tags.some((tag) => resolveTagSlug(tag) === slug));
   }
 
   if (item.type === "series") {

@@ -1,5 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import { resolveSeriesId } from "./series";
+import { compareLearningOrder } from "./postOrder";
 
 export function getAdjacentPosts(posts: CollectionEntry<"blog">[], currentPostId: string) {
   const currentIndex = posts.findIndex((entry) => entry.id === currentPostId);
@@ -47,10 +48,3 @@ export function getLearningPathPosts(
   return categoryPosts.sort(compareLearningOrder);
 }
 
-function compareLearningOrder(a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) {
-  const orderA = a.data.chapter ?? a.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
-  const orderB = b.data.chapter ?? b.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
-
-  if (orderA !== orderB) return orderA - orderB;
-  return b.data.date.valueOf() - a.data.date.valueOf();
-}

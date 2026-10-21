@@ -1,12 +1,12 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { collectImageReferences, resolveLocalImageReference } from "./image-usage.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const blogRoot = path.join(root, "src/content/blog");
 const distRoot = path.join(root, "dist");
 const optimizedDir = path.join(distRoot, "_astro");
-const oneMiB = 1024 * 1024;
 const maxEmittedImageBytes = 512 * 1024;
 const imageSuffix = /\.(?:png|jpe?g|gif|webp|avif)$/i;
 const failures = [];
@@ -20,32 +20,18 @@ let publishedPostsWithImages = 0;
 
 for (const file of markdown) {
   const source = await readFile(file, "utf8");
-  const refs = new Set();
-
-  for (const match of source.matchAll(/!\[[^\]]*]\(\s*(?:<([^>]+)>|([^)\s]+))/g)) {
-    refs.add(match[1] ?? match[2]);
-  }
-  for (const match of source.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)) {
-    refs.add(match[1]);
-  }
+  const refs = collectImageReferences(source);
 
   let localImageCount = 0;
   for (const reference of refs) {
-    if (!reference || /^(?:[a-z][\w+.-]*:|\/\/|\/|#)/i.test(reference)) continue;
-    let decoded;
+    let resolved;
     try {
-      decoded = decodeURIComponent(reference.split(/[?#]/)[0]);
-    } catch {
-      failures.push("Invalid encoded image reference: " + reference + " in " + path.relative(root, file));
+      resolved = resolveLocalImageReference(reference, file, blogRoot);
+    } catch (error) {
+      failures.push(error.message + " in " + path.relative(root, file));
       continue;
     }
-
-    const resolved = path.resolve(path.dirname(file), decoded);
-    if (!resolved.startsWith(blogRoot + path.sep)) {
-      failures.push("Image reference escapes blog directory: " + reference + " in " + path.relative(root, file));
-      continue;
-    }
-    if (!imageSuffix.test(resolved)) continue;
+    if (!resolved) continue;
 
     used.add(resolved);
     localImageCount++;
@@ -79,11 +65,10 @@ for (const file of markdown) {
 }
 
 const orphan = assets.filter((file) => !used.has(file));
-const orphanLarge = [];
-for (const file of orphan) {
-  const size = (await stat(file)).size;
-  if (size >= oneMiB) orphanLarge.push({ file, size });
-}
+const orphanDetails = await Promise.all(orphan.map(async (file) => ({
+  file,
+  size: (await stat(file)).size
+})));
 
 let emittedImages;
 try {
@@ -111,10 +96,13 @@ if (publishedPostsWithImages && webpCount === 0) {
 
 console.log("[image:audit] " + used.size + "/" + assets.length + " local blog images referenced; " + orphan.length + " unused");
 console.log("[image:audit] " + emittedImages.length + " generated images (" + webpCount + " WebP); " + (totalEmitted / 1024).toFixed(1) + " KiB total; max " + (largestEmitted / 1024).toFixed(1) + " KiB");
-if (orphanLarge.length) {
-  console.warn("[image:audit] " + orphanLarge.length + " unreferenced source images >= 1 MiB (not delivered in article pages):");
-  for (const { file, size } of orphanLarge) {
-    console.warn("[image:audit]  - " + path.relative(root, file) + " (" + (size / oneMiB).toFixed(2) + " MiB)");
+if (orphanDetails.length) {
+  console.warn("[image:audit] Unreferenced blog source images (including small files):");
+  for (const { file, size } of orphanDetails) {
+    console.warn("[image:audit]  - " + path.relative(root, file) + " (" + (size / 1024).toFixed(1) + " KiB)");
+  }
+  if (process.env.CI === "true" || process.env.IMAGE_AUDIT_STRICT === "1") {
+    failures.push("Unreferenced blog images found: " + orphanDetails.length);
   }
 }
 

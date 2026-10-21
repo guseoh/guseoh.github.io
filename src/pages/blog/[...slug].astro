@@ -1,6 +1,8 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
+// Article-only Markdown presentation is not needed by non-post routes.
+import "../../styles/obsidian-article.css";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import CategoryIcon from "../../components/CategoryIcon.astro";
 import PostComments from "../../components/PostComments.astro";
