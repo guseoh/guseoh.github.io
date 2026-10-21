@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "github:contributions": "node scripts/fetch-github-contributions.mjs",
-    "build": "astro build && node scripts/audit-images.mjs && node scripts/audit-document-images.mjs",
+    "build": "astro build && node scripts/audit-images.mjs && node scripts/audit-document-images.mjs && node scripts/audit-delivery.mjs",
     "deploy:meta": "node scripts/write-deploy-meta.mjs",
     "preview": "astro preview",
     "check": "astro check",
@@ -19,7 +19,8 @@
     "lighthouse": "lhci autorun",
     "smoke": "node scripts/smoke-test.mjs",
     "images:audit": "node scripts/audit-images.mjs && node scripts/audit-document-images.mjs",
-    "scripts:check": "node scripts/check-js-syntax.mjs"
+    "scripts:check": "node scripts/check-js-syntax.mjs",
+    "delivery:audit": "node scripts/audit-delivery.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.2",

@@ -56,7 +56,9 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Build
+      - name: Build and inspect published cache policy
+        env:
+          AUDIT_LIVE_CACHE: "1"
         run: npm run build
 
       - name: Install Chromium for browser quality checks
