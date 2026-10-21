@@ -15,7 +15,6 @@
     "content:style": "node scripts/check-content-style.mjs",
     "links:check": "node scripts/check-links.mjs",
     "test": "node scripts/check-korea-date.mjs && node scripts/check-blog-contracts.mjs && node scripts/content-style-rules.test.mjs",
-    "quality:install": "npm install --no-save --package-lock=false @playwright/test@1.61.1 @axe-core/playwright@4.12.1 @lhci/cli@0.15.x",
     "test:e2e": "playwright test",
     "lighthouse": "lhci autorun",
     "smoke": "node scripts/smoke-test.mjs",
