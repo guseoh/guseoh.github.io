@@ -37,6 +37,37 @@ test("실제 검색 색인 처리의 일치도 우선순위를 유지한다", as
     .toEqual(priorities.map((entry) => entry.id));
 });
 
+test("제목 완전·부분 일치가 다른 필드의 누적 점수보다 우선한다", async ({ page }) => {
+  const base = {
+    title: "JPA", description: "기타 설명", category: "Backend",
+    tags: [] as string[], series: "", date: "2025-01-01T00:00:00.000Z",
+    readingTime: "1분", bodyText: "", codeText: ""
+  };
+  const items = [
+    { slug: "many", description: "Spring 소개", category: "Spring", tags: ["Spring", "Spring Boot"],
+      series: "Spring", bodyText: "Spring 본문", codeText: "Spring 코드" },
+    { slug: "partial", title: "Spring Boot" },
+    { slug: "exact", title: "Spring" },
+    { slug: "tie-old", tags: ["Spring"], updated: "2025-01-02T00:00:00.000Z" },
+    { slug: "tie-new", tags: ["Spring"], updated: "2025-01-03T00:00:00.000Z" },
+    { slug: "code", codeText: "Spring" },
+    { slug: "body", bodyText: "Spring" }
+  ].map((item) => ({ ...base, ...item, url: `/blog/${item.slug}/` }));
+
+  await page.route("**/search-index.json", (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(items) })
+  );
+  await page.goto("/search/?q=Spring");
+
+  const cards = page.locator("[data-search-list] [data-post-slug]");
+  await expect(cards).toHaveCount(items.length);
+  expect(await cards.evaluateAll((elements) =>
+    elements.map((element) => element.getAttribute("data-post-slug"))
+  )).toEqual(["exact", "partial", "many", "tie-new", "tie-old", "code", "body"]);
+  await expect(cards.first().getByRole("list", { name: "검색 일치 이유" }))
+    .toContainText("제목이 정확히 일치");
+});
+
 test("검색 색인은 본문과 코드만 별도로 담고 중복된 전체 searchText를 포함하지 않는다", async ({ request }) => {
   const response = await request.get("/search-index.json");
   expect(response.ok()).toBe(true);
@@ -96,25 +127,49 @@ test("연속 입력은 마지막 검색어 기준으로 한 번만 결과 목록
   await expect(page.locator("[data-search-list] .post-card").first()).toBeVisible();
 });
 
-test("글 목록과 기본 검색은 수정일순으로 정렬하고 수정 날짜를 일관되게 표시한다", async ({ page }) => {
+test("글 목록과 기본 검색은 공개 색인의 정렬·수정일을 동적으로 따른다", async ({ page, request }) => {
+  const response = await request.get("/search-index.json");
+  expect(response.ok()).toBe(true);
+  const posts = await response.json() as Array<{ slug: string; date: string; updated?: string }>;
+  expect(posts.length).toBeGreaterThan(0);
+  const activityDate = (post: (typeof posts)[number]) => post.updated ?? post.date;
+
+  for (let i = 1; i < posts.length; i += 1) {
+    expect(new Date(activityDate(posts[i - 1])).valueOf())
+      .toBeGreaterThanOrEqual(new Date(activityDate(posts[i])).valueOf());
+  }
+
   await page.goto("/blog/");
   await expect(page.locator(".blog-list-head__sort")).toHaveText("정렬 기준: 최근 수정일순");
-
   const blogCards = page.locator("#blog-post-list [data-post-slug]");
-  await expect(blogCards.first()).toHaveAttribute("data-post-slug", "security/basic1");
-  const blogCardMeta = page.locator('#blog-post-list [data-post-slug="security/basic1"] .post-card__meta');
-  await expect(blogCardMeta).toContainText("수정");
-  await expect(blogCardMeta).toContainText("2026.10.17");
+  const visible = await blogCards.evaluateAll((items) =>
+    items.map((item) => item.getAttribute("data-post-slug"))
+  );
+  expect(visible.length).toBeGreaterThan(0);
+  expect(visible).toEqual(posts.slice(0, visible.length).map((post) => post.slug));
+  expect(await blogCards.locator(".post-card__meta time").evaluateAll((items) =>
+    items.map((item) => item.getAttribute("datetime"))
+  )).toEqual(posts.slice(0, visible.length).map(activityDate));
+
+  const updatedPost = posts.slice(0, visible.length).find((post) =>
+    post.updated && new Date(post.updated).valueOf() > new Date(post.date).valueOf()
+  );
+  if (updatedPost) {
+    await expect(page.locator(`#blog-post-list [data-post-slug="${updatedPost.slug}"] .post-card__meta`))
+      .toContainText("수정");
+  }
 
   await page.goto("/search/");
   await expect(page.locator(".search-sort-note")).toContainText("최근 수정일순");
-  await expect(page.locator("[data-search-meta]")).toHaveText(/^총 \d+개 결과$/);
-
+  await expect(page.locator("[data-search-meta]")).toHaveText(`총 ${posts.length}개 결과`);
   const searchCards = page.locator("[data-search-list] [data-post-slug]");
-  await expect(searchCards.first()).toHaveAttribute("data-post-slug", "security/basic1");
-  const searchCardMeta = page.locator('[data-search-list] [data-post-slug="security/basic1"] .post-card__meta');
-  await expect(searchCardMeta).toContainText("수정");
-  await expect(searchCardMeta).toContainText("2026.10.17");
+  await expect(searchCards).toHaveCount(posts.length);
+  expect(await searchCards.evaluateAll((items) =>
+    items.map((item) => item.getAttribute("data-post-slug"))
+  )).toEqual(posts.map((post) => post.slug));
+  expect(await searchCards.locator(".post-card__meta time").evaluateAll((items) =>
+    items.map((item) => item.getAttribute("datetime"))
+  )).toEqual(posts.map(activityDate));
 });
 
 test("본문 일치는 해당 문맥을 보여주며 원문 검색어를 강조한다", async ({ page }) => {
