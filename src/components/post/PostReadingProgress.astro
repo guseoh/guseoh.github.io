@@ -38,7 +38,6 @@
 
       let frame = 0;
       let frameFallback = 0;
-      let lastObservedScrollY = window.scrollY;
       const motionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
 
       const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -161,12 +160,6 @@
         }, 120);
       };
 
-      const pollScrollPosition = () => {
-        if (Math.abs(window.scrollY - lastObservedScrollY) < 1) return;
-        lastObservedScrollY = window.scrollY;
-        scheduleUpdate();
-      };
-
       const scrollToTop = () => {
         window.scrollTo({
           top: 0,
@@ -174,12 +167,8 @@
         });
       };
 
+      // Native buttons already synthesize click for Enter and Space.
       backToTopButton.addEventListener("click", scrollToTop);
-      backToTopButton.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        scrollToTop();
-      });
       let saveTimer = 0;
       window.addEventListener("scroll", () => {
         scheduleUpdate();
@@ -196,7 +185,6 @@
       });
       window.addEventListener("resize", scheduleUpdate);
       window.addEventListener("load", scheduleUpdate);
-      window.setInterval(pollScrollPosition, 300);
 
       if ("ResizeObserver" in window) {
         const observer = new ResizeObserver(scheduleUpdate);

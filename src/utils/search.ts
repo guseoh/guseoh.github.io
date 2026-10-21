@@ -108,8 +108,8 @@ export function scoreSearchItem(post: SearchIndexItem, rawQuery: string): Search
 }
 
 // The result snippet is selected from an actual match, not the article's first
-// paragraph. Search ordering remains title > tag > category > series >
-// description > code > prose, with recent posts breaking ties.
+// paragraph. Exact and partial title matches are sorted ahead of other fields;
+// within each title tier, multiple matches earn cumulative relevance scores.
 export function getSearchSnippet(post: SearchIndexItem, rawQuery: string) {
   const query = normalizeSearchText(rawQuery);
   const description = post.description;
@@ -143,6 +143,15 @@ export function sortSearchResults(posts: SearchIndexItem[], query: string) {
     .map((post) => ({ post, match: scoreSearchItem(post, normalizedQuery) }))
     .filter(({ match }) => !normalizedQuery || match.score > 0)
     .sort((a, b) => {
+      // Exact title > partial title > other fields; within a title tier,
+      // weighted scores still reward matches in multiple metadata fields.
+      const titleTier = (post: SearchIndexItem) => {
+        if (!normalizedQuery) return 0;
+        const title = normalizeSearchText(post.title);
+        return title === normalizedQuery ? 2 : title.includes(normalizedQuery) ? 1 : 0;
+      };
+      const tierDifference = titleTier(b.post) - titleTier(a.post);
+      if (tierDifference !== 0) return tierDifference;
       if (b.match.score !== a.match.score) return b.match.score - a.match.score;
       return new Date(b.post.updated ?? b.post.date).valueOf() - new Date(a.post.updated ?? a.post.date).valueOf();
     });

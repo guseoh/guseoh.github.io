@@ -25,38 +25,20 @@ JPA, Spring Security, HTTP·Network, Database, Infra 등으로 학습 범위를 
 
 ### 📖 Reading
 
-<!-- 이미지 추가 후 주석 해제
-<p align="center">
-  <img src="docs/images/readme/post-reading.png"
-       alt="Post Reading Experience"
-       width="820" />
-</p>
--->
+
 
 목차, 읽기 진행률, 코드 하이라이팅과 관련 글 탐색을 지원해  
 긴 기술 글에서도 필요한 내용을 쉽게 찾을 수 있도록 구성했습니다.
 
 ### 🔎 Explore
 
-<!-- 이미지 추가 후 주석 해제
-<p align="center">
-  <img src="docs/images/readme/search.gif"
-       alt="Search and Content Exploration"
-       width="820" />
-</p>
--->
+
 
 본문 검색과 Category, Tag를 이용해 이전에 학습한 내용을 다시 찾을 수 있습니다.
 
 ### 🌓 Theme
 
-<!-- 이미지 추가 후 주석 해제
-<p align="center">
-  <img src="docs/images/readme/theme-responsive.png"
-       alt="Light Dark Mode and Responsive Design"
-       width="820" />
-</p>
--->
+
 
 Light / Dark Mode와 반응형 레이아웃을 지원해  
 데스크톱과 모바일 환경 모두에서 사용할 수 있습니다.

@@ -4,12 +4,11 @@ import Header from "../components/layout/Header.astro";
 import Sidebar from "../components/layout/Sidebar.astro";
 import LayoutScripts from "../components/layout/LayoutScripts.astro";
 import { SITE } from "../config/site";
+import { serializeInlineJson } from "../utils/serializeInlineJson";
 import { getPublishedPosts } from "../utils/content/posts";
 import { normalizeCategory } from "../utils/categories";
 import { buildArchiveTagSummary } from "../utils/tags";
 import { buildSidebarNavigation } from "../utils/navigation";
-import { buildBookSummaries } from "../utils/books";
-import { buildSeriesSummary } from "../utils/series";
 import {
   SIDEBAR_TAG_LIMIT,
   SITE_AUTHOR,
@@ -52,10 +51,12 @@ const {
 } = Astro.props;
 
 const posts = await getPublishedPosts();
-const sidebarNavigation = buildSidebarNavigation(posts);
-const tagSummary = buildArchiveTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
-const hasPublishedBooks = buildBookSummaries(posts).length > 0;
-const hasPublishedSeries = buildSeriesSummary(posts).length > 0;
+// The home layout does not render Sidebar. Avoid taxonomy aggregation there.
+const sidebarNavigation = minimalHome ? [] : buildSidebarNavigation(posts);
+const tagSummary = minimalHome ? [] : buildArchiveTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
+// The header only needs to know whether published Book/Series content exists.
+const hasPublishedBooks = posts.some((post) => Boolean(post.data.book?.trim()));
+const hasPublishedSeries = posts.some((post) => Boolean(post.data.series?.trim()));
 const siteUrl = Astro.site ?? new URL(SITE_URL);
 const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride, siteUrl).toString()
@@ -78,9 +79,7 @@ const currentCategory = currentCategoryName?.trim()
   : routeCategory;
 const currentTag = currentPath.startsWith("/tags/") ? currentPath.split("/")[2] ?? "" : "";
 
-function serializeJsonLd(value: unknown) {
-  return JSON.stringify(value).replace(/</g, "\\u003c");
-}
+
 ---
 
 <!doctype html>
@@ -110,7 +109,7 @@ function serializeJsonLd(value: unknown) {
     {type === "article" && <meta property="article:author" content={SITE_AUTHOR} />}
     {type === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
     {type === "article" && updatedTime && <meta property="article:modified_time" content={updatedTime} />}
-    {structuredData && <script is:inline type="application/ld+json" set:html={serializeJsonLd(structuredData)} />}
+    {structuredData && <script is:inline type="application/ld+json" set:html={serializeInlineJson(structuredData)} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />

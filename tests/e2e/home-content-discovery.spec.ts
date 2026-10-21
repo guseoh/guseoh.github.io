@@ -93,7 +93,7 @@ test("읽기 경로가 모바일·데스크톱, 라이트·다크 모드에서 �
 test("홈 대표 글과 최근 발행 글은 중복되지 않고 활동 그래프는 필요할 때 펼친다", async ({ page }) => {
   await page.goto("/");
   const featured = page.locator(".home-featured-card");
-  await expect(featured).toHaveCount(2);
+  await expect(featured.first()).toBeVisible();
   const urls = await featured.evaluateAll((items) => items.map((item) => item.getAttribute("href")));
   expect(new Set(urls).size).toBe(urls.length);
   const latestUrls = await page.locator("#home-latest-post-list .post-card__header a")

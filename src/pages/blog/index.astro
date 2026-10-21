@@ -5,11 +5,12 @@ import PostViewSwitch from "../../components/PostViewSwitch.astro";
 import Pagination from "../../components/Pagination.astro";
 import { getPublishedPostsSorted } from "../../utils/content/posts";
 import { getPostSlug, POSTS_PER_PAGE, SITE_DESCRIPTION } from "../../utils/posts";
+import { getPageCount, getPageItems } from "../../utils/pagination";
 
 const posts = await getPublishedPostsSorted();
 
-const pagePosts = posts.slice(0, POSTS_PER_PAGE);
-const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+const pagePosts = getPageItems(posts, 1, POSTS_PER_PAGE);
+const totalPages = getPageCount(posts.length, POSTS_PER_PAGE);
 ---
 
 <BaseLayout title="devjune.dev | 글" description={SITE_DESCRIPTION}>

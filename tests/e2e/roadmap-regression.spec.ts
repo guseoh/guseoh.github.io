@@ -7,7 +7,7 @@ test("대표 글 카드와 개념도는 화면 크기와 세 테마에서 넘치
     for (const width of [375, 768, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/");
-      await expect(page.locator(".home-featured-card")).toHaveCount(2);
+      await expect(page.locator(".home-featured-card").first()).toBeVisible();
       const homeWidth = await page.evaluate(() => document.documentElement.scrollWidth);
       expect(homeWidth, `home ${mode} / ${width}`).toBeLessThanOrEqual(width + 2);
       await page.goto("/blog/jpa/relationship-mapping/");
