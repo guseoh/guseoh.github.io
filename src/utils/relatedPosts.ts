@@ -1,7 +1,7 @@
 import type { CollectionEntry } from "astro:content";
 import { normalizeCategory } from "./categories";
 import { resolveSeriesId } from "./series";
-import { normalizeTag } from "./tags";
+import { resolveTagSlug } from "./tags";
 
 export interface RelatedPostResult {
   post: CollectionEntry<"blog">;
@@ -32,7 +32,7 @@ export function getRelatedPosts(
   const excludeSameSeries = options.excludeSameSeries ?? true;
   const currentCategory = normalizeOptionalCategory(currentPost.data.category);
   const currentSeries = normalizeOptionalSeries(currentPost.data.series);
-  const currentTags = new Map(currentPost.data.tags.map((tag) => [normalizeTag(tag), tag]));
+  const currentTags = new Set(currentPost.data.tags.map(resolveTagSlug));
 
   return allPosts
     .filter((post) => post.id !== currentPost.id && !post.data.draft)
@@ -42,7 +42,13 @@ export function getRelatedPosts(
         return undefined;
       }
 
-      const commonTags = post.data.tags.filter((tag) => currentTags.has(normalizeTag(tag)));
+      const matchedTagIds = new Set<string>();
+      const commonTags = post.data.tags.filter((tag) => {
+        const id = resolveTagSlug(tag);
+        if (!currentTags.has(id) || matchedTagIds.has(id)) return false;
+        matchedTagIds.add(id);
+        return true;
+      });
       const candidateCategory = normalizeOptionalCategory(post.data.category);
       const sameCategory = Boolean(currentCategory && candidateCategory === currentCategory);
       const score = commonTags.length * tagScore + (sameCategory ? categoryScore : 0);
