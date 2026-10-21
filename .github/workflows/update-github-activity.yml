@@ -2,13 +2,13 @@ name: Update GitHub Activity
 
 on:
   schedule:
-    # 매일 한국 시간 오전 00:10에 실행
+    # Every day at 00:10 KST.
     - cron: "10 15 * * *"
   workflow_dispatch:
 
 permissions:
   actions: write
-  contents: write
+  contents: read
 
 concurrency:
   group: update-github-activity
@@ -19,7 +19,6 @@ jobs:
     name: Update GitHub Activity
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - name: Checkout main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -42,57 +41,25 @@ jobs:
           GH_CONTRIBUTIONS_TOKEN: ${{ secrets.GH_CONTRIBUTIONS_TOKEN }}
           GITHUB_CONTRIBUTIONS_USERNAME: guseoh
 
-      - name: Commit updated contribution data
-        id: commit_activity
-        shell: bash
-        run: |
-          echo "changed=false" >> "$GITHUB_OUTPUT"
-          echo "committed=false" >> "$GITHUB_OUTPUT"
-          echo "commit_hash=" >> "$GITHUB_OUTPUT"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add public/data/github-contributions.json
-
-          if git diff --cached --quiet; then
-            echo "GitHub Activity 데이터 변경 사항이 없습니다."
-            exit 0
-          fi
-
-          git commit -m "chore: update github activity data"
-          git pull --rebase origin main
-          git push origin HEAD:main
-
-          commit_hash="$(git rev-parse HEAD)"
-
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "committed=true" >> "$GITHUB_OUTPUT"
-          echo "commit_hash=$commit_hash" >> "$GITHUB_OUTPUT"
-
-          echo "GitHub Activity 데이터를 커밋했습니다: $commit_hash"
-
-      - name: Request activity deployment
+      - name: Request daily Pages deployment
         id: deploy_activity
-        if: steps.commit_activity.outputs.changed == 'true'
+        if: contains(fromJSON('["success", "fallback"]'), steps.fetch_activity.outputs.status)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          COMMIT_HASH: ${{ steps.commit_activity.outputs.commit_hash }}
         run: |
           echo "run_id=" >> "$GITHUB_OUTPUT"
           echo "run_url=" >> "$GITHUB_OUTPUT"
           echo "head_sha=" >> "$GITHUB_OUTPUT"
 
-          target_sha="${COMMIT_HASH:?commit hash is required}"
-          remote_sha="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
-
-          if [ "$remote_sha" != "$target_sha" ]; then
-            echo "원격 main 브랜치의 커밋이 예상 값과 일치하지 않습니다."
-            echo "현재 원격 커밋: $remote_sha"
-            echo "예상 커밋: $target_sha"
-            exit 1
-          fi
+          # Never commit, push or bypass branch protection.
+          previous_run_id="$(gh run list \
+            --workflow deploy.yml \
+            --branch main \
+            --event workflow_dispatch \
+            --limit 1 \
+            --json databaseId \
+            --jq '.[0].databaseId // 0')"
 
           gh workflow run deploy.yml --ref main
 
@@ -101,29 +68,26 @@ jobs:
               --workflow deploy.yml \
               --branch main \
               --event workflow_dispatch \
-              --limit 20 \
-              --json databaseId,headSha \
-              --jq ".[] | select(.headSha == \"$target_sha\") | .databaseId" \
+              --limit 30 \
+              --json databaseId \
+              --jq ".[].databaseId | select(. > $previous_run_id)" \
               | head -n 1)"
 
             if [ -n "$run_id" ]; then
+              run_sha="$(gh run view "$run_id" --json headSha --jq '.headSha')"
               run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id}"
-
               echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
               echo "run_url=$run_url" >> "$GITHUB_OUTPUT"
-              echo "head_sha=$target_sha" >> "$GITHUB_OUTPUT"
-
-              echo "배포 워크플로 실행 요청이 생성되었습니다."
-              echo "배포 실행 ID: $run_id"
-              echo "배포 대상 커밋: $target_sha"
+              echo "head_sha=$run_sha" >> "$GITHUB_OUTPUT"
+              echo "Daily Pages deployment requested: $run_url (SHA $run_sha)."
               exit 0
             fi
 
-            echo "배포 워크플로 실행 생성을 기다리는 중입니다. ($attempt/12)"
+            echo "Waiting for the newly dispatched deployment run ($attempt/12)."
             sleep 5
           done
 
-          echo "배포 워크플로 실행 요청을 확인하지 못했습니다."
+          echo "::error::Could not find the newly dispatched deployment run."
           exit 1
 
       - name: Write activity refresh summary
@@ -133,90 +97,32 @@ jobs:
           REFRESH_STATUS: ${{ steps.fetch_activity.outputs.status || 'unknown' }}
           REFRESH_SOURCE: ${{ steps.fetch_activity.outputs.source || 'unknown' }}
           REFRESH_DETAIL: ${{ steps.fetch_activity.outputs.detail }}
-          DATA_CHANGED: ${{ steps.commit_activity.outputs.changed || 'false' }}
-          COMMITTED: ${{ steps.commit_activity.outputs.committed || 'false' }}
-          COMMIT_HASH: ${{ steps.commit_activity.outputs.commit_hash }}
+          DATA_CHANGED: ${{ steps.fetch_activity.outputs.changed || 'false' }}
           DEPLOY_OUTCOME: ${{ steps.deploy_activity.outcome || 'skipped' }}
           DEPLOY_RUN_ID: ${{ steps.deploy_activity.outputs.run_id }}
           DEPLOY_RUN_URL: ${{ steps.deploy_activity.outputs.run_url }}
           DEPLOY_HEAD_SHA: ${{ steps.deploy_activity.outputs.head_sha }}
-          WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          case "$DATA_CHANGED" in
-            true)
-              data_status="변경됨"
-              ;;
-            false)
-              data_status="변경 없음"
-              ;;
-            *)
-              data_status="확인 필요"
-              ;;
-          esac
-
-          case "$COMMITTED" in
-            true)
-              commit_status="자동 커밋 완료"
-              ;;
-            false)
-              commit_status="커밋 없음"
-              ;;
-            *)
-              commit_status="확인 필요"
-              ;;
-          esac
-
-          case "$DEPLOY_OUTCOME" in
-            success)
-              deploy_status="배포 실행 요청 완료"
-              ;;
-            failure)
-              deploy_status="배포 실행 요청 실패"
-              ;;
-            skipped)
-              deploy_status="배포 생략"
-              ;;
-            cancelled)
-              deploy_status="배포 요청 취소"
-              ;;
-            *)
-              deploy_status="$DEPLOY_OUTCOME"
-              ;;
-          esac
-
           {
             echo "## GitHub Activity 갱신 결과"
             echo
             echo "| 항목 | 결과 |"
             echo "| --- | --- |"
             echo "| 실행 시각 | $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M:%S KST') |"
-            echo "| 데이터 수집 상태 | \`$REFRESH_STATUS\` |"
-            echo "| 데이터 출처 | \`$REFRESH_SOURCE\` |"
-            echo "| 데이터 변경 | $data_status |"
-            echo "| 커밋 | $commit_status |"
-            echo "| 배포 | $deploy_status |"
-
-            if [ -n "$COMMIT_HASH" ]; then
-              echo "| 커밋 SHA | \`$COMMIT_HASH\` |"
-            fi
-
+            echo "| 수집 상태 | $REFRESH_STATUS |"
+            echo "| 데이터 출처 | $REFRESH_SOURCE |"
+            echo "| 데이터 변경 감지 | $DATA_CHANGED |"
+            echo "| main 자동 커밋 | 없음 (배포 빌드에서 데이터 생성) |"
+            echo "| 배포 요청 | $DEPLOY_OUTCOME |"
             if [ -n "$DEPLOY_RUN_ID" ]; then
-              echo "| 배포 실행 ID | \`$DEPLOY_RUN_ID\` |"
+              echo "| 배포 실행 ID | $DEPLOY_RUN_ID |"
+              echo "| 배포 대상 SHA | $DEPLOY_HEAD_SHA |"
             fi
-
-            if [ -n "$DEPLOY_HEAD_SHA" ]; then
-              echo "| 배포 대상 커밋 | \`$DEPLOY_HEAD_SHA\` |"
-            fi
-
             echo
-            echo "### 바로가기"
-            echo
-            echo "- [현재 워크플로 실행 결과]($WORKFLOW_RUN_URL)"
-
+            echo "- [현재 워크플로 실행](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
             if [ -n "$DEPLOY_RUN_URL" ]; then
-              echo "- [배포 워크플로 실행 결과]($DEPLOY_RUN_URL)"
+              echo "- [배포 워크플로 실행]($DEPLOY_RUN_URL)"
             fi
-
             if [ -n "$REFRESH_DETAIL" ]; then
               echo
               echo "### 상세 내용"
@@ -231,24 +137,18 @@ jobs:
         run: node scripts/notify-discord.mjs
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-
+          ACTIVITY_DEPLOY_MODE: build
           REPOSITORY: ${{ github.repository }}
           BRANCH: main
           SERVER_URL: ${{ github.server_url }}
-
           REFRESH_STATUS: ${{ steps.fetch_activity.outputs.status || 'unknown' }}
           REFRESH_SOURCE: ${{ steps.fetch_activity.outputs.source || 'unknown' }}
           REFRESH_DETAIL: ${{ steps.fetch_activity.outputs.detail }}
-
-          DATA_CHANGED: ${{ steps.commit_activity.outputs.changed || 'false' }}
-          COMMITTED: ${{ steps.commit_activity.outputs.committed || 'false' }}
-          COMMIT_HASH: ${{ steps.commit_activity.outputs.commit_hash }}
-
+          DATA_CHANGED: ${{ steps.fetch_activity.outputs.changed || 'false' }}
           DEPLOY_OUTCOME: ${{ steps.deploy_activity.outcome || 'skipped' }}
           DEPLOY_RUN_ID: ${{ steps.deploy_activity.outputs.run_id }}
           DEPLOY_RUN_URL: ${{ steps.deploy_activity.outputs.run_url }}
           DEPLOY_HEAD_SHA: ${{ steps.deploy_activity.outputs.head_sha }}
-
           JOB_STATUS: ${{ job.status }}
           WORKFLOW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -261,5 +161,5 @@ jobs:
           )
         shell: bash
         run: |
-          echo "GitHub Activity 데이터 갱신 또는 배포 요청 과정에서 문제가 발생했습니다."
+          echo "::error::GitHub Activity refresh or Pages dispatch failed."
           exit 1

@@ -155,10 +155,17 @@ jobs:
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
       - name: Fetch GitHub contributions
+        id: fetch_activity
         run: npm run github:contributions
         env:
           GH_CONTRIBUTIONS_TOKEN: ${{ secrets.GH_CONTRIBUTIONS_TOKEN }}
           GITHUB_CONTRIBUTIONS_USERNAME: guseoh
+
+      - name: Reject degraded contribution data
+        if: steps.fetch_activity.outputs.status == 'degraded'
+        run: |
+          echo "::error::GitHub contribution data is stale; stopping publication."
+          exit 1
 
       - name: Build with Astro
         run: npm run build

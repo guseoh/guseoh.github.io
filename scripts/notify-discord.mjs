@@ -28,6 +28,7 @@ const refreshSource =
 const refreshDetail = process.env.REFRESH_DETAIL?.trim();
 
 const dataChanged = process.env.DATA_CHANGED === "true";
+const deployOnlyRefresh = process.env.ACTIVITY_DEPLOY_MODE === "build";
 const committed = process.env.COMMITTED === "true";
 const commitHash = process.env.COMMIT_HASH?.trim();
 
@@ -285,6 +286,12 @@ function getSourceLabel(source) {
 }
 
 function getDataStatus() {
+  if (deployOnlyRefresh) {
+    return dataChanged
+      ? "✅ 변경 감지 · 배포 빌드에서 갱신"
+      : "✅ 데이터 확인 · 배포 빌드 재실행";
+  }
+
   if (committed) {
     return "✅ 변경됨 · 자동 커밋 완료";
   }
@@ -460,7 +467,7 @@ function getNotification() {
       level: "error",
       title: "🚨 GitHub 활동 배포 요청 실패",
       description:
-        "기여 데이터 변경과 자동 커밋은 완료했지만 배포 워크플로 실행 요청에 실패했습니다."
+        "GitHub 기여 데이터 갱신 후 배포 워크플로 실행 요청에 실패했습니다."
     };
   }
 
@@ -479,6 +486,15 @@ function getNotification() {
       title: "⚠️ GitHub 활동 데이터 대체 수집",
       description:
         "GitHub GraphQL API 수집에 실패하여 공개 GitHub 페이지를 통해 기여 데이터를 가져왔습니다."
+    };
+  }
+
+  if (deployOnlyRefresh && deployOutcome === "success") {
+    return {
+      level: "success",
+      title: "✅ GitHub 활동 데이터 갱신 및 배포 요청 완료",
+      description:
+        "GitHub 기여 데이터를 확인하고 재배포를 요청했습니다. main에 자동 커밋하지 않고 배포 빌드에서 최신 데이터를 다시 수집합니다."
     };
   }
 
