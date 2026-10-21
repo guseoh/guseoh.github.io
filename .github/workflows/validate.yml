@@ -2,17 +2,15 @@ name: Validate
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
+  workflow_call:
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: validate-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: validate-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   validate:
@@ -49,16 +47,19 @@ jobs:
       - name: Type-check Astro
         run: npm run check
 
+      - name: Syntax-check activity scripts
+        run: |
+          node --check scripts/fetch-github-contributions.mjs
+          node --check scripts/notify-discord.mjs
+
       - name: Run tests
         run: npm test
 
       - name: Build
         run: npm run build
 
-      - name: Install browser quality tools
-        run: |
-          npm run quality:install
-          npx playwright install --with-deps chromium
+      - name: Install Chromium for browser quality checks
+        run: npx playwright install --with-deps chromium
 
       - name: Run browser and accessibility checks
         run: npm run test:e2e
