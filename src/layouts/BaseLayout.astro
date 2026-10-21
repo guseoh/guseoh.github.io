@@ -8,8 +8,6 @@ import { getPublishedPosts } from "../utils/content/posts";
 import { normalizeCategory } from "../utils/categories";
 import { buildArchiveTagSummary } from "../utils/tags";
 import { buildSidebarNavigation } from "../utils/navigation";
-import { buildBookSummaries } from "../utils/books";
-import { buildSeriesSummary } from "../utils/series";
 import {
   SIDEBAR_TAG_LIMIT,
   SITE_AUTHOR,
@@ -52,10 +50,12 @@ const {
 } = Astro.props;
 
 const posts = await getPublishedPosts();
-const sidebarNavigation = buildSidebarNavigation(posts);
-const tagSummary = buildArchiveTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
-const hasPublishedBooks = buildBookSummaries(posts).length > 0;
-const hasPublishedSeries = buildSeriesSummary(posts).length > 0;
+// The home layout does not render Sidebar. Avoid taxonomy aggregation there.
+const sidebarNavigation = minimalHome ? [] : buildSidebarNavigation(posts);
+const tagSummary = minimalHome ? [] : buildArchiveTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
+// The header only needs to know whether published Book/Series content exists.
+const hasPublishedBooks = posts.some((post) => Boolean(post.data.book?.trim()));
+const hasPublishedSeries = posts.some((post) => Boolean(post.data.series?.trim()));
 const siteUrl = Astro.site ?? new URL(SITE_URL);
 const canonicalUrl = canonicalUrlOverride
   ? new URL(canonicalUrlOverride, siteUrl).toString()
