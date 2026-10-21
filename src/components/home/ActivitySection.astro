@@ -29,12 +29,12 @@ const sourceLabels = {
 
 const summaryItems = [
   { label: "전체 공개 글", value: blogStats.totalPosts, suffix: "개" },
-  { label: "이번 달 블로그 활동", value: blogStats.monthActivities, suffix: "건" },
+  { label: "이번 달 글 작성·수정", value: blogStats.monthActivities, suffix: "건" },
   { label: "이번 달 GitHub contribution", value: githubStats.monthContributions, suffix: "개" }
 ];
 
 const blogPanelStats = [
-  { label: "올해 활동", value: blogStats.yearActivities, suffix: "건" },
+  { label: "올해 글 작성·수정", value: blogStats.yearActivities, suffix: "건" },
   { label: "현재 연속", value: blogStats.currentStreak, suffix: "일" },
   { label: "최장 연속", value: blogStats.longestStreak, suffix: "일" }
 ];
@@ -52,7 +52,7 @@ const githubPanelStats = [
       <p class="activity-section__eyebrow">Activity</p>
       <h2 id="activity-section-title">학습과 개발 활동</h2>
       <p class="activity-section__description">
-        올해의 블로그 작성·수정 기록과 GitHub contribution을 함께 보여줍니다.
+        공개 글별 마지막 작성·수정 날짜와 GitHub contribution을 함께 보여줍니다.
       </p>
     </div>
     <p class="activity-section__range">{blogStats.rangeStart} ~ {blogStats.rangeEnd}</p>
@@ -76,7 +76,7 @@ const githubPanelStats = [
           <p class="activity-panel__eyebrow">Blog Writing</p>
           <h3 id="blog-activity-title">블로그 활동</h3>
         </div>
-        <span class="activity-panel__meta">작성/수정 기록</span>
+        <span class="activity-panel__meta">글마다 마지막 작성·수정일 1건</span>
       </div>
 
       <dl class="activity-panel__stats" aria-label="블로그 활동 통계">
@@ -130,7 +130,7 @@ const githubPanelStats = [
         <span class="grass-cell" data-level="3" aria-hidden="true"></span>
         <span class="grass-cell" data-level="4" aria-hidden="true"></span>
         <span>많음</span>
-        <span class="grass-legend__note">공개 글의 작성일 또는 최근 수정일 기준입니다.</span>
+        <span class="grass-legend__note">공개 글마다 작성일 또는 마지막 수정일에 1건만 집계하며, 과거 수정 이력·검증일은 포함하지 않습니다.</span>
       </div>
     </article>
 

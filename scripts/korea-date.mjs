@@ -40,7 +40,11 @@ function parseDateKey(dateKey) {
 
   const [, year, month, day] = match;
 
-  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  if (date.toISOString().slice(0, 10) !== dateKey) {
+    throw new Error(`Invalid date key: ${dateKey}`);
+  }
+  return date;
 }
 
 function normalizeDate(dateInput) {

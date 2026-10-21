@@ -1,5 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import { getKoreaDateKey } from "./koreaDate";
+import { buildPostActivityDateCounts } from "./postActivityCounts";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -40,7 +41,7 @@ export function buildBlogActivityStats(
   const rangeStart = parseDateKey(`${currentYear}-01-01`);
   const graphStart = getMondayStart(rangeStart);
   const graphEnd = addUtcDays(getMondayStart(todayUtc), 6);
-  const activityDateCounts = buildActivityDateCounts(posts);
+  const activityDateCounts = buildPostActivityDateCounts(posts.map((post) => post.data));
   const currentMonth = todayUtc.getUTCMonth();
 
   const weeks: BlogGrassWeek[] = [];
@@ -88,19 +89,6 @@ export function buildBlogActivityStats(
     rangeStart: toDateKey(rangeStart),
     rangeEnd: toDateKey(todayUtc)
   };
-}
-
-function buildActivityDateCounts(posts: CollectionEntry<"blog">[]) {
-  return posts.reduce<Record<string, number>>((counts, post) => {
-    if (post.data.draft) {
-      return counts;
-    }
-
-    const dateKey = toDateKey(post.data.updated ?? post.data.date);
-    counts[dateKey] = (counts[dateKey] ?? 0) + 1;
-
-    return counts;
-  }, {});
 }
 
 function sumCounts(dateCounts: Record<string, number>, predicate: (date: Date) => boolean) {
@@ -186,7 +174,7 @@ function formatActivityLabel(date: Date, count: number, isOutsideRange: boolean)
     return `${dateLabel}: 표시 범위 밖`;
   }
 
-  return `${dateLabel}: 블로그 활동 ${count}건`;
+  return `${dateLabel}: 공개 글의 최종 작성·수정일 ${count}건`;
 }
 
 function getMondayStart(date: Date) {
