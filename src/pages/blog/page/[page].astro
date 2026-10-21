@@ -36,11 +36,11 @@ const { pagePosts, currentPage, totalPages, postCount } = Astro.props as {
 };
 ---
 
-<BaseLayout title={`devjune.dev | Blog ${currentPage}`} description={SITE_DESCRIPTION}>
-  <section class="blog-list-page" aria-label={`All posts page ${currentPage}`}>
+<BaseLayout title={`devjune.dev | 전체 글 ${currentPage}페이지`} description={SITE_DESCRIPTION}>
+  <section class="blog-list-page" aria-label={`전체 글 ${currentPage}페이지`}>
     <div class="blog-list-head">
       <div>
-        <h1 class="blog-list-head__title">All Posts ({postCount})</h1>
+        <h1 class="blog-list-head__title">전체 글 ({postCount})</h1>
         <p class="blog-list-head__description">{SITE_DESCRIPTION}</p>
         <p class="blog-list-head__sort">정렬 기준: 최근 수정일순</p>
       </div>

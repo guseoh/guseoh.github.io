@@ -2,8 +2,9 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { SITE_DESCRIPTION } from "../utils/posts";
 import navigationData from "../data/navigation.json";
+import { serializeInlineJson } from "../utils/serializeInlineJson";
 
-const navigationGroupsJson = JSON.stringify(navigationData);
+const navigationGroupsJson = serializeInlineJson(navigationData);
 ---
 
 <BaseLayout title="devjune.dev | 검색" description={`검색과 필터 - ${SITE_DESCRIPTION}`}>

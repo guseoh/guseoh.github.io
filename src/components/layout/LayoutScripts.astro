@@ -120,6 +120,7 @@
       ].filter((element) => element instanceof HTMLElement);
       let sidebarTrigger = sidebarOpenButton;
       let backdropHideTimer = 0;
+      let backdropTransitionListener = null;
 
       const revealWithin = (container, element) => {
         const containerRect = container.getBoundingClientRect();
@@ -182,7 +183,13 @@
       const setBackdropVisible = (visible) => {
         if (!(sidebarBackdrop instanceof HTMLButtonElement)) return;
 
+        // Reopening cancels the previous close animation completely.
         window.clearTimeout(backdropHideTimer);
+        backdropHideTimer = 0;
+        if (backdropTransitionListener) {
+          sidebarBackdrop.removeEventListener("transitionend", backdropTransitionListener);
+          backdropTransitionListener = null;
+        }
 
         if (visible) {
           sidebarBackdrop.hidden = false;
@@ -199,10 +206,16 @@
         }
 
         const hide = () => {
+          if (sidebarBackdrop.classList.contains("is-visible")) return;
           sidebarBackdrop.hidden = true;
+          sidebarBackdrop.removeEventListener("transitionend", hide);
+          backdropTransitionListener = null;
+          window.clearTimeout(backdropHideTimer);
+          backdropHideTimer = 0;
         };
 
-        sidebarBackdrop.addEventListener("transitionend", hide, { once: true });
+        backdropTransitionListener = hide;
+        sidebarBackdrop.addEventListener("transitionend", hide);
         backdropHideTimer = window.setTimeout(hide, 260);
       };
 
