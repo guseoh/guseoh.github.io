@@ -1,5 +1,42 @@
 import { expect, test } from "@playwright/test";
 
+test("실제 검색 색인 처리의 일치도 우선순위를 유지한다", async ({ page }) => {
+  const priorities = [
+    { id: "title-exact", title: "Spring" },
+    { id: "title-partial", title: "Spring 입문" },
+    { id: "tag", tags: ["Spring"] },
+    { id: "category", category: "Spring" },
+    { id: "series", series: "Spring" },
+    { id: "description", description: "Spring 설명" },
+    { id: "code", codeText: "Spring code" },
+    { id: "body", bodyText: "Spring 본문" }
+  ];
+
+  const records = priorities.map((entry) => ({
+    title: "JPA",
+    description: "관련 자료",
+    category: "Backend",
+    tags: [] as string[],
+    series: "",
+    date: "2025-01-01T00:00:00.000Z",
+    slug: entry.id,
+    url: "/blog/" + entry.id + "/",
+    readingTime: "1분",
+    bodyText: "",
+    codeText: "",
+    ...entry
+  }));
+
+  await page.route("**/search-index.json", (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(records) })
+  );
+  await page.goto("/search/?q=Spring");
+  const items = page.locator("[data-search-list] [data-post-slug]");
+  await expect(items).toHaveCount(priorities.length);
+  expect(await items.evaluateAll((elements) => elements.map((element) => element.getAttribute("data-post-slug"))))
+    .toEqual(priorities.map((entry) => entry.id));
+});
+
 test("검색 색인은 본문과 코드만 별도로 담고 중복된 전체 searchText를 포함하지 않는다", async ({ request }) => {
   const response = await request.get("/search-index.json");
   expect(response.ok()).toBe(true);

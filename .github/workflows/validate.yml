@@ -47,10 +47,8 @@ jobs:
       - name: Type-check Astro
         run: npm run check
 
-      - name: Syntax-check activity scripts
-        run: |
-          node --check scripts/fetch-github-contributions.mjs
-          node --check scripts/notify-discord.mjs
+      - name: Syntax-check JavaScript tooling and plugins
+        run: npm run scripts:check
 
       - name: Run tests
         run: npm test

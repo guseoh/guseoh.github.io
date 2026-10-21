@@ -91,7 +91,6 @@ if (newestPost) {
   assert(new URL(newestPost.path, siteUrl).toString().includes("/blog/"), "최신 글 절대 URL 생성이 올바르지 않습니다.");
 }
 
-checkSearchScoringContracts();
 await checkSourceContracts();
 
 if (failures.length > 0) {
@@ -248,110 +247,6 @@ function latestPostDate(sourcePosts) {
 
 function getPostOgImagePath(post) {
   return `/og/${encodeURIComponent(post.slug).replace(/%2F/g, "/")}.png`;
-}
-
-function checkSearchScoringContracts() {
-  const items = [
-    makeSearchItem("Spring", "old body", "Board", ["Java"], "", "2024-01-01"),
-    makeSearchItem("Spring 성능 개선", "old body", "Board", ["Java"], "", "2024-01-02"),
-    makeSearchItem("JPA", "old body", "Board", ["Spring"], "", "2024-01-03"),
-    makeSearchItem("JPA", "old body", "Spring", ["Java"], "", "2024-01-04"),
-    makeSearchItem("JPA", "old body", "Board", ["Java"], "Spring", "2024-01-05"),
-    makeSearchItem("JPA", "Spring description", "Board", ["Java"], "", "2024-01-06"),
-    makeSearchItem("JPA", "old body", "Board", ["Java"], "", "2024-01-07", "Spring body")
-  ];
-  const scores = items.map((item) => scoreSearchItem(item, "spring").score);
-
-  assert(scores[0] > scores[1], "검색 점수: 제목 완전 일치가 제목 부분 일치보다 높아야 합니다.");
-  assert(scores[1] > scores[2], "검색 점수: 제목 부분 일치가 태그 일치보다 높아야 합니다.");
-  assert(scores[2] > scores[3], "검색 점수: 태그 일치가 카테고리 일치보다 높아야 합니다.");
-  assert(scores[3] > scores[4], "검색 점수: 카테고리 일치가 시리즈 일치보다 높아야 합니다.");
-  assert(scores[4] > scores[5], "검색 점수: 시리즈 일치가 설명 일치보다 높아야 합니다.");
-  assert(scores[5] > scores[6], "검색 점수: 설명 일치가 본문 일치보다 높아야 합니다.");
-
-  const sorted = sortSearchResults([
-    makeSearchItem("Spring", "same", "Board", [], "", "2024-01-01"),
-    makeSearchItem("Spring", "same", "Board", [], "", "2024-02-01")
-  ], "spring");
-  assert(sorted[0]?.post.date === "2024-02-01", "검색 정렬: 같은 점수에서는 최신 글이 먼저 와야 합니다.");
-}
-
-function makeSearchItem(title, description, category, tags, series, date, body = "") {
-  return {
-    title,
-    description,
-    category,
-    tags,
-    series,
-    date,
-    excerpt: description,
-    searchText: `${title} ${description} ${category} ${tags.join(" ")} ${series} ${body}`.toLowerCase()
-  };
-}
-
-function normalizeSearchText(value) {
-  return value.trim().toLowerCase();
-}
-
-function scoreSearchItem(post, rawQuery) {
-  const query = normalizeSearchText(rawQuery);
-  if (!query) return { score: 0, reasons: [] };
-
-  const reasons = [];
-  let score = 0;
-  const title = normalizeSearchText(post.title);
-  const description = normalizeSearchText(post.description || post.excerpt);
-  const category = normalizeSearchText(post.category);
-  const series = normalizeSearchText(post.series);
-  const tags = post.tags.map((tag) => ({ raw: tag, value: normalizeSearchText(tag) }));
-
-  if (title === query) {
-    score += 1000;
-    reasons.push("제목이 정확히 일치");
-  } else if (title.includes(query)) {
-    score += 650;
-    reasons.push("제목에서 일치");
-  }
-
-  const matchedTags = tags.filter((tag) => tag.value.includes(query));
-  if (matchedTags.length > 0) {
-    score += 420 + matchedTags.length * 20;
-    reasons.push(`태그 ${matchedTags.map((tag) => tag.raw).join(", ")}에서 일치`);
-  }
-
-  if (category.includes(query)) {
-    score += 320;
-    reasons.push(`카테고리 ${post.category}에서 일치`);
-  }
-
-  if (series && series.includes(query)) {
-    score += 260;
-    reasons.push("시리즈에서 일치");
-  }
-
-  if (description.includes(query)) {
-    score += 160;
-    reasons.push("설명에서 일치");
-  }
-
-  if (post.searchText.includes(query)) {
-    score += 40;
-    if (reasons.length === 0) {
-      reasons.push("본문에서 일치");
-    }
-  }
-
-  return { score, reasons };
-}
-
-function sortSearchResults(sourcePosts, query) {
-  return sourcePosts
-    .map((post) => ({ post, match: scoreSearchItem(post, query) }))
-    .filter(({ match }) => match.score > 0)
-    .sort((a, b) => {
-      if (b.match.score !== a.match.score) return b.match.score - a.match.score;
-      return new Date(b.post.date).valueOf() - new Date(a.post.date).valueOf();
-    });
 }
 
 async function checkSourceContracts() {
