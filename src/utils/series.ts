@@ -2,6 +2,8 @@ import type { CollectionEntry } from "astro:content";
 import seriesMetadata from "../data/series.json";
 import { getCategoryName } from "./categories";
 import { getPostActivityDate } from "./posts";
+import { compareLearningOrder } from "./postOrder";
+import { normalizeTaxonomySlug } from "./taxonomySlug";
 
 export type SeriesStatus = "planned" | "ongoing" | "completed";
 
@@ -43,11 +45,7 @@ function getRepresentativeCategory(posts: CollectionEntry<"blog">[]) {
 }
 
 export function normalizeSeriesName(seriesName: string) {
-  return seriesName
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣]+/gi, "-")
-    .replace(/^-+|-+$/g, "");
+  return normalizeTaxonomySlug(seriesName);
 }
 
 const SERIES_BY_LEGACY_NAME = new Map(SERIES.map((metadata) => [normalizeSeriesName(metadata.title), metadata]));
@@ -109,13 +107,7 @@ export function buildSeriesSummary(posts: CollectionEntry<"blog">[]): SeriesSumm
     .map((series) => ({
       ...series,
       category: getRepresentativeCategory(series.posts),
-      posts: [...series.posts].sort((a, b) => {
-        const orderA = a.data.chapter ?? a.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
-        const orderB = b.data.chapter ?? b.data.seriesOrder ?? Number.MAX_SAFE_INTEGER;
-
-        if (orderA !== orderB) return orderA - orderB;
-        return b.data.date.valueOf() - a.data.date.valueOf();
-      })
+      posts: [...series.posts].sort(compareLearningOrder)
     }))
     .sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;

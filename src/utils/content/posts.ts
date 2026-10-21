@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { getPostAliases, getPostSlug, sortPostsByDate } from "../posts";
+import { getPostAliases, getPostSlug, normalizePostSlug, sortPostsByDate } from "../posts";
 
 export async function getPublishedPosts() {
   return getCollection("blog", ({ data }) => !data.draft);
@@ -14,17 +14,17 @@ export async function getLatestPublishedPost() {
 }
 
 export async function getPostBySlug(slug: string) {
-  const normalizedSlug = slug.replace(/^\/+/, "").replace(/^blog\/+/i, "").replace(/\/+$/, "");
+  const normalizedSlug = normalizePostSlug(slug);
   const posts = await getPublishedPosts();
 
   return posts.find((post) => {
     if (getPostSlug(post) === normalizedSlug) return true;
-    return getPostAliases(post).some((alias) => alias.replace(/^\/blog\/|\/$/g, "") === normalizedSlug);
+    return getPostAliases(post).some((alias) => normalizePostSlug(alias) === normalizedSlug);
   });
 }
 
 export function findPostBySlug(posts: CollectionEntry<"blog">[], slug: string) {
-  const normalizedSlug = slug.replace(/^\/+/, "").replace(/^blog\/+/i, "").replace(/\/+$/, "");
+  const normalizedSlug = normalizePostSlug(slug);
 
   return posts.find((post) => getPostSlug(post) === normalizedSlug);
 }

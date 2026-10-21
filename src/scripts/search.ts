@@ -69,8 +69,19 @@ if (
       fillSelect(categorySelect, uniqueSorted(posts.map((post) => post.category)), initialCategory, "전체 카테고리");
       fillSelect(tagSelect, uniqueSorted(posts.flatMap((post) => post.tags)), initialTag, "전체 태그");
 
+      // Keystrokes in one burst should not rebuild every result card each time.
+      // Submitting or changing a filter still produces results immediately.
+      let pendingInputRender: number | undefined;
       const render = () => {
+        if (pendingInputRender !== undefined) {
+          window.clearTimeout(pendingInputRender);
+          pendingInputRender = undefined;
+        }
         renderSearch(posts, navigationGroups, activeGroup);
+      };
+      const scheduleInputRender = () => {
+        if (pendingInputRender !== undefined) window.clearTimeout(pendingInputRender);
+        pendingInputRender = window.setTimeout(render, 120);
       };
 
       form.addEventListener("submit", (event) => {
@@ -79,7 +90,7 @@ if (
         renderRecentSearches();
         render();
       });
-      input.addEventListener("input", render);
+      input.addEventListener("input", scheduleInputRender);
       categorySelect.addEventListener("change", render);
       tagSelect.addEventListener("change", render);
 

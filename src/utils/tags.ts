@@ -1,5 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import tagMetadata from "../data/tags.json";
+import { normalizeTaxonomySlug } from "./taxonomySlug";
 
 export type TagType = "tech" | "project" | "topic" | "post";
 
@@ -30,11 +31,7 @@ for (const entry of TAG_METADATA_LIST) {
 }
 
 export function normalizeTag(tag: string) {
-  return tag
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  return normalizeTaxonomySlug(tag);
 }
 
 export function resolveTagSlug(tag: string) {

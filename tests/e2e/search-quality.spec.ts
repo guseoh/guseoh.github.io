@@ -1,5 +1,42 @@
 import { expect, test } from "@playwright/test";
 
+test("실제 검색 색인 처리의 일치도 우선순위를 유지한다", async ({ page }) => {
+  const priorities = [
+    { id: "title-exact", title: "Spring" },
+    { id: "title-partial", title: "Spring 입문" },
+    { id: "tag", tags: ["Spring"] },
+    { id: "category", category: "Spring" },
+    { id: "series", series: "Spring" },
+    { id: "description", description: "Spring 설명" },
+    { id: "code", codeText: "Spring code" },
+    { id: "body", bodyText: "Spring 본문" }
+  ];
+
+  const records = priorities.map((entry) => ({
+    title: "JPA",
+    description: "관련 자료",
+    category: "Backend",
+    tags: [] as string[],
+    series: "",
+    date: "2025-01-01T00:00:00.000Z",
+    slug: entry.id,
+    url: "/blog/" + entry.id + "/",
+    readingTime: "1분",
+    bodyText: "",
+    codeText: "",
+    ...entry
+  }));
+
+  await page.route("**/search-index.json", (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(records) })
+  );
+  await page.goto("/search/?q=Spring");
+  const items = page.locator("[data-search-list] [data-post-slug]");
+  await expect(items).toHaveCount(priorities.length);
+  expect(await items.evaluateAll((elements) => elements.map((element) => element.getAttribute("data-post-slug"))))
+    .toEqual(priorities.map((entry) => entry.id));
+});
+
 test("검색 색인은 본문과 코드만 별도로 담고 중복된 전체 searchText를 포함하지 않는다", async ({ request }) => {
   const response = await request.get("/search-index.json");
   expect(response.ok()).toBe(true);
@@ -8,6 +45,7 @@ test("검색 색인은 본문과 코드만 별도로 담고 중복된 전체 sea
     bodyText: string;
     codeText: string;
     searchText?: string;
+    excerpt?: string;
   }>;
 
   expect(posts.length).toBeGreaterThan(0);
@@ -15,6 +53,7 @@ test("검색 색인은 본문과 코드만 별도로 담고 중복된 전체 sea
     expect(typeof post.bodyText).toBe("string");
     expect(typeof post.codeText).toBe("string");
     expect(post).not.toHaveProperty("searchText");
+    expect(post).not.toHaveProperty("excerpt");
   }
 
   const mapping = posts.find((post) => post.url === "/blog/jpa/relationship-mapping/");
@@ -23,6 +62,38 @@ test("검색 색인은 본문과 코드만 별도로 담고 중복된 전체 sea
   const flyway = posts.find((post) => post.url === "/blog/db/flyway/flyway/");
   expect(flyway?.codeText).toContain("V2_1__create_member_email_index.sql");
   expect(flyway?.bodyText).not.toContain("V2_1__create_member_email_index.sql");
+});
+
+test("연속 입력은 마지막 검색어 기준으로 한 번만 결과 목록을 갱신한다", async ({ page }) => {
+  await page.goto("/search/");
+  await expect(page.locator("[data-search-meta]")).toBeVisible();
+
+  const result = await page.evaluate(async () => {
+    const input = document.getElementById("search-page-input");
+    const list = document.querySelector("[data-search-list]");
+    if (!(input instanceof HTMLInputElement) || !(list instanceof HTMLElement)) {
+      throw new Error("Search controls are missing");
+    }
+
+    let renderCount = 0;
+    const observer = new MutationObserver((changes) => {
+      renderCount += changes.filter((change) => change.type === "childList").length;
+    });
+    observer.observe(list, { childList: true });
+
+    for (const value of ["S", "Sp", "Spr", "Spri", "Spring"]) {
+      input.value = value;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    observer.disconnect();
+    return { renderCount, query: new URLSearchParams(location.search).get("q") };
+  });
+
+  expect(result.renderCount).toBe(1);
+  expect(result.query).toBe("Spring");
+  await expect(page.locator("[data-search-meta]")).toContainText("결과");
+  await expect(page.locator("[data-search-list] .post-card").first()).toBeVisible();
 });
 
 test("글 목록과 기본 검색은 수정일순으로 정렬하고 수정 날짜를 일관되게 표시한다", async ({ page }) => {

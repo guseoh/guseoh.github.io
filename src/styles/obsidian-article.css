@@ -276,10 +276,6 @@
 }
 
 @media (max-width: 760px) {
-  .post .post__content > :is(p, ul, ol, blockquote) {
-    line-height: var(--article-paragraph-leading);
-  }
-
   .post .post__content > :is(.code-block, pre) {
     margin-top: 1.15rem;
     margin-bottom: 0.18rem;
