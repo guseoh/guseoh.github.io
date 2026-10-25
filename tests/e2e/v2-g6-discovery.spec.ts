@@ -40,7 +40,7 @@ test("실제 검색 결과는 Astro가 렌더링한 소제목 앵커로 이동�
   const link = page.locator('[data-post-slug="jpa/persistence-context"] .post-card__header a');
   await expect(link).toHaveAttribute("href", "/blog/jpa/persistence-context/#" + encodeURIComponent(heading.id));
   await link.click();
-  await expect(page.locator(CSSescape(heading.id))).toBeVisible();
+  await expect(page.locator(`[id="${heading.id}"]`)).toBeVisible();
 });
 
 test("본문 검색 링크는 정확한 표현이 있는 문단을 찾아 강조한다", async ({ page }) => {
@@ -100,6 +100,3 @@ test("새 탐색 영역은 모바일과 3개 테마에서 가로 넘침이 없�
   }
 });
 
-function CSSescape(value: string) {
-  return "#" + value.replace(/[^a-zA-Z0-9_-]/g, (letter) => "\\" + letter.codePointAt(0)!.toString(16) + " ");
-}
