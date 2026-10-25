@@ -8,6 +8,7 @@ import CategoryIcon from "../../components/CategoryIcon.astro";
 import PostComments from "../../components/PostComments.astro";
 import PostCodeEnhancer from "../../components/post/PostCodeEnhancer.astro";
 import PostHeadingEnhancer from "../../components/post/PostHeadingEnhancer.astro";
+import PostShareControls from "../../components/post/PostShareControls.astro";
 import PostImageLightbox from "../../components/post/PostImageLightbox.astro";
 import PostLinkCardEnhancer from "../../components/post/PostLinkCardEnhancer.astro";
 import PostReadingProgress from "../../components/post/PostReadingProgress.astro";
@@ -274,6 +275,7 @@ const breadcrumbStructuredData = {
             {hiddenTagCount > 0 && <span class="tag tag--muted">+{hiddenTagCount} tags</span>}
           </div>
         )}
+        <PostShareControls postUrl={postUrl} title={postTitle} />
       </header>
 
       <aside class="post-reading-resume" data-reading-resume hidden aria-label="이어 읽기">

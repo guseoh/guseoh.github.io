@@ -1,0 +1,94 @@
+---
+interface Props {
+  postUrl: string;
+  title: string;
+}
+const { postUrl, title } = Astro.props as Props;
+---
+
+<nav class="post-quick-actions" aria-label="글 읽기 및 공유">
+  <button type="button" data-post-native-share hidden aria-label="이 글 공유하기">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 16V3m0 0L7 8m5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>
+    </svg><span>공유</span>
+  </button>
+  <button type="button" data-post-copy-url aria-label="이 글 주소 복사">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.7 1.7M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.7-1.7"/>
+    </svg><span>링크 복사</span>
+  </button>
+  <button type="button" data-post-focus-toggle aria-pressed="false" aria-label="집중 읽기 켜기">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/>
+    </svg><span data-post-focus-label>집중 읽기</span>
+  </button>
+</nav>
+<span class="sr-only" data-post-action-status aria-live="polite" aria-atomic="true"></span>
+
+<script is:inline define:vars={{ postUrl, title }}>
+  (() => {
+    const controls = document.querySelector(".post-quick-actions");
+    if (!(controls instanceof HTMLElement)) return;
+    const nativeShare = controls.querySelector("[data-post-native-share]");
+    const copyButton = controls.querySelector("[data-post-copy-url]");
+    const focusButton = controls.querySelector("[data-post-focus-toggle]");
+    const focusLabel = controls.querySelector("[data-post-focus-label]");
+    const status = document.querySelector("[data-post-action-status]");
+    const canonicalUrl = new URL(postUrl, window.location.origin).toString();
+
+    const announce = (value) => {
+      if (status instanceof HTMLElement) status.textContent = value;
+    };
+    const copyUrl = async () => {
+      if (navigator.clipboard?.writeText && window.isSecureContext) {
+        await navigator.clipboard.writeText(canonicalUrl);
+        announce("게시글 주소가 복사되었습니다.");
+        return;
+      }
+      const input = document.createElement("textarea");
+      input.value = canonicalUrl;
+      input.setAttribute("readonly", "true");
+      input.style.position = "fixed";
+      input.style.left = "-10000px";
+      document.body.append(input);
+      input.select();
+      const copied = document.execCommand("copy");
+      input.remove();
+      announce(copied ? "게시글 주소가 복사되었습니다." : "주소 복사에 실패했습니다.");
+    };
+    if (copyButton instanceof HTMLButtonElement) {
+      copyButton.addEventListener("click", () => {
+        copyUrl().catch(() => announce("주소 복사에 실패했습니다."));
+      });
+    }
+    if (nativeShare instanceof HTMLButtonElement && typeof navigator.share === "function") {
+      nativeShare.hidden = false;
+      nativeShare.addEventListener("click", async () => {
+        try {
+          await navigator.share({ title, url: canonicalUrl });
+        } catch (error) {
+          if (error?.name !== "AbortError") announce("공유를 완료하지 못했습니다. 링크 복사를 이용해 주세요.");
+        }
+      });
+    }
+    if (focusButton instanceof HTMLButtonElement && focusLabel instanceof HTMLElement) {
+      const setFocusMode = (active) => {
+        document.body.classList.toggle("reading-focus-mode", active);
+        focusButton.setAttribute("aria-pressed", String(active));
+        focusButton.setAttribute("aria-label", active ? "집중 읽기 해제" : "집중 읽기 켜기");
+        focusLabel.textContent = active ? "기본 보기" : "집중 읽기";
+      };
+      focusButton.addEventListener("click", () => {
+        setFocusMode(!document.body.classList.contains("reading-focus-mode"));
+      });
+      window.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || !document.body.classList.contains("reading-focus-mode")) return;
+        if (document.querySelector(".post-lightbox[aria-hidden='false'], dialog[open]")) return;
+        setFocusMode(false);
+        focusButton.focus();
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }, true);
+    }
+  })();
+</script>

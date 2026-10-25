@@ -14,7 +14,8 @@ import ResumeReadingHome from "../components/home/ResumeReadingHome.astro";
 const posts = await getPublishedPostsSorted();
 // "최근 글"은 수정일이 아닌 최초 발행일로 정렬합니다.
 // 별도의 최근 수정 글 영역에 같은 글이 반복되지 않게 합니다.
-const featuredPosts = posts.filter((post) => post.data.featured);
+// Keep the featured section curated without crowding out chronological reading.
+const featuredPosts = posts.filter((post) => post.data.featured).slice(0, 2);
 const featuredIds = new Set(featuredPosts.map((post) => post.id));
 const latestPosts = [...posts].filter((post) => !featuredIds.has(post.id)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()

@@ -11,6 +11,24 @@
     if (post.dataset.headingAnchorsReady === "true") return;
     post.dataset.headingAnchorsReady = "true";
 
+    const createIcon = (type) => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      for (const [key, value] of Object.entries({
+        viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false",
+        fill: "none", stroke: "currentColor", "stroke-width": "1.8",
+        "stroke-linecap": "round", "stroke-linejoin": "round"
+      })) svg.setAttribute(key, value);
+      const shapes = type === "link"
+        ? ["M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.7 1.7", "M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.7-1.7"]
+        : ["M8 4h11a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z", "M4 8H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1"];
+      for (const shape of shapes) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", shape);
+        svg.append(path);
+      }
+      return svg;
+    };
+
     const ensureHeadingActions = () => {
       const headings = Array.from(post.querySelectorAll(".post__content h2[id], .post__content h3[id], .post__content h4[id]"));
 
@@ -29,7 +47,7 @@
         anchor.href = `#${id}`;
         anchor.setAttribute("aria-label", `제목 링크로 이동: ${label}`);
         anchor.title = "제목 링크";
-        anchor.textContent = "#";
+        anchor.append(createIcon("link"));
 
         const button = document.createElement("button");
         button.className = "post-heading-copy";
@@ -37,7 +55,7 @@
         button.dataset.headingId = id;
         button.setAttribute("aria-label", `제목 URL 복사: ${label}`);
         button.title = "제목 URL 복사";
-        button.textContent = "복사";
+        button.append(createIcon("copy"));
 
         actions.append(anchor, button);
         heading.classList.add("post-heading");
@@ -96,12 +114,14 @@
 
         try {
           const result = await copyText(url.toString());
-          button.textContent = result === "copied" ? "완료" : "선택됨";
+          button.dataset.copyState = result;
+          button.title = result === "copied" ? "복사 완료" : "URL 선택됨";
           announce(result === "copied"
             ? "제목 URL이 복사되었습니다."
             : "제목 URL을 선택했습니다. 직접 복사해 주세요.");
           window.setTimeout(() => {
-            button.textContent = "복사";
+            delete button.dataset.copyState;
+            button.title = "제목 URL 복사";
           }, 1400);
         } catch {
           announce("제목 URL을 복사하지 못했습니다.");
