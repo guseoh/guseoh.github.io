@@ -44,6 +44,7 @@ test("내부 링크의 미리보기는 등록된 공개 글 정보만 보여 주
   await page.keyboard.press("Escape");
   await expect(popup).toBeHidden();
   await expect(next).toBeFocused();
+  await next.evaluate((element) => (element as HTMLElement).blur());
   await next.focus();
   await expect(popup).toBeVisible();
   await popup.getByRole("button", { name: "미리보기 닫기" }).click();
