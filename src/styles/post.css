@@ -1141,8 +1141,8 @@ html[data-theme="dark"] .astro-code span {
 }
 
 html[data-theme="dark"] .post img {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: color-mix(in srgb, var(--border) 72%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 30%, transparent);
   filter: brightness(0.96) contrast(1.01);
 }
 
