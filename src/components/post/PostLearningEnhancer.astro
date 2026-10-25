@@ -142,5 +142,82 @@
         else renderDiagram(node, index);
       });
     }
+
+    // User-entered JS/Java is deliberately unsupported; only a bounded,
+    // numeric arithmetic expression is evaluated inside a sandboxed frame.
+    const runners = Array.from(root.querySelectorAll("[data-learning-run]"));
+    runners.forEach((runner, index) => {
+      const execute = runner.querySelector("[data-learning-execute]");
+      const reset = runner.querySelector("[data-learning-reset]");
+      const output = runner.querySelector("[data-learning-output]");
+      const expression = runner.querySelector("[data-learning-expression]")?.textContent?.trim() ?? "";
+      if (!(execute instanceof HTMLButtonElement) || !(reset instanceof HTMLButtonElement)
+        || !(output instanceof HTMLElement)) return;
+      let currentFrame = null;
+      let cleanup = null;
+      const clear = () => {
+        cleanup?.();
+        cleanup = null;
+        currentFrame?.remove();
+        currentFrame = null;
+      };
+      const runnerSource = [
+        "<!doctype html><html><head><meta http-equiv=\"Content-Security-Policy\"",
+        " content=\"default-src 'none'; script-src 'unsafe-inline'; connect-src 'none'; form-action 'none'\">",
+        "</head><body><script>",
+        "function calculate(source){",
+        "let input=source.replace(/\\s+/g,''), tokens=input.match(/\\d+(?:\\.\\d+)?|[()+*/%-]/g)||[];",
+        "if(tokens.join('')!==input)throw Error('Invalid token');",
+        "let i=0;function primary(){let t=tokens[i++];if(t==='+'||t==='-'){let n=primary();return t==='-'?-n:n;}",
+        "if(t==='('){let n=sum();if(tokens[i++]!==')')throw Error('Missing )');return n;}",
+        "if(!t||!/^\\d/.test(t))throw Error('Expected number');return Number(t);}",
+        "function product(){let n=primary();while(['*','/','%'].includes(tokens[i])){",
+        "let op=tokens[i++],v=primary();n=op==='*'?n*v:op==='/'?n/v:n%v;}return n;}",
+        "function sum(){let n=product();while(['+','-'].includes(tokens[i])){",
+        "let op=tokens[i++],v=product();n=op==='+'?n+v:n-v;}return n;}",
+        "let result=sum();if(i!==tokens.length||!Number.isFinite(result))throw Error('Invalid expression');",
+        "return result;}",
+        "addEventListener('message',function(e){",
+        "if(!e.data||e.data.type!=='calculate')return;",
+        "try{parent.postMessage({type:'calculated',id:e.data.id,value:String(calculate(e.data.expression))},'*');}",
+        "catch(err){parent.postMessage({type:'calculated',id:e.data.id,error:'표현식을 계산할 수 없습니다.'},'*');}});",
+        "</scr" + "ipt></body></html>"
+      ].join("");
+      execute.addEventListener("click", () => {
+        clear();
+        output.textContent = "계산 중…";
+        const frame = document.createElement("iframe");
+        frame.hidden = true;
+        frame.tabIndex = -1;
+        frame.setAttribute("aria-hidden", "true");
+        frame.setAttribute("sandbox", "allow-scripts");
+        frame.setAttribute("referrerpolicy", "no-referrer");
+        currentFrame = frame;
+        const id = "learn-run-" + index + "-" + Date.now();
+        const onMessage = (event) => {
+          if (event.source !== frame.contentWindow || event.data?.type !== "calculated" || event.data.id !== id) return;
+          output.textContent = event.data.error ?? "결과: " + event.data.value;
+          clear();
+        };
+        window.addEventListener("message", onMessage);
+        const timeout = window.setTimeout(() => {
+          output.textContent = "실행 시간이 초과되었습니다.";
+          clear();
+        }, 3000);
+        cleanup = () => {
+          window.removeEventListener("message", onMessage);
+          window.clearTimeout(timeout);
+        };
+        frame.addEventListener("load", () => {
+          frame.contentWindow?.postMessage({ type: "calculate", id, expression }, "*");
+        }, { once: true });
+        frame.srcdoc = runnerSource;
+        runner.append(frame);
+      });
+      reset.addEventListener("click", () => {
+        clear();
+        output.textContent = "실행 전";
+      });
+    });
   })();
 </script>

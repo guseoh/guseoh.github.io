@@ -14,7 +14,7 @@
     "content:check": "node scripts/check-tag-metadata.mjs && node scripts/check-content.mjs && node scripts/check-content-style.mjs",
     "content:style": "node scripts/check-content-style.mjs",
     "links:check": "node scripts/check-links.mjs",
-    "test": "node scripts/check-korea-date.mjs && node scripts/check-blog-contracts.mjs && node scripts/content-style-rules.test.mjs && node --experimental-strip-types scripts/check-taxonomy-order.mjs && node scripts/image-usage.test.mjs && node --experimental-strip-types scripts/check-pagination-contracts.mjs && node --experimental-strip-types scripts/check-post-activity.mjs && node scripts/document-image-usage.test.mjs && node --experimental-strip-types scripts/check-inline-json.mjs",
+    "test": "node scripts/check-korea-date.mjs && node scripts/check-blog-contracts.mjs && node scripts/content-style-rules.test.mjs && node --experimental-strip-types scripts/check-taxonomy-order.mjs && node scripts/image-usage.test.mjs && node --experimental-strip-types scripts/check-pagination-contracts.mjs && node --experimental-strip-types scripts/check-post-activity.mjs && node scripts/document-image-usage.test.mjs && node --experimental-strip-types scripts/check-inline-json.mjs && node scripts/learning-blocks.test.mjs",
     "test:e2e": "playwright test",
     "lighthouse": "lhci autorun",
     "smoke": "node scripts/smoke-test.mjs",
