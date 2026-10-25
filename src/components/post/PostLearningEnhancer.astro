@@ -126,6 +126,8 @@
             for (const attr of Array.from(element.attributes)) {
               const key = attr.localName.toLowerCase();
               const value = attr.value;
+              // The SVG namespace is a required XML declaration, not a fetch.
+              if (attr.name === "xmlns" && value === "http://www.w3.org/2000/svg") continue;
               if (/^on/i.test(key) || key === "href" || key === "src"
                 || key === "externalresourcesrequired" || attr.namespaceURI === "http://www.w3.org/1999/xlink"
                 || /url\(\s*['"]?\s*(?:https?:|data:|javascript:|\/\/)/i.test(value)
