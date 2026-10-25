@@ -50,5 +50,5 @@ assert.ok(safeDump.includes("Prepare"));
 const unsafe = { type: "root", children: [pre("learn-tabs", '[{"title":"<img onerror=1>","text":"safe"},{"title":"B","text":"ok"}]')] };
 rehypeLearningBlocks()(unsafe);
 assert.ok(JSON.stringify(unsafe).includes("<img onerror=1>")); // text node, not executable HTML
-assert.equal(unsafe.children[0].children[0].children[0].children[0].type, "text");
+assert.equal(unsafe.children[0].children[0].children[0].children[0].children[0].type, "text");
 console.log("[learning-blocks] Markdown validation and safe HAST rendering passed.");
