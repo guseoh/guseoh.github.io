@@ -134,7 +134,7 @@
               }
             }
             if (element.localName.toLowerCase() === "style"
-              && /@import|url\s*\(|expression\s*\(/i.test(element.textContent || "")) {
+              && /@import|url\s*\(\s*['"]?\s*(?!#)|expression\s*\(/i.test(element.textContent || "")) {
               throw new Error("Diagram contains an unsafe stylesheet");
             }
           }

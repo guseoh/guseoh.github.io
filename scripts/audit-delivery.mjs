@@ -68,7 +68,7 @@ console.log("[delivery:audit] Emitted JS: " + jsCount + " assets; "
 let rasterBytes = 0;
 let rasterCount = 0;
 for (const name of assetNames) {
-  if (!/\\.(?:png|webp|avif|jpe?g)$/i.test(name)) continue;
+  if (!/\.(?:png|webp|avif|jpe?g)$/i.test(name)) continue;
   rasterCount += 1;
   rasterBytes += (await stat(path.join(astroAssets, name))).size;
 }
