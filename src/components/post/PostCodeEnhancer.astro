@@ -93,7 +93,7 @@
     };
 
     for (const [index, pre] of blocks.entries()) {
-      if (!(pre instanceof HTMLPreElement) || pre.parentElement?.classList.contains("code-block")) continue;
+      if (!(pre instanceof HTMLPreElement) || pre.parentElement?.classList.contains("code-block") || pre.closest(".learning-block")) continue;
       const code = pre.querySelector("code");
       const metaMarker = pre.previousElementSibling instanceof HTMLElement && pre.previousElementSibling.classList.contains("code-block-meta")
         ? pre.previousElementSibling
@@ -101,6 +101,14 @@
 
       const wrapper = document.createElement("div");
       wrapper.className = "code-block";
+      const tabGroup = getMetaValue(pre, code, metaMarker, "codeTabGroup").trim();
+      const tabTitle = getMetaValue(pre, code, metaMarker, "codeTabTitle").trim();
+      const diffState = getMetaValue(pre, code, metaMarker, "codeDiffState").trim();
+      if (tabGroup) wrapper.dataset.codeTabGroup = tabGroup;
+      if (tabTitle) wrapper.dataset.codeTabTitle = tabTitle;
+      if (diffState === "before" || diffState === "after") {
+        wrapper.classList.add(`code-block--diff-${diffState}`);
+      }
       pre.parentNode?.insertBefore(wrapper, pre);
 
       const header = document.createElement("div");
@@ -129,6 +137,12 @@
         title.textContent = codeTitle;
         title.title = codeTitle;
         meta.append(title);
+      }
+      if (diffState === "before" || diffState === "after") {
+        const badge = document.createElement("span");
+        badge.className = "code-block__diff-label";
+        badge.textContent = diffState === "before" ? "수정 전" : "수정 후";
+        meta.append(badge);
       }
 
       const button = document.createElement("button");
@@ -242,6 +256,105 @@
           }, 1400);
         }
       });
+    }
+
+    // A contiguous set of fenced code blocks with the same tabGroup forms one
+    // accessible tabs widget. Ordinary code fences and code copy stay unchanged.
+    const candidates = Array.from(document.querySelectorAll(".post__content .code-block[data-code-tab-group]"));
+    const used = new Set();
+    let groupId = 0;
+    for (const first of candidates) {
+      if (used.has(first)) continue;
+      const name = first.dataset.codeTabGroup;
+      const siblings = [first];
+      let next = first.nextElementSibling;
+      while (next?.classList.contains("code-block") && next.dataset.codeTabGroup === name) {
+        siblings.push(next);
+        next = next.nextElementSibling;
+      }
+      siblings.forEach((node) => used.add(node));
+      if (siblings.length < 2) continue;
+      const container = document.createElement("section");
+      container.className = "code-tab-group";
+      container.setAttribute("aria-label", "코드 예제 탭");
+      const tabs = document.createElement("div");
+      tabs.className = "code-tab-group__tabs";
+      tabs.setAttribute("role", "tablist");
+      tabs.setAttribute("aria-label", "코드 버전");
+      const buttons = [];
+      const selectTab = (selected, moveFocus = false) => {
+        siblings.forEach((panel, i) => {
+          const active = i === selected;
+          panel.hidden = !active;
+          buttons[i].setAttribute("aria-selected", String(active));
+          buttons[i].tabIndex = active ? 0 : -1;
+        });
+        if (moveFocus) buttons[selected].focus();
+      };
+      const id = groupId++;
+      siblings.forEach((panel, i) => {
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "code-tab-group__tab";
+        const displayName = panel.dataset.codeTabTitle || (
+          panel.classList.contains("code-block--diff-before") ? "수정 전"
+            : panel.classList.contains("code-block--diff-after") ? "수정 후" : "예제 " + (i + 1)
+        );
+        tab.textContent = displayName;
+        tab.id = `code-group-${id}-tab-${i}`;
+        panel.id = `code-group-${id}-panel-${i}`;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-controls", panel.id);
+        panel.setAttribute("role", "tabpanel");
+        panel.setAttribute("aria-labelledby", tab.id);
+        tab.addEventListener("click", () => selectTab(i));
+        tab.addEventListener("keydown", (event) => {
+          let target = -1;
+          if (event.key === "ArrowRight") target = (i + 1) % siblings.length;
+          if (event.key === "ArrowLeft") target = (i - 1 + siblings.length) % siblings.length;
+          if (event.key === "Home") target = 0;
+          if (event.key === "End") target = siblings.length - 1;
+          if (target < 0) return;
+          event.preventDefault();
+          selectTab(target, true);
+        });
+        buttons.push(tab);
+        tabs.append(tab);
+      });
+      first.parentNode?.insertBefore(container, first);
+      container.append(tabs, ...siblings);
+
+      // A bounded LCS marks only changed lines, without altering the code text
+      // used by the existing Copy button.
+      const before = siblings.find((panel) => panel.classList.contains("code-block--diff-before"));
+      const after = siblings.find((panel) => panel.classList.contains("code-block--diff-after"));
+      if (before && after) {
+        const beforeLines = Array.from(before.querySelectorAll("code > .line"));
+        const afterLines = Array.from(after.querySelectorAll("code > .line"));
+        const a = beforeLines.map((line) => line.textContent ?? "");
+        const b = afterLines.map((line) => line.textContent ?? "");
+        if (a.length > 0 && b.length > 0 && a.length <= 250 && b.length <= 250) {
+          const dp = Array.from({ length: a.length + 1 }, () => new Uint16Array(b.length + 1));
+          for (let i = a.length - 1; i >= 0; i -= 1) {
+            for (let j = b.length - 1; j >= 0; j -= 1) {
+              dp[i][j] = a[i] === b[j] ? 1 + dp[i + 1][j + 1] : Math.max(dp[i + 1][j], dp[i][j + 1]);
+            }
+          }
+          let i = 0;
+          let j = 0;
+          while (i < a.length && j < b.length) {
+            if (a[i] === b[j]) { i += 1; j += 1; }
+            else if (dp[i + 1][j] >= dp[i][j + 1]) {
+              beforeLines[i++].classList.add("is-removed");
+            } else {
+              afterLines[j++].classList.add("is-added");
+            }
+          }
+          while (i < a.length) beforeLines[i++].classList.add("is-removed");
+          while (j < b.length) afterLines[j++].classList.add("is-added");
+        }
+      }
+      selectTab(0);
     }
   })();
 </script>

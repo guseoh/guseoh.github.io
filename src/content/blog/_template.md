@@ -30,6 +30,16 @@ draft: true
 - 정리 장은 본문에서 확인한 핵심 결론을 3~6개의 완결된 글머리 문장으로 요약한다.
 - 정리 장에는 본문에서 설명하지 않은 새로운 내용을 추가하지 않는다.
 - 참고 자료 링크는 [제목](URL) 형식으로 작성한다. 참고 자료 절의 링크 아이콘과 출처 유형은 화면에서 자동으로 표시된다.
+- V2 선택형 학습 컴포넌트: 일반 코드/Markdown 글은 기존 문법을 유지한다.
+- - 인접 코드 블록에 같은 tabGroup="setup"과 서로 다른 tabTitle="Java" 등을 추가하면 코드 탭이 된다.
+- - 코드 변경 전후는 tabGroup="change"와 diffState="before" 또는 diffState="after"를 조합한다.
+- - 본문 탭: learn-tabs 코드 펜스에 title/text 필드를 가진 JSON 객체 배열(2~10개)을 작성한다.
+- - 파일 트리: learn-tree 코드 펜스에 두 칸씩 들여쓰고 폴더 이름은 /로 끝낸다.
+- - 단계 가이드: learn-steps 코드 펜스에 문자열 JSON 배열(2~10개)을 작성한다.
+- - Mermaid: mermaid 코드 펜스에 flowchart/graph/sequenceDiagram/classDiagram을 작성한다. click/href는 금지.
+- - 수식: math 코드 펜스 또는 인라인 코드의 math: 접두사를 사용한다.
+- - 제한 실행: learn-run 코드 펜스에 1 + 2 * (3 - 1) 같은 숫자 산술식만 작성한다.
+- - Mermaid/LaTeX는 로드되지 않으면 텍스트 원본을 유지한다. 임의 JavaScript/Java/Spring 코드는 실행하지 않는다.
 - 투명 배경 다이어그램은 대체 텍스트 또는 title에 {light-bg}를 추가할 수 있다.
 - 넓은 다이어그램은 {full-width}, 다크 모드 전용 원본이 있으면 {dark-src=파일경로}를 사용한다.
 - 원본 색을 그대로 유지할 이미지는 {no-dark-filter}, 라이트박스에서 제외할 이미지는 {no-lightbox}를 사용한다.

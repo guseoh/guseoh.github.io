@@ -1871,3 +1871,62 @@ html[data-theme="dark"] .post .markdown-alert :not(pre) > code {
 html.post-lightbox-open {
   scrollbar-gutter: stable;
 }
+
+/* V2 reusable fenced-code tabs. A regular code block remains untouched. */
+.code-tab-group {
+  min-width: 0;
+  margin: 1.1rem 0;
+}
+.code-tab-group__tabs {
+  display: flex;
+  gap: 0.15rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  padding: 0.2rem 0.25rem;
+  scrollbar-width: thin;
+}
+.code-tab-group__tab {
+  flex: 0 0 auto;
+  min-height: 2.3rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
+  background: transparent;
+  color: var(--muted-readable);
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.code-tab-group__tab[aria-selected="true"] {
+  color: var(--heading);
+  border-bottom-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 33%, transparent);
+}
+.code-tab-group__tab:focus-visible {
+  outline: 2px solid var(--post-link-focus);
+  outline-offset: -2px;
+}
+.code-tab-group > .code-block {
+  margin-top: 0.55rem;
+}
+.code-tab-group > .code-block[hidden] { display: none !important; }
+.code-block__diff-label {
+  font-size: 0.68rem;
+  color: var(--muted-readable);
+  font-weight: 650;
+}
+.code-block--diff-before .code-block__diff-label { color: var(--alert-caution); }
+.code-block--diff-after .code-block__diff-label { color: var(--alert-tip); }
+@media print {
+  .code-tab-group__tabs { display: none; }
+  .code-tab-group > .code-block[hidden] { display: block !important; }
+}
+
+.code-block--diff-before .line.is-removed {
+  background: color-mix(in srgb, var(--alert-caution) 16%, transparent);
+  border-left: 2px solid var(--alert-caution);
+}
+.code-block--diff-after .line.is-added {
+  background: color-mix(in srgb, var(--alert-tip) 16%, transparent);
+  border-left: 2px solid var(--alert-tip);
+}
