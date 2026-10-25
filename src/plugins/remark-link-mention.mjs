@@ -51,7 +51,7 @@ function normalizeUrl(value, baseUrl) {
   try {
     const base = new URL(baseUrl);
     const url = new URL(trimmed, base);
-    const isRootRelative = trimmed.startsWith("/");
+    const isRootRelative = trimmed.startsWith("/") && !trimmed.startsWith("//");
     const isAbsoluteHttp = /^https?:\/\//i.test(trimmed);
 
     if (!isRootRelative && !isAbsoluteHttp) return undefined;
@@ -71,7 +71,11 @@ function normalizeUrl(value, baseUrl) {
 
 function normalizeImageUrl(value, baseUrl) {
   if (!value) return undefined;
-  return normalizeUrl(value, baseUrl)?.href;
+  const normalized = normalizeUrl(value, baseUrl);
+  if (!normalized) return undefined;
+  const candidate = new URL(normalized.href, baseUrl);
+  if (candidate.protocol !== "https:" && candidate.origin !== new URL(baseUrl).origin) return undefined;
+  return normalized.href;
 }
 
 function firstLetter(value) {

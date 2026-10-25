@@ -108,14 +108,34 @@
           const result = await mermaid.render("learn-diagram-" + index, pre.textContent || "");
           const doc = new DOMParser().parseFromString(result.svg, "image/svg+xml");
           const svg = doc.documentElement;
-          if (svg.tagName.toLowerCase() !== "svg" || svg.querySelector("parsererror,script,foreignObject")) {
+          if (svg.localName.toLowerCase() !== "svg" || svg.namespaceURI !== "http://www.w3.org/2000/svg") {
             throw new Error("Unsafe or invalid diagram result");
           }
+          // A browser DOM import would activate non-SVG or fetch-capable nodes.
+          // Use a conservative SVG allowlist and retain the visible source on failure.
+          const allowedTags = new Set([
+            "svg", "g", "defs", "style", "path", "rect", "circle", "ellipse",
+            "line", "polyline", "polygon", "text", "tspan", "title", "desc",
+            "marker", "lineargradient", "radialgradient", "stop", "clippath"
+          ]);
           for (const element of [svg, ...svg.querySelectorAll("*")]) {
+            if (element.namespaceURI !== "http://www.w3.org/2000/svg"
+              || !allowedTags.has(element.localName.toLowerCase())) {
+              throw new Error("Diagram contains an unsupported element");
+            }
             for (const attr of Array.from(element.attributes)) {
-              if (/^on/i.test(attr.name) || (/href$/i.test(attr.name) && /^(https?:|data:|javascript:)/i.test(attr.value))) {
-                throw new Error("Diagram contains an external or executable link");
+              const key = attr.localName.toLowerCase();
+              const value = attr.value;
+              if (/^on/i.test(key) || key === "href" || key === "src"
+                || key === "externalresourcesrequired" || attr.namespaceURI === "http://www.w3.org/1999/xlink"
+                || /url\(\s*['"]?\s*(?:https?:|data:|javascript:|\/\/)/i.test(value)
+                || /(?:https?:|javascript:|data:text\/html)/i.test(value)) {
+                throw new Error("Diagram contains an unsafe reference");
               }
+            }
+            if (element.localName.toLowerCase() === "style"
+              && /@import|url\s*\(|expression\s*\(/i.test(element.textContent || "")) {
+              throw new Error("Diagram contains an unsafe stylesheet");
             }
           }
           const details = document.createElement("details");
