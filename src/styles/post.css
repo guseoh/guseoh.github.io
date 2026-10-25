@@ -1921,3 +1921,12 @@ html.post-lightbox-open {
   .code-tab-group__tabs { display: none; }
   .code-tab-group > .code-block[hidden] { display: block !important; }
 }
+
+.code-block--diff-before .line.is-removed {
+  background: color-mix(in srgb, var(--alert-caution) 16%, transparent);
+  border-left: 2px solid var(--alert-caution);
+}
+.code-block--diff-after .line.is-added {
+  background: color-mix(in srgb, var(--alert-tip) 16%, transparent);
+  border-left: 2px solid var(--alert-tip);
+}

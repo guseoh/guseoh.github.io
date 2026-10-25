@@ -40,6 +40,7 @@ test("기존 코드 Copy/줄 번호와 공존하는 인접 코드 탭은 키보�
   await expect(after).toHaveAttribute("aria-selected", "true");
   const panel = page.locator(".code-tab-group > [role='tabpanel']:not([hidden])");
   await expect(panel).toContainText("int a = 2;");
+  await expect(panel.locator("code > .line.is-added")).toHaveCount(1);
   await expect(panel.getByRole("button", { name: "코드 블록 복사" })).toBeVisible();
 });
 
