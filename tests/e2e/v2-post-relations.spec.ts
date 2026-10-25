@@ -35,6 +35,7 @@ test("명시된 chapter 연결만 그래프와 텍스트 목록에 나타난다"
 test("내부 링크의 미리보기는 등록된 공개 글 정보만 보여 주고 Escape로 닫힌다", async ({ page }) => {
   await page.goto("/blog/security/basic2/");
   const next = page.locator(".post-knowledge__list a[href='/blog/security/basic3/']");
+  await next.scrollIntoViewIfNeeded();
   await next.focus();
   const popup = page.locator("[data-post-preview]");
   await expect(popup).toBeVisible();
@@ -44,10 +45,10 @@ test("내부 링크의 미리보기는 등록된 공개 글 정보만 보여 주
   await page.keyboard.press("Escape");
   await expect(popup).toBeHidden();
   await expect(next).toBeFocused();
-  await next.evaluate((element) => (element as HTMLElement).blur());
-  await next.focus();
+  await next.dispatchEvent("mouseenter");
   await expect(popup).toBeVisible();
-  await popup.getByRole("button", { name: "미리보기 닫기" }).click();
+  await popup.getByRole("button", { name: "미리보기 닫기" }).focus();
+  await page.keyboard.press("Enter");
   await expect(popup).toBeHidden();
   await expect(next).toBeFocused();
 });

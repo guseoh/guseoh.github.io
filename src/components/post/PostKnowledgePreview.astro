@@ -113,10 +113,11 @@ const { entries } = Astro.props as Props;
     // Focus may scroll an anchor into view: reposition rather than dismissing
     // the tooltip in the same interaction that opened it.
     window.addEventListener("scroll", () => {
-      if (preview.hidden || !current) return;
-      const rect = current.getBoundingClientRect();
-      if (rect.bottom < 0 || rect.top > window.innerHeight) hide();
-      else positionPreview(current);
+      if (!preview.hidden && current) positionPreview(current);
     }, { passive: true });
+    // Only user-generated scrolling dismisses the popup; focus-triggered
+    // browser scrolls must not immediately erase an accessible preview.
+    window.addEventListener("wheel", hide, { passive: true });
+    window.addEventListener("touchmove", hide, { passive: true });
   })();
 </script>
