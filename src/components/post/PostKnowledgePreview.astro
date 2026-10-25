@@ -92,14 +92,14 @@ const { entries } = Astro.props as Props;
     preview.addEventListener("mouseleave", scheduleHide);
     close.addEventListener("click", () => {
       const back = current;
-      hide();
       back?.focus();
+      hide();
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && !preview.hidden) {
         const back = current;
-        hide();
         back?.focus();
+        hide();
       }
     });
     document.addEventListener("pointerdown", (event) => {

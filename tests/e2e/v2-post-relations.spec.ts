@@ -44,6 +44,11 @@ test("내부 링크의 미리보기는 등록된 공개 글 정보만 보여 주
   await page.keyboard.press("Escape");
   await expect(popup).toBeHidden();
   await expect(next).toBeFocused();
+  await next.focus();
+  await expect(popup).toBeVisible();
+  await popup.getByRole("button", { name: "미리보기 닫기" }).click();
+  await expect(popup).toBeHidden();
+  await expect(next).toBeFocused();
 });
 
 test("Series 허브는 존재하지 않는 Series ID 없이 명시된 카테고리 chapter 경로를 연결한다", async ({ page }) => {
