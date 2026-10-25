@@ -455,3 +455,59 @@ html.left-sidebar-collapsed .post-toc,
     display: none;
   }
 }
+
+/* V2: lightweight article actions and session-only reading focus. */
+.post-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.65rem;
+  margin-top: 0.7rem;
+}
+.post-quick-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.18rem;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted-readable);
+  font-size: 0.78rem;
+  font-weight: 680;
+  cursor: pointer;
+}
+.post-quick-actions button[hidden] { display: none; }
+.post-quick-actions button svg { width: 0.94rem; height: 0.94rem; }
+.post-quick-actions button:hover,
+.post-quick-actions button:focus-visible,
+.post-quick-actions button[aria-pressed="true"] { color: var(--link-hover); }
+.post-quick-actions button:focus-visible {
+  outline: 2px solid var(--post-link-focus);
+  outline-offset: 2px;
+}
+/* Keep the user's sidebar storage unchanged; only the current view changes. */
+body.reading-focus-mode .site-layout--wide:not(.site-layout--minimal) {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+body.reading-focus-mode .site-layout--wide > .site-content {
+  grid-column: 1;
+  min-width: 0;
+}
+body.reading-focus-mode #site-sidebar,
+body.reading-focus-mode #sidebar-open,
+body.reading-focus-mode #sidebar-backdrop,
+body.reading-focus-mode .post-view > .post-toc,
+body.reading-focus-mode .post-view > .post-toc-mobile {
+  display: none !important;
+}
+body.reading-focus-mode .site-layout--wide .post-view > .post-column {
+  position: static;
+  left: auto;
+  width: min(100%, var(--post-reading-width));
+  max-width: var(--post-reading-width);
+  margin-inline: auto;
+}
+@media print { .post-quick-actions { display: none; } }

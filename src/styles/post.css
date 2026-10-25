@@ -369,52 +369,47 @@
 .post-heading {
   display: flex;
   align-items: baseline;
-  gap: 0.45rem;
+  gap: 0.32rem;
   flex-wrap: wrap;
 }
-
 .post-heading-actions {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  opacity: 0;
+  gap: 0.08rem;
+  opacity: 0.25;
   transition: opacity 140ms ease;
 }
-
 .post-heading:hover .post-heading-actions,
-.post-heading:focus-within .post-heading-actions {
-  opacity: 1;
-}
-
+.post-heading:focus-within .post-heading-actions { opacity: 1; }
 .post-heading-anchor,
 .post-heading-copy {
-  min-width: 1.8rem;
-  min-height: 1.8rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
-  color: var(--post-link);
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  font-weight: 850;
-  line-height: 1;
-  padding: 0.24rem 0.38rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted-readable);
+  padding: 0;
   text-decoration: none;
 }
-
-.post-heading-copy {
-  cursor: pointer;
+.post-heading-anchor svg, .post-heading-copy svg {
+  width: 0.94rem;
+  height: 0.94rem;
 }
-
+.post-heading-copy { cursor: pointer; }
 .post-heading-anchor:hover,
 .post-heading-anchor:focus-visible,
 .post-heading-copy:hover,
-.post-heading-copy:focus-visible {
-  background: var(--surface-hover);
+.post-heading-copy:focus-visible,
+.post-heading-copy[data-copy-state] {
+  background: color-mix(in srgb, var(--accent-soft) 45%, transparent);
   color: var(--post-link-hover);
+}
+.post-heading-actions :is(a, button):focus-visible {
+  outline: 2px solid var(--post-link-focus);
+  outline-offset: 2px;
 }
 
 .post > h2,
