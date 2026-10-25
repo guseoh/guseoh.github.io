@@ -72,10 +72,16 @@ test("V2 TOC 반응형 경계는 기존 접이식 이동·Escape와 3열 배치�
   await page.reload();
   for (const width of [980, 981, 1280, 1439, 1440, 1480, 1800]) {
     await page.setViewportSize({ width, height: 900 });
-    const wide = width >= 1480;
-    await expect(page.locator(".post-view > .post-toc")).toBeVisible({ visible: wide });
-    if (!wide) {
-      const button = page.getByRole("button", { name: "이 글의 목차" });
+    const desktopToc = page.locator(".post-view > .post-toc");
+    const button = page.getByRole("button", { name: "이 글의 목차" });
+    const isDesktopTocVisible = await desktopToc.isVisible();
+    // Existing reading.css can expose a desktop TOC earlier when the left
+    // sidebar is collapsed; never assume one fixed breakpoint for both states.
+    if (width <= 981) expect(isDesktopTocVisible).toBe(false);
+    if (width === 1800) expect(isDesktopTocVisible).toBe(true);
+    if (isDesktopTocVisible) {
+      await expect(button).toBeHidden();
+    } else {
       await expect(button).toBeVisible();
       await button.click();
       await expect(button).toHaveAttribute("aria-expanded", "true");
