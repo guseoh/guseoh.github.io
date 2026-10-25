@@ -93,7 +93,7 @@
     };
 
     for (const [index, pre] of blocks.entries()) {
-      if (!(pre instanceof HTMLPreElement) || pre.parentElement?.classList.contains("code-block")) continue;
+      if (!(pre instanceof HTMLPreElement) || pre.parentElement?.classList.contains("code-block") || pre.closest(".learning-block")) continue;
       const code = pre.querySelector("code");
       const metaMarker = pre.previousElementSibling instanceof HTMLElement && pre.previousElementSibling.classList.contains("code-block-meta")
         ? pre.previousElementSibling
