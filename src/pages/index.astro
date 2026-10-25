@@ -10,6 +10,7 @@ import LatestPosts from "../components/home/LatestPosts.astro";
 import FeaturedPosts from "../components/home/FeaturedPosts.astro";
 import RecentlyUpdatedPosts from "../components/home/RecentlyUpdatedPosts.astro";
 import ResumeReadingHome from "../components/home/ResumeReadingHome.astro";
+import LearningPathsHome from "../components/home/LearningPathsHome.astro";
 
 const posts = await getPublishedPostsSorted();
 // "최근 글"은 수정일이 아닌 최초 발행일로 정렬합니다.
@@ -47,6 +48,7 @@ const structuredData = {
   <ArchiveHero topics={topics} />
   <ResumeReadingHome />
   <FeaturedPosts posts={featuredPosts} />
+  <LearningPathsHome posts={posts} excludedIds={featuredIds} />
   <LatestPosts posts={latestPosts} />
   <RecentlyUpdatedPosts posts={posts} excludePostIds={latestPostIds} />
   <ActivitySection posts={posts} username={SITE.githubActivityUsername} />
