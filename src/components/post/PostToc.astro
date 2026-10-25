@@ -87,13 +87,20 @@ const { headings } = Astro.props as Props;
             let tocInteractionUntil = 0;
 
             const markTocInteraction = () => {
-              tocInteractionUntil = Date.now() + 1200;
+              tocInteractionUntil = Date.now() + 4000;
             };
 
             if (desktopToc instanceof HTMLElement) {
               desktopToc.addEventListener("wheel", markTocInteraction, { passive: true });
               desktopToc.addEventListener("touchstart", markTocInteraction, { passive: true });
+              desktopToc.addEventListener("touchmove", markTocInteraction, { passive: true });
               desktopToc.addEventListener("pointerdown", markTocInteraction, { passive: true });
+              desktopToc.addEventListener("focusin", markTocInteraction);
+              desktopToc.addEventListener("keydown", (event) => {
+                if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].includes(event.key)) {
+                  markTocInteraction();
+                }
+              });
             }
 
             const revealDesktopLink = (section) => {

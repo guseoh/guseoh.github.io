@@ -287,6 +287,13 @@ html.left-sidebar-collapsed .post-toc,
   }
 }
 
+/* A little more room for long section titles when the right rail can afford it. */
+@media (min-width: 1700px) {
+  .site-layout--wide .post-view:not(.post-view--single) {
+    --post-toc-width: 15.5rem;
+  }
+}
+
 /* A collapsed left navigation leaves enough room for the right TOC from normal desktop widths. */
 @media (min-width: 1280px) and (max-width: 1479px) {
   html.left-sidebar-collapsed .site-layout--wide .post-view:not(.post-view--single),
