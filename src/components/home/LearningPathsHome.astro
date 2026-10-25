@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { buildCategorySummary, normalizeCategory } from "../../utils/categories";
+import { getLearningPathPosts } from "../../utils/postNavigation";
+import { getPostPath } from "../../utils/posts";
+import { buildSeriesSummary } from "../../utils/series";
+
+interface Props {
+  posts: CollectionEntry<"blog">[];
+  excludedIds?: ReadonlySet<string>;
+}
+const { posts, excludedIds = new Set<string>() } = Astro.props as Props;
+
+const paths = buildCategorySummary(posts).flatMap(({ name, slug }) => {
+  const published = posts.filter((post) =>
+    !post.data.series && normalizeCategory(post.data.category) === slug && typeof post.data.chapter === "number"
+  );
+  const ordered = published[0] ? getLearningPathPosts(published, published[0]) : [];
+  if (ordered.length < 2) return [];
+  const firstUnfeatured = ordered.find((post) => !excludedIds.has(post.id));
+  return [{
+    name,
+    slug,
+    count: ordered.length,
+    first: firstUnfeatured ? getPostPath(firstUnfeatured) : "",
+    firstTitle: firstUnfeatured?.data.title || "",
+    isStart: Boolean(firstUnfeatured && firstUnfeatured.id === ordered[0].id)
+  }];
+});
+const series = buildSeriesSummary(posts).filter((entry) => entry.posts.length >= 2)
+  .map((entry) => ({ name: entry.title, slug: entry.id, count: entry.count }));
+const displayed = paths.slice(0, 3);
+const shownSeries = series.slice(0, Math.max(0, 3 - displayed.length));
+---
+{(displayed.length > 0 || shownSeries.length > 0) && (
+  <section class="home-section home-learning-paths" aria-labelledby="home-learning-title">
+    <div class="home-section__head">
+      <div>
+        <p class="home-section__eyebrow">Learning paths</p>
+        <h2 id="home-learning-title" class="home-section__title">주제별 학습 순서</h2>
+      </div>
+      <a class="home-section__link" href="/series/">전체 학습 경로</a>
+    </div>
+    <ul class="home-learning-paths__list">
+      {displayed.map((path) => (
+        <li>
+          <a href={"/categories/" + path.slug + "/"}>{path.name}</a>
+          <span>{path.count}개 글 · 장 순서대로 읽기</span>
+          {path.first && (
+            <a href={path.first}>{path.isStart ? "첫 글" : "다음 추천 글"} · {path.firstTitle}</a>
+          )}
+        </li>
+      ))}
+      {shownSeries.map((path) => (
+        <li>
+          <a href={"/series/" + path.slug + "/"}>{path.name}</a>
+          <span>{path.count}개 글 · Series 전체 보기</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

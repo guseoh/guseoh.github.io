@@ -1,0 +1,24 @@
+
+/* Breadcrumb mirrors existing BreadcrumbList schema without becoming another hero. */
+.post-breadcrumb { margin: 0.05rem 0 0.8rem; font-size: 0.76rem; color: var(--muted-readable); }
+.post-breadcrumb ol { display: flex; flex-wrap: wrap; gap: 0.3rem 0.45rem; list-style: none; margin: 0; padding: 0; }
+.post-breadcrumb li { min-width: 0; }
+.post-breadcrumb li + li::before { content: "/"; color: var(--muted); margin-right: 0.45rem; }
+.post-breadcrumb a { color: var(--link); text-decoration: none; }
+.post-breadcrumb a:is(:hover, :focus-visible) { text-decoration: underline; }
+.post-breadcrumb [aria-current="page"] { font-weight: 700; overflow-wrap: anywhere; }
+.post-search-hit { scroll-margin-top: 6rem; outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 3px; }
+.search-result__jump { display: inline-block; margin-top: 0.3rem; color: var(--link); font-size: 0.76rem; }
+.archive-entry { margin: 0.75rem 0; border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.9rem; background: var(--card-bg); }
+.archive-entry summary { cursor: pointer; color: var(--heading); font-weight: 750; }
+.archive-entry ul { margin: 0.7rem 0 0.2rem; padding-left: 1.2rem; }
+.archive-entry li { padding: 0.32rem 0; line-height: 1.55; }
+.archive-entry a { color: var(--link); }
+.archive-entry time { display: inline-block; min-width: 6.5rem; margin-right: 0.55rem; color: var(--muted-readable); font-size: 0.76rem; }
+.blog-archive-link { display: inline-block; margin: 0.35rem 0 1rem; color: var(--link); font-size: 0.82rem; }
+.home-learning-paths { border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; background: var(--card-bg); }
+.home-learning-paths__list { display: grid; gap: 0.6rem; list-style: none; margin: 0.6rem 0 0; padding: 0; }
+.home-learning-paths__list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1rem; border-top: 1px solid var(--border); padding-top: 0.5rem; }
+.home-learning-paths__list a { color: var(--link); font-weight: 720; }
+.home-learning-paths__list span { color: var(--muted-readable); font-size: 0.76rem; }
+@media (max-width: 480px) { .archive-entry time { display: block; } .post-breadcrumb ol { row-gap: 0.45rem; } }

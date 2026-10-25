@@ -25,6 +25,7 @@ const totalPages = getPageCount(posts.length, POSTS_PER_PAGE);
         <h1 class="blog-list-head__title">전체 글 ({posts.length})</h1>
         <p class="blog-list-head__description">{SITE_DESCRIPTION}</p>
         <p class="blog-list-head__sort">정렬 기준: 최근 수정일순</p>
+        <a class="blog-archive-link" href="/blog/archive/">연도·월별 발행 아카이브 보기</a>
       </div>
 
       <PostViewSwitch listId="blog-post-list" storageKey="guseo:blog-list-view" />
