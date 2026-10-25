@@ -4,10 +4,20 @@ import "../../styles/library.css";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { buildSeriesSummary } from "../../utils/series";
 import { getPublishedPostsSorted } from "../../utils/content/posts";
+import { buildCategorySummary, normalizeCategory } from "../../utils/categories";
+import { getLearningPathPosts } from "../../utils/postNavigation";
 import { SITE_DESCRIPTION, formatPostDate, getPostPath } from "../../utils/posts";
 
 const posts = await getPublishedPostsSorted();
 const seriesSummary = buildSeriesSummary(posts);
+// Do not synthesize Series IDs: chapter-based category learning paths live here
+// as discovery links to the existing category pages.
+const chapterPaths = buildCategorySummary(posts).flatMap(({ name, slug }) => {
+  const available = posts.filter((post) => normalizeCategory(post.data.category) === slug
+    && !post.data.series && typeof post.data.chapter === "number");
+  const ordered = available[0] ? getLearningPathPosts(available, available[0]) : [];
+  return ordered.length > 1 ? [{ name, slug, posts: ordered }] : [];
+});
 ---
 
 <BaseLayout title="devjune.dev | Series" description={`시리즈별 글 목록 - ${SITE_DESCRIPTION}`}>
@@ -18,6 +28,28 @@ const seriesSummary = buildSeriesSummary(posts);
       <p>Book 안에서 더 작은 흐름으로 이어지는 학습 기록과 프로젝트 개선 과정을 모았습니다.</p>
     </section>
 
+    {chapterPaths.length > 0 && (
+      <section class="chapter-section" aria-labelledby="chapter-learning-title">
+        <div class="chapter-section__head">
+          <div>
+            <p class="library-hero__eyebrow">Learning paths</p>
+            <h2 id="chapter-learning-title">순서가 있는 공개 학습 글</h2>
+          </div>
+          <span>{chapterPaths.length}개의 경로</span>
+        </div>
+        <p class="library-path-intro">기존 게시글의 chapter 순서를 그대로 활용합니다. 별도 Series나 읽기 목록은 생성하지 않습니다.</p>
+        <ul class="library-paths">
+          {chapterPaths.map((path) => (
+            <li>
+              <strong>{path.name}</strong>
+              <span>{path.posts.length}개 글</span>
+              <a href={"/categories/" + path.slug + "/"}>전체 순서 보기</a>
+              <a href={getPostPath(path.posts[0])}>첫 글 읽기</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
     {
       seriesSummary.length === 0 ? (
         <p class="section-empty library-empty">아직 공개된 시리즈가 없습니다.</p>

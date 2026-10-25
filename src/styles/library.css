@@ -604,3 +604,14 @@
     margin-inline: auto;
   }
 }
+
+/* Series learning hub reuses existing chapters/reading-position storage. */
+.library-path-intro { margin: 0.45rem 0 0.8rem; font-size: 0.83rem; color: var(--muted-readable); }
+.library-paths { display: grid; gap: 0.65rem; margin: 0.75rem 0 1.5rem; padding: 0; list-style: none; }
+.library-paths li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; padding: 0.75rem; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
+.library-paths li strong { flex: 1 1 10rem; color: var(--heading); }
+.library-paths li span { color: var(--muted-readable); font-size: 0.77rem; }
+.library-paths li a, .series-study-status a { color: var(--link); font-size: 0.82rem; font-weight: 700; }
+.series-study-status { margin: 1rem 0 1.35rem; padding: 0.8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); }
+.series-study-status p { margin: 0 0 0.5rem; color: var(--muted-readable); font-size: 0.8rem; }
+.series-study-status span { margin-left: 0.5rem; color: var(--muted-readable); font-size: 0.72rem; }

@@ -22,6 +22,8 @@ draft: true
 - featured·heroImage는 대표 글 지정이나 별도 이미지가 필요할 때만 추가한다.
 - testedWith는 실제로 확인한 환경만 남기고, 검증 환경이 없으면 필드를 삭제한다.
 - book과 series에는 등록된 id만 작성한다. 해당 묶음에 속하지 않으면 book, series와 chapter를 삭제한다.
+- 서로 다른 공개 글을 연결할 때는 실제 게시글의 /blog/.../ 경로로 Markdown 링크를 작성한다. 없는 글/초안 링크로 Backlinks를 만들지 않는다.
+- chapter는 같은 카테고리나 등록된 Series에서 학습 순서를 실제로 정했을 때만 작성한다. 관계 그래프는 이 순서와 실제 본문 링크만 활용한다.
 - 본문 heading은 ## 1. ..., ### 1.1 ...처럼 번호를 사용한다.
 - 코드 펜스에는 java, sql, yaml, json, http, bash, text 같은 언어 이름만 작성한다.
 - 파일명과 코드 설명은 코드 블록 밖의 일반 문단에 작성한다.
