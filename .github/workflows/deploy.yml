@@ -8,8 +8,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -131,6 +129,9 @@ jobs:
 
   build:
     needs: validate
+    permissions:
+      contents: read
+      pages: write
     runs-on: ubuntu-latest
     timeout-minutes: 25
     outputs:
@@ -184,6 +185,10 @@ jobs:
 
   deploy:
     needs: build
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:

@@ -20,7 +20,8 @@
     "smoke": "node scripts/smoke-test.mjs",
     "images:audit": "node scripts/audit-images.mjs && node scripts/audit-document-images.mjs",
     "scripts:check": "node scripts/check-js-syntax.mjs",
-    "delivery:audit": "node scripts/audit-delivery.mjs"
+    "delivery:audit": "node scripts/audit-delivery.mjs",
+    "hosting:audit": "node scripts/audit-hosting.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.2",
