@@ -10,7 +10,7 @@ assert.doesNotThrow(() => validateLearningFence("learn-run", "1 + 2 * (3 - 1)"))
 assert.throws(() => validateLearningFence("learn-run", "alert(1)"), /numeric arithmetic/);
 assert.throws(() => validateLearningFence("mermaid", "flowchart LR\nclick A href"), /Unsupported/);
 assert.throws(() => validateLearningFence("learn-tabs", '[{"title":"Only one","text":"Hi"}]'), /2–10/);
-assert.throws(() => validateLearningFence("learn-tree", " folder/"), /pairs of spaces/);
+assert.throws(() => validateLearningFence("learn-tree", "root/\n child"), /pairs of spaces/);
 
 const md = { type: "root", children: [
   { type: "inlineCode", value: "math:E=mc^2" },
