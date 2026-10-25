@@ -43,6 +43,12 @@ const { entries } = Astro.props as Props;
       preview.hidden = true;
       current = null;
     };
+    const positionPreview = (anchor) => {
+      const rect = anchor.getBoundingClientRect();
+      const bounds = preview.getBoundingClientRect();
+      preview.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - bounds.width - 8)) + "px";
+      preview.style.top = Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - bounds.height - 8)) + "px";
+    };
     const show = (anchor, entry) => {
       window.clearTimeout(dismissTimer);
       const label = (anchor.textContent || "").trim().replace(/\s+/g, " ");
@@ -56,10 +62,7 @@ const { entries } = Astro.props as Props;
       more.href = entry.path;
       preview.hidden = false;
       current = anchor;
-      const rect = anchor.getBoundingClientRect();
-      const bounds = preview.getBoundingClientRect();
-      preview.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - bounds.width - 8)) + "px";
-      preview.style.top = Math.max(8, Math.min(rect.bottom + 8, window.innerHeight - bounds.height - 8)) + "px";
+      positionPreview(anchor);
     };
     const scheduleHide = () => {
       window.clearTimeout(dismissTimer);
@@ -106,6 +109,13 @@ const { entries } = Astro.props as Props;
       if (!preview.hidden && !preview.contains(event.target) && event.target !== current) hide();
     });
     window.addEventListener("resize", hide);
-    window.addEventListener("scroll", hide, { passive: true });
+    // Focus may scroll an anchor into view: reposition rather than dismissing
+    // the tooltip in the same interaction that opened it.
+    window.addEventListener("scroll", () => {
+      if (preview.hidden || !current) return;
+      const rect = current.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > window.innerHeight) hide();
+      else positionPreview(current);
+    }, { passive: true });
   })();
 </script>
