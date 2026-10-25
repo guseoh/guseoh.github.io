@@ -16,6 +16,7 @@ import PostReadingProgress from "../../components/post/PostReadingProgress.astro
 import PostRelatedPosts from "../../components/post/PostRelatedPosts.astro";
 import PostKnowledgeConnections from "../../components/post/PostKnowledgeConnections.astro";
 import PostKnowledgePreview from "../../components/post/PostKnowledgePreview.astro";
+import PostSearchJump from "../../components/post/PostSearchJump.astro";
 import PostTableEnhancer from "../../components/post/PostTableEnhancer.astro";
 import PostToc from "../../components/post/PostToc.astro";
 import { SITE } from "../../config/site";
@@ -231,6 +232,13 @@ const breadcrumbStructuredData = {
 
     <div class="post-column">
     <article class="post">
+      <nav class="post-breadcrumb" aria-label="현재 위치">
+        <ol>
+          <li><a href="/">홈</a></li>
+          <li><a href={`/categories/${categorySlug}/`}>{categoryName}</a></li>
+          <li aria-current="page"><span>{postTitle}</span></li>
+        </ol>
+      </nav>
       <header class="post__header">
         <h1>{post.data.title}</h1>
         <p class="post__description">{description}</p>
@@ -404,6 +412,7 @@ const breadcrumbStructuredData = {
   <PostLinkCardEnhancer />
   <PostKnowledgePreview entries={postPreviews} />
   <PostHeadingEnhancer />
+  <PostSearchJump />
   <PostTableEnhancer />
   <PostCodeEnhancer />
   <PostLearningEnhancer />

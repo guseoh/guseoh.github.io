@@ -1,0 +1,19 @@
+<script is:inline>
+  (() => {
+    const query = new URLSearchParams(location.search).get("find")?.trim();
+    if (!query || query.length > 120) return;
+    const content = document.querySelector(".post__content");
+    if (!(content instanceof HTMLElement)) return;
+    const matches = Array.from(content.querySelectorAll("h2, h3, h4, p, li, pre"))
+      .filter((node) => !node.closest(".post-heading-actions, .post-preview"));
+    const target = matches.find((node) =>
+      node.textContent?.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+    );
+    if (!(target instanceof HTMLElement)) return;
+    target.classList.add("post-search-hit");
+    // Wait until document layout settles; no persistent read-position changes.
+    const navigate = () => target.scrollIntoView({ block: "center", behavior: "instant" });
+    if (document.readyState === "complete") requestAnimationFrame(navigate);
+    else window.addEventListener("load", navigate, { once: true });
+  })();
+</script>

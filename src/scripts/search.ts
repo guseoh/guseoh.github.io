@@ -1,4 +1,4 @@
-import { getSearchSnippet, normalizeSearchText, scoreSearchItem, sortSearchResults, type SearchIndexItem } from "../utils/search";
+import { getSearchSnippet, getSearchTargetUrl, normalizeSearchText, scoreSearchItem, sortSearchResults, type SearchIndexItem } from "../utils/search";
 import { normalizeCategory } from "../utils/categories";
 import { formatTagName, getTagHref, resolveTagSlug } from "../utils/tags";
 import { formatPostDate } from "../utils/posts";
@@ -204,7 +204,7 @@ function renderPost(post: SearchIndexItem, reasons: string[], query: string) {
   header.className = "post-card__header";
   const heading = document.createElement("h2");
   const link = document.createElement("a");
-  link.href = post.url;
+  link.href = getSearchTargetUrl(post, query);
   appendHighlightedText(link, post.title, query);
   heading.append(link);
   header.append(heading);
@@ -220,6 +220,14 @@ function renderPost(post: SearchIndexItem, reasons: string[], query: string) {
     description.append(contextLabel);
   }
   appendHighlightedText(description, snippet.text, query);
+  const jumpUrl = getSearchTargetUrl(post, query);
+  if (jumpUrl !== post.url) {
+    const jump = document.createElement("a");
+    jump.href = jumpUrl;
+    jump.className = "search-result__jump";
+    jump.textContent = jumpUrl.includes("#") ? "일치하는 소제목으로 이동" : "본문 검색 위치로 이동";
+    description.append(" ", jump);
+  }
 
   const footer = document.createElement("div");
   footer.className = "post-card__footer";

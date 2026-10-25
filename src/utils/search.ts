@@ -14,6 +14,7 @@ export type SearchIndexItem = {
   readingTime: string;
   bodyText: string;
   codeText: string;
+  headings?: Array<{ id: string; text: string }>;
 };
 
 export type SearchMatch = {
@@ -23,7 +24,10 @@ export type SearchMatch = {
 
 const MAX_EXCERPT_LENGTH = 280;
 
-export function buildSearchIndex(posts: CollectionEntry<"blog">[]): SearchIndexItem[] {
+export function buildSearchIndex(
+  posts: CollectionEntry<"blog">[],
+  headingsById: ReadonlyMap<string, Array<{ id: string; text: string }>> = new Map()
+): SearchIndexItem[] {
   return posts.map((post) => {
     const description = getPostDescription(post);
     const category = post.data.category?.trim() || "Uncategorized";
@@ -44,9 +48,24 @@ export function buildSearchIndex(posts: CollectionEntry<"blog">[]): SearchIndexI
       url: getPostPath(post),
       readingTime: getReadingTime(post),
       bodyText,
-      codeText
+      codeText,
+      ...(headingsById.has(post.id) ? { headings: headingsById.get(post.id) } : {})
     };
   });
+}
+
+/** Navigation-only metadata: changing these URLs must not change search ranking. */
+export function getSearchTargetUrl(post: SearchIndexItem, rawQuery: string) {
+  const query = rawQuery.trim();
+  if (!query) return post.url;
+  const normalized = normalizeSearchText(query);
+  const heading = post.headings?.find((entry) => normalizeSearchText(entry.text).includes(normalized));
+  if (heading?.id) return post.url + "#" + encodeURIComponent(heading.id);
+  if (normalizeSearchText(post.bodyText).includes(normalized)
+    || normalizeSearchText(post.codeText).includes(normalized)) {
+    return post.url + "?find=" + encodeURIComponent(query.slice(0, 120));
+  }
+  return post.url;
 }
 
 export function normalizeSearchText(value: string) {
