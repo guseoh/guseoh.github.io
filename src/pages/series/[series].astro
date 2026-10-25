@@ -91,6 +91,13 @@ const statusLabel: Record<SeriesStatus, string> = {
       </dl>
     </section>
 
+    {posts.length > 0 && (
+      <nav class="series-study-status" data-series-study-status aria-label="시리즈 이어 읽기">
+        <p>이 시리즈의 전체 {posts.length}개 글은 기존 chapter 순서대로 표시됩니다.</p>
+        <a data-series-resume-link href={getPostPath(posts[0])}>첫 글부터 읽기</a>
+        <span data-series-resume-note aria-live="polite"></span>
+      </nav>
+    )}
     <section class="chapter-section" aria-labelledby="series-posts-title">
       <div class="chapter-section__head">
         <div>
@@ -104,7 +111,7 @@ const statusLabel: Record<SeriesStatus, string> = {
         <ol class="chapter-list">
           {posts.map((post, index) => (
             <li>
-              <a href={getPostPath(post)}>
+              <a href={getPostPath(post)} data-series-post-url={getPostPath(post)}>
                 <span class="chapter-list__number">{String(index + 1).padStart(2, "0")}</span>
                 <span class="chapter-list__content">
                   <strong>{post.data.title}</strong>
@@ -125,4 +132,28 @@ const statusLabel: Record<SeriesStatus, string> = {
       )}
     </section>
   </div>
+  <script is:inline>
+    (() => {
+      const status = document.querySelector("[data-series-study-status]");
+      const link = status?.querySelector("[data-series-resume-link]");
+      const note = status?.querySelector("[data-series-resume-note]");
+      const entries = Array.from(document.querySelectorAll("[data-series-post-url]"));
+      if (!(link instanceof HTMLAnchorElement) || !(note instanceof HTMLElement)) return;
+      try {
+        const recent = JSON.parse(localStorage.getItem("guseo:reading:last") || "null");
+        const current = entries.find((entry) => entry.getAttribute("href") === recent?.url);
+        const valid = recent && current && Number.isFinite(recent.fraction)
+          && recent.fraction >= 0.08 && recent.fraction < 0.97
+          && Number.isFinite(recent.updatedAt)
+          && recent.updatedAt <= Date.now()
+          && recent.updatedAt > Date.now() - 30 * 24 * 60 * 60 * 1000;
+        if (!valid) return;
+        link.href = recent.url;
+        link.textContent = "최근 읽던 글 이어 읽기";
+        note.textContent = "약 " + Math.round(recent.fraction * 100) + "% 읽던 위치";
+      } catch {
+        // Private mode and disabled storage must not interrupt reading.
+      }
+    })();
+  </script>
 </BaseLayout>

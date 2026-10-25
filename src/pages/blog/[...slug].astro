@@ -14,6 +14,8 @@ import PostImageLightbox from "../../components/post/PostImageLightbox.astro";
 import PostLinkCardEnhancer from "../../components/post/PostLinkCardEnhancer.astro";
 import PostReadingProgress from "../../components/post/PostReadingProgress.astro";
 import PostRelatedPosts from "../../components/post/PostRelatedPosts.astro";
+import PostKnowledgeConnections from "../../components/post/PostKnowledgeConnections.astro";
+import PostKnowledgePreview from "../../components/post/PostKnowledgePreview.astro";
 import PostTableEnhancer from "../../components/post/PostTableEnhancer.astro";
 import PostToc from "../../components/post/PostToc.astro";
 import { SITE } from "../../config/site";
@@ -22,6 +24,7 @@ import { getPublishedPostsSorted } from "../../utils/content/posts";
 import { getAdjacentPosts, getLearningPathPosts } from "../../utils/postNavigation";
 import { buildPostTocHeadings } from "../../utils/postToc";
 import { getRelatedPosts } from "../../utils/relatedPosts";
+import { buildPostRelationIndex, buildPostPreviewCatalog, getPostRelations } from "../../utils/postRelations";
 import { getSeriesContinuationMessage, getSeriesMetadata } from "../../utils/series";
 import { formatTagName, getTagHref } from "../../utils/tags";
 import {
@@ -115,6 +118,9 @@ const { newerPost, olderPost } = getAdjacentPosts(allPosts, post.id);
 const learningPathPostIds = new Set(learningPathPosts.map((entry) => entry.id));
 const relatedCandidates = allPosts.filter((entry) => !learningPathPostIds.has(entry.id));
 const relatedPosts = getRelatedPosts(post, relatedCandidates, { limit: 3 });
+const relationIndex = buildPostRelationIndex(allPosts);
+const postConnections = getPostRelations(relationIndex, post);
+const postPreviews = buildPostPreviewCatalog(relationIndex);
 const siteUrl = Astro.site ?? new URL(SITE.siteUrl);
 const postUrl = getPostUrl(post, siteUrl);
 const postImagePath = getPostOgImagePath(post);
@@ -351,6 +357,7 @@ const breadcrumbStructuredData = {
           </section>
         ) : null}
 
+        <PostKnowledgeConnections current={post} incoming={postConnections.incoming} connections={postConnections.connections} />
         <PostRelatedPosts relatedPosts={relatedPosts} />
 
         <p class="post-adjacent-context">전체 글 탐색 · 최근 수정일 순서</p>
@@ -395,6 +402,7 @@ const breadcrumbStructuredData = {
 
   <PostImageLightbox />
   <PostLinkCardEnhancer />
+  <PostKnowledgePreview entries={postPreviews} />
   <PostHeadingEnhancer />
   <PostTableEnhancer />
   <PostCodeEnhancer />
