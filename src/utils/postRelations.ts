@@ -1,5 +1,7 @@
 import type { CollectionEntry } from "astro:content";
 import { getLearningPathPosts } from "./postNavigation";
+import { extractPostLinkTargets, resolveInternalBlogPath } from "./postLinkTargets";
+export { extractPostLinkTargets } from "./postLinkTargets";
 import { getPostAliases, getPostDescription, getPostPath, SITE_URL } from "./posts";
 
 type Post = CollectionEntry<"blog">;
@@ -11,40 +13,15 @@ export type PostRelationIndex = {
   posts: Post[];
 };
 
-/** Only map authored URLs to a real published post. */
+/** Resolve only a known published post. Canonical/alias mapping is built elsewhere. */
 export function resolveInternalPostLink(
   href: string,
   sourcePath: string,
   byPath: Map<string, Post>,
   siteUrl: string = SITE_URL
 ): Post | undefined {
-  if (!href.trim() || /^(?:#|mailto:|tel:|javascript:|data:)/i.test(href.trim())) return;
-  try {
-    const site = new URL(siteUrl);
-    const url = new URL(href.trim().replace(/^<|>$/g, ""), new URL(sourcePath, site));
-    if (url.origin !== site.origin || !url.pathname.startsWith("/blog/")) return;
-    const path = decodeURI(url.pathname).replace(/\/{2,}/g, "/").replace(/\/?$/, "/");
-    return byPath.get(path);
-  } catch {
-    return;
-  }
-}
-
-/** Ignore fenced and inline code so illustrative URLs never become relationships. */
-export function extractPostLinkTargets(body: string): string[] {
-  const clean = body
-    .replace(/^---\s*\n[\s\S]*?\n---\s*\n/, "")
-    .replace(/(?:^|\n)[ \t]*(\x60{3,}|~{3,})[^\n]*\n[\s\S]*?\n[ \t]*\1[^\n]*(?=\n|$)/g, "\n")
-    .replace(/!\[([^\]]*)\]\((?:<[^>]*>|[^)]*)\)/g, "")
-    .replace(/\x60[^\x60\n]*\x60/g, "");
-  const links: string[] = [];
-  for (const match of clean.matchAll(/\[[^\]]+\]\(\s*(<[^>]*>|[^)\s]+)(?:\s+["'][^"']*["'])?\s*\)/g)) {
-    links.push(match[1]);
-  }
-  for (const match of clean.matchAll(/<a\s+[^>]*href\s*=\s*(["'])(.*?)\1[^>]*>/gi)) {
-    links.push(match[2]);
-  }
-  return links;
+  const resolved = resolveInternalBlogPath(href, sourcePath, siteUrl);
+  return resolved ? byPath.get(resolved) : undefined;
 }
 
 export function buildPostRelationIndex(allPosts: Post[]): PostRelationIndex {
