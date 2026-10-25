@@ -50,7 +50,7 @@ test("메인 소개는 실제 주제 탐색과 결합되고 모바일에서는 �
   await expect(topics).toBeVisible();
 });
 
-test("다크 모드는 청록색 없이 중립 차콜 계층과 충분한 대비를 유지한다", async ({ page }) => {
+test("다크 모드는 블랙·블루 계층을 유지하고 청록색 없이 충분한 대비를 제공한다", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => localStorage.setItem("theme", "dark"));
   await page.reload();
@@ -81,17 +81,18 @@ test("다크 모드는 청록색 없이 중립 차콜 계층과 충분한 대비
     const la = brightness(a), lb = brightness(b);
     return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
   };
-  // Dark surfaces should have subtle brightness layers, not blue/green casts.
+  // Obsidian Black deliberately uses blue-black surfaces rather than gray/teal.
   const surfaces = ["--bg", "--bg-deep", "--surface", "--surface-2", "--card-bg", "--post-bg"];
   expect(new Set(surfaces.map((name) => palette[name])).size).toBeGreaterThanOrEqual(4);
   for (const name of surfaces) {
     const channels = rgb(palette[name]);
-    expect(Math.max(...channels) - Math.min(...channels), name).toBeLessThanOrEqual(10);
+    expect(channels[0] < channels[1] && channels[1] < channels[2], name).toBe(true);
+    expect(channels[2] - channels[0], name).toBeGreaterThanOrEqual(7);
   }
-  // UI semantic tokens may be neutral or muted violet/blue, never turquoise.
+  // Blue and violet accents are allowed; cyan/teal tint is not.
   const isTeal = (hex: string): boolean => {
     const [red, green, blue] = rgb(hex);
-    return green > red + 20 && blue > red + 18 && Math.abs(green - blue) < 58;
+    return green > red + 20 && blue > red + 18 && green >= blue - 12;
   };
   for (const [name, color] of Object.entries(palette)) {
     expect(isTeal(color), `${name} should not be teal: ${color}`).toBe(false);
@@ -106,11 +107,11 @@ test("다크 모드는 청록색 없이 중립 차콜 계층과 충분한 대비
   await expect(page.locator(".archive-hero--simple")).toBeVisible();
 });
 
-test("다크 팔레트 변경은 Light와 Planner 모드를 변경하지 않는다", async ({ page }) => {
+test("라이트 팔레트는 유지하고 Planner는 별도의 Deep Navy를 사용한다", async ({ page }) => {
   await page.goto("/");
   for (const [mode, expectedBackground] of [
     ["light", "#f7f9fc"],
-    ["planner", "#131517"]
+    ["planner", "#091625"]
   ]) {
     await page.evaluate((value) => localStorage.setItem("theme", value), mode);
     await page.reload();
@@ -120,6 +121,40 @@ test("다크 팔레트 변경은 Light와 Planner 모드를 변경하지 않는�
     }));
     expect(theme.mode).toBe(mode);
     expect(theme.bg).toBe(expectedBackground);
+  }
+});
+
+
+
+test("V2 테마는 홈·게시글의 핵심 표면과 조작 대비를 유지한다", async ({ page }) => {
+  for (const [mode, background, card, accent] of [
+    ["dark", "#0b0e14", "#131a26", "#9db4ff"],
+    ["planner", "#091625", "#10233a", "#80bdff"]
+  ] as const) {
+    for (const path of ["/", "/blog/security/basic1/", "/blog/jpa/persistence-context/"]) {
+      await page.goto(path);
+      await page.evaluate((value) => localStorage.setItem("theme", value), mode);
+      await page.reload();
+
+      const state = await page.evaluate(() => {
+        const root = document.documentElement;
+        const style = getComputedStyle(root);
+        return {
+          mode: root.dataset.themeMode,
+          resolved: root.dataset.theme,
+          bg: style.getPropertyValue("--bg").trim(),
+          card: style.getPropertyValue("--card-bg").trim(),
+          link: style.getPropertyValue("--link").trim(),
+          overflow: root.scrollWidth - innerWidth
+        };
+      });
+      expect(state.mode).toBe(mode);
+      expect(state.resolved).toBe("dark");
+      expect(state.bg).toBe(background);
+      expect(state.card).toBe(card);
+      expect(state.link).toBe(accent);
+      expect(state.overflow, `${mode} ${path}`).toBeLessThanOrEqual(2);
+    }
   }
 });
 

@@ -135,14 +135,14 @@ html[data-theme="dark"] .post {
 .archive-hero__actions a:first-child {
   border-color: var(--link);
   background: var(--link);
-  color: var(--surface);
+  color: var(--bg);
 }
 
 .archive-hero__actions a:first-child:hover,
 .archive-hero__actions a:first-child:focus-visible {
   border-color: var(--link-hover);
   background: var(--link-hover);
-  color: var(--surface);
+  color: var(--bg);
 }
 
 .home-section__head {

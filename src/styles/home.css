@@ -460,7 +460,7 @@
   border-color: color-mix(in srgb, var(--accent) 16%, var(--border));
   background:
     radial-gradient(circle at 5% 8%, var(--home-glow), transparent 57%),
-    linear-gradient(140deg, var(--card-bg), color-mix(in srgb, var(--surface-2) 57%, var(--card-bg)));
+    linear-gradient(140deg, var(--card-bg), color-mix(in srgb, var(--surface-2) var(--home-hero-surface-mix), var(--card-bg)));
   padding: clamp(1.4rem, 2.7vw, 2.65rem);
 }
 
