@@ -1,0 +1,58 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getPostPath } from "../../utils/posts";
+import type { Relationship } from "../../utils/postRelations";
+interface Props {
+  current: CollectionEntry<"blog">;
+  incoming: CollectionEntry<"blog">[];
+  connections: Relationship[];
+}
+const { current, incoming, connections } = Astro.props as Props;
+const graph = connections.slice(0, 5);
+const height = Math.max(102, graph.length * 60 + 22);
+const shorten = (value: string) => value.length > 21 ? value.slice(0, 20) + "…" : value;
+const kinds: Record<Relationship["kind"], string> = {
+  previous: "이전 학습 단계",
+  next: "다음 학습 단계",
+  linked: "본문에서 참조한 글"
+};
+---
+{(incoming.length > 0 || connections.length > 0) && (
+  <section class="post-knowledge" aria-labelledby="post-knowledge-title">
+    <div class="post-knowledge__heading">
+      <span class="post-related__label">Knowledge connections</span>
+      <h2 id="post-knowledge-title">실제 글 연결</h2>
+      <p>게시글 내부 링크와 명시된 장 순서만 연결합니다.</p>
+    </div>
+    {graph.length > 0 && (
+      <div class="post-knowledge__graph">
+        <svg viewBox={"0 0 660 " + height} role="img" aria-label="현재 글과 관계가 확인된 글의 연결도" class="post-knowledge__svg">
+          <rect x="6" y={height / 2 - 26} width="260" height="52" rx="10" class="post-knowledge__graph-current" />
+          <text x="18" y={height / 2 + 5} class="post-knowledge__graph-text">{shorten(current.data.title)}</text>
+          {graph.map(({ post, kind }, index) => (
+            <g>
+              <line x1="266" y1={height / 2} x2="384" y2={12 + index * 60 + 26} class="post-knowledge__graph-edge" />
+              <a href={getPostPath(post)} aria-label={kinds[kind] + ": " + post.data.title}>
+                <rect x="384" y={12 + index * 60} width="268" height="52" rx="9" class="post-knowledge__graph-node" />
+                <text x="396" y={12 + index * 60 + 31} class="post-knowledge__graph-text">{shorten(post.data.title)}</text>
+              </a>
+            </g>
+          ))}
+        </svg>
+      </div>
+    )}
+    {connections.length > 0 && (
+      <ul class="post-knowledge__list" aria-label="연결된 글 텍스트 목록">
+        {connections.map(({ post, kind }) => (
+          <li><span>{kinds[kind]}</span><a href={getPostPath(post)}>{post.data.title}</a></li>
+        ))}
+      </ul>
+    )}
+    {incoming.length > 0 && (
+      <div class="post-knowledge__backlinks">
+        <h3>이 글을 참조한 글 <span>{incoming.length}</span></h3>
+        <ul>{incoming.map((post) => <li><a href={getPostPath(post)}>{post.data.title}</a></li>)}</ul>
+      </div>
+    )}
+  </section>
+)}
