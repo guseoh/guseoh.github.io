@@ -135,26 +135,19 @@ const referenceIconMap = Object.fromEntries(
       icon.className = "reference-link__icon reference-link__icon--brand";
       icon.setAttribute("aria-hidden", "true");
       icon.style.setProperty("--reference-icon-color", `#${iconData.hex}`);
-      icon.innerHTML = `<svg viewBox="0 0 24 24" focusable="false" data-simple-icons-slug="${iconData.slug}"><path d="${iconData.path}"></path></svg>`;
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("focusable", "false");
+      svg.setAttribute("data-simple-icons-slug", iconData.slug);
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", iconData.path);
+      svg.append(path);
+      icon.append(svg);
       return icon;
     };
 
-    const faviconIcon = (url) => {
-      const icon = document.createElement("span");
-      icon.className = "reference-link__icon reference-link__icon--favicon";
-      icon.setAttribute("aria-hidden", "true");
-
-      const image = document.createElement("img");
-      image.alt = "";
-      image.loading = "lazy";
-      image.decoding = "async";
-      image.referrerPolicy = "no-referrer";
-      image.src = `${url.origin}/favicon.ico`;
-      image.addEventListener("error", () => icon.replaceWith(genericIcon()), { once: true });
-      icon.append(image);
-      return icon;
-    };
-
+    // Unknown references deliberately use a local icon rather than contacting
+    // every unrelated website for a favicon (privacy, mixed-content and latency).
     for (const link of referenceLinks) {
       if (!(link instanceof HTMLAnchorElement) || link.dataset.referenceLinkReady === "true") continue;
 
@@ -173,7 +166,7 @@ const referenceIconMap = Object.fromEntries(
       const host = url.hostname.toLowerCase().replace(/^www\./, "");
       const rule = rules.find((candidate) => candidate.test(host));
       const iconData = rule?.icon ? referenceIconMap[rule.icon] : undefined;
-      const icon = iconData ? brandIcon(iconData) : faviconIcon(url);
+      const icon = iconData ? brandIcon(iconData) : genericIcon();
       const label = document.createElement("span");
       label.className = "reference-link__label";
 
