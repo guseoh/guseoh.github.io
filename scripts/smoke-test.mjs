@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const DEFAULT_PATHS = [
   "/",
   "/blog/",
+  "/blog/archive/",
   "/books/",
   "/categories/",
   "/tags/",
