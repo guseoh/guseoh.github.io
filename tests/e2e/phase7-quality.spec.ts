@@ -80,7 +80,11 @@ test("320px 모바일과 200% 텍스트 확대에서 주요 조작 요소와 게
       expect(geometry.mainWidth).toBeGreaterThan(100);
       if (path.includes("/blog/jpa")) {
         await expect(page.locator(".post__header h1")).toBeVisible();
-        await expect(page.locator(".post-back-to-top")).toBeVisible();
+        const backToTop = page.locator(".post-back-to-top");
+        await expect(backToTop).toBeAttached();
+        await expect(backToTop).toBeHidden();
+        await page.evaluate(() => window.scrollTo(0, 600));
+        await expect(backToTop).toBeVisible();
       }
     }
   }

@@ -146,6 +146,7 @@
           frameFallback = 0;
         }
         bar.style.transform = `scaleX(${readProgress()})`;
+        backToTopButton.classList.toggle("is-visible", window.scrollY > 320);
       };
 
       const scheduleUpdate = () => {
