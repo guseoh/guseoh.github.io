@@ -67,7 +67,8 @@ const { entries } = Astro.props as Props;
     const scheduleHide = () => {
       window.clearTimeout(dismissTimer);
       dismissTimer = window.setTimeout(() => {
-        if (!preview.matches(":hover") && !preview.contains(document.activeElement)) hide();
+        if (!preview.matches(":hover") && !preview.contains(document.activeElement)
+          && current !== document.activeElement) hide();
       }, 250);
     };
     const anchors = document.querySelectorAll(
