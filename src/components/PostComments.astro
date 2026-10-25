@@ -21,9 +21,12 @@ commentsIssueUrl.searchParams.set("q", commentKey);
       <span>댓글을 불러오는 중입니다.</span>
     </div>
     <div class="comments-fallback" data-comments-fallback role="status" aria-live="polite" hidden>
-      <strong>댓글을 불러오지 못했습니다.</strong>
-      <p>GitHub에서 댓글과 토론을 확인할 수 있습니다.</p>
-      <a href={commentsIssueUrl.toString()} target="_blank" rel="noopener noreferrer">GitHub에서 확인하기</a>
+      <strong>외부 댓글을 표시할 수 없습니다.</strong>
+      <p>네트워크 연결이나 콘텐츠 차단 설정으로 댓글 서비스가 응답하지 않을 수 있습니다. GitHub에서 직접 확인하거나 다시 시도해 주세요.</p>
+      <div class="comments-fallback__actions">
+        <button type="button" data-comments-retry>다시 시도</button>
+        <a href={commentsIssueUrl.toString()} target="_blank" rel="noopener noreferrer">GitHub에서 확인하기</a>
+      </div>
     </div>
   </div>
 
@@ -36,12 +39,14 @@ commentsIssueUrl.searchParams.set("q", commentKey);
 
       const loading = target.querySelector("[data-comments-loading]");
       const fallback = target.querySelector("[data-comments-fallback]");
+      const retryButton = target.querySelector("[data-comments-retry]");
       const wrapper = target.closest("[data-comment-key]");
       const repository = wrapper?.dataset.commentRepository || "guseoh/guseoh.github.io";
       const commentKey = wrapper?.dataset.commentKey || "pathname";
       let frameObserver;
       let themeObserver;
       let timeoutId = 0;
+      let activeScript = null;
 
       const showFallback = () => {
         if (target.classList.contains("is-ready")) return;
@@ -101,8 +106,17 @@ commentsIssueUrl.searchParams.set("q", commentKey);
       const loadComments = () => {
         if (target.dataset.loaded === "true") return;
         target.dataset.loaded = "true";
+        if (loading instanceof HTMLElement) loading.hidden = false;
+        if (fallback instanceof HTMLElement) fallback.hidden = true;
+        target.setAttribute("aria-busy", "true");
+        frameObserver?.observe(target, { childList: true, subtree: true });
+        themeObserver?.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["data-theme"]
+        });
 
         const script = document.createElement("script");
+        activeScript = script;
         script.src = "https://utteranc.es/client.js";
         script.setAttribute("repo", repository);
         script.setAttribute("issue-term", commentKey);
@@ -113,11 +127,26 @@ commentsIssueUrl.searchParams.set("q", commentKey);
           watchFrame();
           window.setTimeout(syncTheme, 0);
         });
-        script.addEventListener("error", showFallback, { once: true });
+        script.addEventListener("error", () => {
+          if (activeScript === script) showFallback();
+        }, { once: true });
         script.async = true;
         target.append(script);
         timeoutId = window.setTimeout(showFallback, 10000);
       };
+
+      if (retryButton instanceof HTMLButtonElement) {
+        retryButton.addEventListener("click", () => {
+          window.clearTimeout(timeoutId);
+          frameObserver?.disconnect();
+          themeObserver?.disconnect();
+          activeScript?.remove();
+          target.querySelectorAll("iframe.utterances-frame").forEach((frame) => frame.remove());
+          activeScript = null;
+          target.dataset.loaded = "false";
+          loadComments();
+        });
+      }
 
       if ("IntersectionObserver" in window) {
         const visibilityObserver = new IntersectionObserver(
