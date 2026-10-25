@@ -36,7 +36,8 @@ test("집중 읽기는 사이드바·TOC를 잠시 숨기고 Esc로 복귀하며
   await page.goto(blog);
   await page.evaluate(() => localStorage.setItem("blog-left-sidebar-collapsed", "false"));
   await page.reload();
-  const mode = page.getByRole("button", { name: "집중 읽기 켜기" });
+  const mode = page.locator("[data-post-focus-toggle]");
+  await expect(mode).toHaveAttribute("aria-label", "집중 읽기 켜기");
   const sidebar = page.locator("#site-sidebar");
   const toc = page.locator(".post-view > .post-toc");
   await expect(sidebar).toBeVisible();
@@ -46,12 +47,14 @@ test("집중 읽기는 사이드바·TOC를 잠시 숨기고 Esc로 복귀하며
   await expect(sidebar).toBeHidden();
   await expect(toc).toBeHidden();
   await expect(mode).toHaveAttribute("aria-pressed", "true");
+  await expect(mode).toHaveAttribute("aria-label", "집중 읽기 해제");
   expect(await page.evaluate(() => localStorage.getItem("blog-left-sidebar-collapsed"))).toBe("false");
   await page.keyboard.press("Escape");
   await expect(page.locator("body")).not.toHaveClass(/reading-focus-mode/);
   await expect(sidebar).toBeVisible();
   await expect(toc).toBeVisible();
   await expect(mode).toHaveAttribute("aria-pressed", "false");
+  await expect(mode).toHaveAttribute("aria-label", "집중 읽기 켜기");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
   expect(overflow).toBeLessThanOrEqual(2);
 });
