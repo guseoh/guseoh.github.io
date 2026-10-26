@@ -283,4 +283,4 @@ Member 상태 로딩
 ## 6. 참고 자료
 
 - [꾸준히 성장하는 개발자스토리 - JPA 연관관계 매핑 기초](https://ssdragon.tistory.com/77)
-- [Jakarta Persistence 3.2 Specification](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2)
+- [Jakarta Persistence 3.2 Specification](https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2.html)
