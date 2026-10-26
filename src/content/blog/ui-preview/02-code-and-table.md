@@ -3,11 +3,9 @@ title: "상세 글 UI 검증: Java·SQL 코드 블록과 폭이 넓은 표"
 description: "다양한 코드 언어, 긴 코드, 복사 버튼, 코드 접기, 가로 스크롤 표와 목록형 비교를 점검하는 임시 테스트 글입니다."
 date: 2026-10-26
 slug: "ui-preview/code-and-table"
-category: "Java"
+category: "UI Preview"
 tags:
-    - Java
-    - SQL
-    - Testing
+    - Learning
 aliases:
     - "/blog/ui-preview/02-code-and-table/"
 draft: false
