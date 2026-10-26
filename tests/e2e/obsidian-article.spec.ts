@@ -150,7 +150,8 @@ test("코드 언어 표시줄은 데스크톱·모바일에서 낮은 높이를 
       expect(metrics.buttonHeight).toBeGreaterThanOrEqual(24);
       expect(metrics.buttonWithinHeader).toBe(true);
       await button.click();
-      await expect(button).toHaveText(/Copied|Selected/);
+      await expect(button).toHaveAttribute("data-copy-state", /copied|selected/);
+      await expect(button.locator("svg")).toHaveCount(1);
     }
   }
 });

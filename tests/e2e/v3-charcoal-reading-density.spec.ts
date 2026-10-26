@@ -20,8 +20,8 @@ test("dark uses neutral charcoal, while light and planner retain distinct palett
       mode: document.documentElement.getAttribute("data-theme-mode")
     };
   });
-  expect(dark).toMatchObject({ bg: "#191919", card: "#202020", inline: "#292929", mode: "dark" });
-  expect(["#222", "#222222"]).toContain(dark.code);
+  expect(dark).toMatchObject({ bg: "#101010", card: "#1a1a1a", inline: "#252423", mode: "dark" });
+  expect(dark.code).toBe("#181818");
 
   await useTheme(page, "planner");
   await expect(page.locator("html")).toHaveAttribute("data-theme-mode", "planner");
@@ -63,7 +63,7 @@ test("desktop article uses narrower text, restrained inline code and normal font
   expect(articleMetrics.textSize).toBeLessThan(15);
   expect(articleMetrics.inlineWeight).toBe("400");
   expect(articleMetrics.inlineBorder).toBe(0);
-  expect(articleMetrics.inlineBackground).toBe("rgb(41, 41, 41)");
+  expect(articleMetrics.inlineBackground).toBe("rgb(37, 36, 35)");
   expect(articleMetrics.inlineSize).toBeLessThan(articleMetrics.inlineParentSize);
   expect(articleMetrics.headingSize).toBeLessThan(24);
 });

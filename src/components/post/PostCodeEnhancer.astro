@@ -148,8 +148,54 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "code-copy-button";
-      button.textContent = "Copy";
-      button.setAttribute("aria-label", isDiagram ? "개념도 텍스트 복사" : "코드 블록 복사");
+      const originalLabel = isDiagram ? "개념도 텍스트 복사" : "코드 블록 복사";
+      const iconNamespace = "http://www.w3.org/2000/svg";
+      const makeIcon = (name) => {
+        const svg = document.createElementNS(iconNamespace, "svg");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("width", "17");
+        svg.setAttribute("height", "17");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", "currentColor");
+        svg.setAttribute("stroke-width", "1.8");
+        svg.setAttribute("stroke-linecap", "round");
+        svg.setAttribute("stroke-linejoin", "round");
+        svg.setAttribute("aria-hidden", "true");
+        const shapes = name === "copy" ? [
+          ["rect", { x: "8", y: "8", width: "13", height: "13", rx: "2" }],
+          ["path", { d: "M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" }]
+        ] : name === "check"
+          ? [["path", { d: "M20 6 9 17l-5-5" }]]
+          : [["path", { d: "M12 9v4m0 4h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.75 3h15.7a2 2 0 0 0 1.75-3L13.7 3.9a2 2 0 0 0-3.4 0Z" }]];
+        shapes.forEach(([tag, attrs]) => {
+          const node = document.createElementNS(iconNamespace, tag);
+          Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+          svg.append(node);
+        });
+        return svg;
+      };
+      const setCopyState = (state) => {
+        const labels = {
+          idle: originalLabel,
+          copied: "복사됨",
+          selected: "복사 실패: 직접 선택해 주세요"
+        };
+        const label = labels[state] || originalLabel;
+        button.replaceChildren(makeIcon(state === "idle" ? "copy" : state === "copied" ? "check" : "warning"));
+        button.dataset.copyState = state;
+        button.dataset.tooltip = label;
+        button.setAttribute("aria-label", label);
+        button.title = label;
+      };
+      let restoreCopyStateTimer = null;
+      const scheduleCopyReset = () => {
+        if (restoreCopyStateTimer !== null) window.clearTimeout(restoreCopyStateTimer);
+        restoreCopyStateTimer = window.setTimeout(() => {
+          setCopyState("idle");
+          restoreCopyStateTimer = null;
+        }, 1400);
+      };
+      setCopyState("idle");
 
       const status = document.createElement("span");
       status.id = `code-copy-status-${index}`;
@@ -241,19 +287,15 @@
       button.addEventListener("click", async () => {
         try {
           const result = await copyText(getCodeText());
-          button.textContent = result === "copied" ? "Copied" : "Selected";
+          setCopyState(result === "copied" ? "copied" : "selected");
           announce(result === "copied"
             ? "코드가 복사되었습니다."
             : "코드를 선택했습니다. 직접 복사해 주세요.");
-          window.setTimeout(() => {
-            button.textContent = "Copy";
-          }, 1400);
+          scheduleCopyReset();
         } catch {
-          button.textContent = "Selected";
+          setCopyState("selected");
           announce("코드를 복사하지 못했습니다. 직접 선택해서 복사해 주세요.");
-          window.setTimeout(() => {
-            button.textContent = "Copy";
-          }, 1400);
+          scheduleCopyReset();
         }
       });
     }
