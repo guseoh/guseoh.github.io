@@ -67,8 +67,9 @@ test("다크 모드는 중립적인 차콜 계층과 충분한 대비를 제공�
     return Object.fromEntries(names.map((name) => [name, style.getPropertyValue(name).trim()]));
   });
   const rgb = (hex: string): number[] => {
-    expect(hex).toMatch(/^#[0-9a-f]{6}$/i);
-    return [1, 3, 5].map((index) => Number.parseInt(hex.slice(index, index + 2), 16));
+    expect(hex).toMatch(/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i);
+    const full = hex.length === 4 ? "#" + [...hex.slice(1)].map((digit) => digit + digit).join("") : hex;
+    return [1, 3, 5].map((index) => Number.parseInt(full.slice(index, index + 2), 16));
   };
   const brightness = (hex: string): number => {
     const [r, g, b] = rgb(hex).map((value) => {
