@@ -3,10 +3,8 @@ title: "상세 글 UI 검증: 이미지·도식·수식·학습 컴포넌트"
 description: "일반 이미지와 전체 너비 이미지, 캡션, 라이트박스, Mermaid, 학습 탭, 파일 트리와 수식 표시를 점검하는 임시 테스트 글입니다."
 date: 2026-10-26
 slug: "ui-preview/media-learning-components"
-category: "Spring Security"
+category: "UI Preview"
 tags:
-    - Spring Security
-    - Security
     - Learning
 aliases:
     - "/blog/ui-preview/03-media-learning-components/"
