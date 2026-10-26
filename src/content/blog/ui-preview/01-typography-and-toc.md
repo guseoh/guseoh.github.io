@@ -3,10 +3,8 @@ title: "상세 글 UI 검증: 제목과 문단이 길어져도 편하게 읽힐�
 description: "한글 타이포그래피, 긴 제목, 본문 간격, 인라인 코드, 목록, 목차와 스크롤 이동을 확인하기 위한 임시 테스트 글입니다."
 date: 2026-10-26
 slug: "ui-preview/typography-and-toc"
-category: "JPA"
+category: "UI Preview"
 tags:
-    - JPA
-    - Java
     - Learning
 aliases:
     - "/blog/ui-preview/01-typography-and-toc/"
