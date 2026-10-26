@@ -27,7 +27,7 @@ test("Obsidian 본문 문단과 목록의 리듬을 테마·화면별로 유지�
       });
       expect(measured.paragraphLineHeight).toBeCloseTo(1.7, 1);
       expect(measured.listLineHeight).toBeCloseTo(1.58, 1);
-      expect(measured.headingTop).toBe("34px");
+      expect(measured.headingTop).toBe("30px");
       expect(measured.left).toBeGreaterThanOrEqual(-2);
       expect(measured.right).toBeLessThanOrEqual(measured.viewport + 2);
     }
