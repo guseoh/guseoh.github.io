@@ -34,7 +34,7 @@ test("깊어진 다크 팔레트와 선셋 블로그 잔디가 GitHub 그린과 
   });
   expect(colors["--bg"]).toBe("#101010");
   expect(colors["--card-bg"]).toBe("#1a1a1a");
-  expect(colors["--home-glow"]).toBe("rgba(255, 255, 255, 0.035)");
+  expect(["#ffffff09", "rgba(255, 255, 255, 0.035)"]).toContain(colors["--home-glow"]);
   for (const name of [
     "--accent", "--accent-strong", "--link", "--link-hover",
     "--post-link", "--post-link-hover", "--muted-readable", "--border",
