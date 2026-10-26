@@ -210,15 +210,16 @@ html.left-sidebar-collapsed .post-view > .post-column,
 .post__content > p:has(img.full-width) > a:only-child,
 .post__content > figure:has(img.full-width) > a:has(> img) {
   display: block;
-  width: 100%;
+  width: 100% !important;
   max-width: 100%;
 }
 .post__content img.full-width {
   width: 100% !important;
   max-width: 100% !important;
 }
-/* The normal linked-image rule is more specific; explicit full-width
- * also expands small source images wrapped in a link. */
+/* The normal standalone and linked-image selectors are more specific.
+ * Full-width must win for either structure, even for small source images. */
+.post__content > p > img.full-width:only-child,
 .post__content > p > a:only-child > img.full-width:only-child {
   width: 100% !important;
 }
