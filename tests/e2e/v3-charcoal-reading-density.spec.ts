@@ -95,6 +95,31 @@ test("ordinary diagram stays below 640px; explicit full-width can expand and lig
   await expect(image).toBeFocused();
 });
 
+test("explicit full-width fills the reading column even for a small linked image", async ({ page }) => {
+  await page.setViewportSize({ width: 1800, height: 900 });
+  await page.goto(article);
+  await page.evaluate(() => {
+    const content = document.querySelector(".post__content");
+    if (!content) throw new Error("Post content missing");
+    const paragraph = document.createElement("p");
+    const anchor = document.createElement("a");
+    anchor.href = "#";
+    const image = document.createElement("img");
+    image.className = "full-width";
+    image.alt = "Linked sample diagram";
+    image.src = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="128"><rect width="320" height="128" fill="#ddd"/></svg>');
+    anchor.append(image);
+    paragraph.append(anchor);
+    content.replaceChildren(paragraph);
+  });
+  const image = page.locator(".post__content > p > a > img.full-width");
+  await expect.poll(() => image.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBe(320);
+  const [imageBox, proseBox] = await Promise.all([image.boundingBox(), page.locator(".post__content").boundingBox()]);
+  expect(imageBox).not.toBeNull();
+  expect(proseBox).not.toBeNull();
+  expect(Math.abs(imageBox!.width - proseBox!.width)).toBeLessThanOrEqual(2);
+});
+
 test("mobile article keeps readable type and images fit the viewport in all themes", async ({ page }) => {
   for (const width of [375, 768]) {
     await page.setViewportSize({ width, height: 900 });
