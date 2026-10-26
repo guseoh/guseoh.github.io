@@ -374,6 +374,13 @@ html.left-sidebar-collapsed .post-toc,
 
 }
 
+/* Preserve mobile/tablet legibility without undoing the desktop 90% density. */
+@media (min-width: 761px) and (max-width: 980px) {
+  .post__content > :where(p, ul, ol, blockquote) {
+    font-size: 0.98rem;
+  }
+}
+
 /* Explicit reading resume; no automatic scroll or global settings. */
 .post-reading-resume {
   width: min(100%, var(--post-text-width));
