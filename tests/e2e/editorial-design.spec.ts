@@ -128,7 +128,7 @@ test("라이트 팔레트는 유지하고 Planner는 별도의 Deep Navy를 사�
 
 test("V2 테마는 홈·게시글의 핵심 표면과 조작 대비를 유지한다", async ({ page }) => {
   for (const [mode, background, card, accent] of [
-    ["dark", "#0b0e14", "#131a26", "#9db4ff"],
+    ["dark", "#191919", "#202020", "#b9c4d4"],
     ["planner", "#091625", "#10233a", "#80bdff"]
   ] as const) {
     for (const path of ["/", "/blog/security/basic1/", "/blog/jpa/persistence-context/"]) {
