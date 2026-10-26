@@ -8,6 +8,8 @@ tags:
     - Java
     - SQL
     - Testing
+aliases:
+    - "/blog/ui-preview/02-code-and-table/"
 draft: false
 ---
 
