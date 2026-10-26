@@ -201,9 +201,16 @@ html.left-sidebar-collapsed .post-view > .post-column,
   margin-inline: auto;
 }
 
-/* Explicitly wide diagrams retain the full article width. */
+/* Explicitly wide diagrams retain the full article width, including
+ * images wrapped in an anchor (no cyclic fit-content sizing). */
 .post__content > p:has(img.full-width),
 .post__content > figure:has(img.full-width) {
+  max-width: 100%;
+}
+.post__content > p:has(img.full-width) > a:only-child,
+.post__content > figure:has(img.full-width) > a:has(> img) {
+  display: block;
+  width: 100%;
   max-width: 100%;
 }
 .post__content img.full-width {

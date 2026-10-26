@@ -60,7 +60,7 @@ test("Planner uses the shared desktop article, sidebar, and TOC layout", async (
 });
 
 for (const route of ["/blog/jpa/persistence-context/", "/blog/security/basic2/"]) {
-  test("article images match prose width and preserve proportions: " + route, async ({ page }, testInfo) => {
+  test("article images fit a restrained, centered frame and preserve proportions: " + route, async ({ page }, testInfo) => {
     if (testInfo.project.name.startsWith("desktop")) {
       await page.setViewportSize({ width: 1800, height: 1000 });
     }
@@ -85,9 +85,9 @@ for (const route of ["/blog/jpa/persistence-context/", "/blog/security/basic2/"]
           const innerWidth = rect.width - parseFloat(style.borderLeftWidth) - parseFloat(style.borderRightWidth) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
           const innerHeight = rect.height - parseFloat(style.borderTopWidth) - parseFloat(style.borderBottomWidth) - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
           return {
-            widthDelta: Math.abs(rect.width - contentRect.width),
-            leftDelta: Math.abs(rect.left - contentRect.left),
-            rightDelta: Math.abs(rect.right - contentRect.right),
+            width: rect.width,
+            available: contentRect.width,
+            centerDelta: Math.abs((rect.left + rect.right) / 2 - (contentRect.left + contentRect.right) / 2),
             height: rect.height,
             ratioDelta: Math.abs(innerWidth / innerHeight - image.naturalWidth / image.naturalHeight),
             maxHeight: style.maxHeight
@@ -95,9 +95,8 @@ for (const route of ["/blog/jpa/persistence-context/", "/blog/security/basic2/"]
         });
       });
       for (const geometry of measurements) {
-        expect(geometry.widthDelta).toBeLessThanOrEqual(2);
-        expect(geometry.leftDelta).toBeLessThanOrEqual(2);
-        expect(geometry.rightDelta).toBeLessThanOrEqual(2);
+        expect(geometry.width).toBeLessThanOrEqual(Math.min(geometry.available, 640) + 2);
+        expect(geometry.centerDelta).toBeLessThanOrEqual(3);
         expect(geometry.height).toBeGreaterThan(0);
         expect(geometry.ratioDelta).toBeLessThanOrEqual(0.02);
         expect(geometry.maxHeight).toBe("none");
@@ -106,7 +105,7 @@ for (const route of ["/blog/jpa/persistence-context/", "/blog/security/basic2/"]
   });
 }
 
-test("plain, linked, captioned and full-width images share the article width", async ({ page }) => {
+test("plain, linked and captioned images stay compact while full-width is explicit", async ({ page }) => {
   await page.goto("/blog/security/basic2/");
   await page.evaluate(() => {
     const content = document.querySelector(".post__content")!;
@@ -125,12 +124,17 @@ test("plain, linked, captioned and full-width images share the article width", a
   await expect(images).toHaveCount(5);
   const contentBox = await page.locator(".post__content").boundingBox();
   expect(contentBox).not.toBeNull();
-  for (const image of await images.all()) {
+  for (const [index, image] of (await images.all()).entries()) {
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     const box = await image.boundingBox();
     expect(box).not.toBeNull();
-    expect(Math.abs(box!.width - contentBox!.width)).toBeLessThanOrEqual(2);
-    expect(Math.abs(box!.x - contentBox!.x)).toBeLessThanOrEqual(2);
+    const centerDelta = Math.abs(box!.x + box!.width / 2 - (contentBox!.x + contentBox!.width / 2));
+    expect(centerDelta).toBeLessThanOrEqual(3);
+    if (index === 4) {
+      expect(Math.abs(box!.width - contentBox!.width)).toBeLessThanOrEqual(2);
+    } else {
+      expect(box!.width).toBeLessThanOrEqual(Math.min(contentBox!.width, 640) + 2);
+    }
   }
 });

@@ -88,7 +88,8 @@ test("데스크톱 글은 본문 폭과 오른쪽 TOC를 유지한다", async ({
   await page.reload();
 
   const width = await page.locator(".post-column").evaluate((element) => element.getBoundingClientRect().width);
-  expect(width).toBeGreaterThanOrEqual(800);
+  expect(width).toBeGreaterThanOrEqual(760);
+  expect(width).toBeLessThanOrEqual(820);
 
   const desktopToc = page.locator(".post-toc");
   await expect(desktopToc).toBeVisible();

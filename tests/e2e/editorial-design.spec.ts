@@ -50,7 +50,7 @@ test("메인 소개는 실제 주제 탐색과 결합되고 모바일에서는 �
   await expect(topics).toBeVisible();
 });
 
-test("다크 모드는 블랙·블루 계층을 유지하고 청록색 없이 충분한 대비를 제공한다", async ({ page }) => {
+test("다크 모드는 중립적인 차콜 계층과 충분한 대비를 제공한다", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => localStorage.setItem("theme", "dark"));
   await page.reload();
@@ -81,15 +81,14 @@ test("다크 모드는 블랙·블루 계층을 유지하고 청록색 없이 �
     const la = brightness(a), lb = brightness(b);
     return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
   };
-  // Obsidian Black deliberately uses blue-black surfaces rather than gray/teal.
+  // hudi.blog-like charcoal: dark surfaces must be neutral, not blue-black.
   const surfaces = ["--bg", "--bg-deep", "--surface", "--surface-2", "--card-bg", "--post-bg"];
   expect(new Set(surfaces.map((name) => palette[name])).size).toBeGreaterThanOrEqual(4);
   for (const name of surfaces) {
-    const channels = rgb(palette[name]);
-    expect(channels[0] < channels[1] && channels[1] < channels[2], name).toBe(true);
-    expect(channels[2] - channels[0], name).toBeGreaterThanOrEqual(7);
+    const [red, green, blue] = rgb(palette[name]);
+    expect(Math.max(red, green, blue) - Math.min(red, green, blue), name).toBeLessThanOrEqual(3);
   }
-  // Blue and violet accents are allowed; cyan/teal tint is not.
+  // Restrained blue-gray accents are allowed, not cyan/teal.
   const isTeal = (hex: string): boolean => {
     const [red, green, blue] = rgb(hex);
     return green > red + 20 && blue > red + 18 && green >= blue - 12;
