@@ -217,6 +217,11 @@ html.left-sidebar-collapsed .post-view > .post-column,
   width: 100% !important;
   max-width: 100% !important;
 }
+/* The normal linked-image rule is more specific; explicit full-width
+ * also expands small source images wrapped in a link. */
+.post__content > p > a:only-child > img.full-width:only-child {
+  width: 100% !important;
+}
 
 .post-footer {
   width: 100%;
