@@ -8,6 +8,8 @@ tags:
     - Spring Security
     - Security
     - Learning
+aliases:
+    - "/blog/ui-preview/03-media-learning-components/"
 draft: false
 ---
 
