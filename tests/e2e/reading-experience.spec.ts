@@ -99,7 +99,8 @@ test("20줄 초과 코드만 접고 펼치며 복사 버튼은 전체 코드를 
 
   const copy = block.locator(".code-copy-button");
   await copy.click();
-  await expect(copy).toHaveText(/Copied|Selected/);
+  await expect(copy).toHaveAttribute("data-copy-state", /copied|selected/);
+  await expect(copy.locator("svg")).toHaveCount(1);
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(block).toHaveClass(/is-collapsed/);
