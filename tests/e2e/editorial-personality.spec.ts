@@ -25,11 +25,26 @@ test("깊어진 다크 팔레트와 선셋 블로그 잔디가 GitHub 그린과 
   await useMode(page, "dark");
   const colors = await page.evaluate(() => {
     const style = getComputedStyle(document.documentElement);
-    return Object.fromEntries(["--bg", "--card-bg", "--blog-grass-2", "--blog-grass-4", "--github-grass-4"]
-      .map((name) => [name, style.getPropertyValue(name).trim()]));
+    return Object.fromEntries([
+      "--bg", "--card-bg", "--home-glow", "--accent", "--accent-strong",
+      "--link", "--link-hover", "--post-link", "--post-link-hover",
+      "--muted-readable", "--border", "--tag-text", "--code-copy-text",
+      "--blog-grass-2", "--blog-grass-4", "--github-grass-4"
+    ].map((name) => [name, style.getPropertyValue(name).trim()]));
   });
   expect(colors["--bg"]).toBe("#101010");
   expect(colors["--card-bg"]).toBe("#1a1a1a");
+  expect(colors["--home-glow"]).toBe("rgba(255, 255, 255, 0.035)");
+  for (const name of [
+    "--accent", "--accent-strong", "--link", "--link-hover",
+    "--post-link", "--post-link-hover", "--muted-readable", "--border",
+    "--tag-text", "--code-copy-text"
+  ]) {
+    const value = colors[name];
+    expect(value, name).toMatch(/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i);
+    const pairs = value.slice(1).match(/../g);
+    expect(new Set(pairs).size, `${name}: ${value}`).toBe(1);
+  }
   expect(colors["--blog-grass-2"]).toBe("#a45b24");
   expect(colors["--blog-grass-4"]).toBe("#ffa64b");
   expect(colors["--github-grass-4"]).toBe("#78d9a5");
