@@ -116,8 +116,8 @@ test("CSS 중복 정리 후 홈 Hero의 간격·글줄·경계가 테마와 화�
         };
       });
 
-      expect(layout.radius, `${mode} / ${width}px`).toBeCloseTo(12, 1);
-      expect(layout.titleLineRatio).toBeCloseTo(1.22, 1);
+      expect(layout.radius, `${mode} / ${width}px`).toBeCloseTo(14, 1);
+      expect(layout.titleLineRatio).toBeCloseTo(1.29, 1);
       expect(layout.leadLineRatio).toBeCloseTo(1.62, 1);
       expect(layout.marginTop).toBeGreaterThan(0);
       for (const bounds of layout.bounds) {

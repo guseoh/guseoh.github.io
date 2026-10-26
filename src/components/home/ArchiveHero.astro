@@ -1,6 +1,7 @@
 ---
 import { SITE_TITLE } from "../../utils/posts";
 import type { CategorySummary } from "../../utils/categories";
+import { getTagHref } from "../../utils/tags";
 
 interface Props {
   title?: string;
@@ -8,19 +9,30 @@ interface Props {
 }
 
 const { title = SITE_TITLE, topics = [] } = Astro.props as Props;
+const mainTracks = [
+  { name: "Java", tag: "Java", code: "01" },
+  { name: "Spring", tag: "Spring", code: "02" },
+  { name: "Database", tag: "Database", code: "03" },
+  { name: "Security", tag: "Spring Security", code: "04" }
+];
 ---
 
 <section class="archive-hero archive-hero--simple" aria-label="블로그 소개">
   <div class="archive-hero__intro">
     <p class="archive-hero__eyebrow">{title}</p>
-    <h1>문제가 발생한 이유를 찾고 직접 검증하며 개선하는 과정을 좋아합니다.</h1>
+    <h1>원리를 이해하고, 직접 검증하며, 더 나은 설계를 기록합니다.</h1>
     <p class="archive-hero__lead">
-      Java와 Spring을 중심으로 백엔드 개발을 공부하고 있습니다.
+      Java·Spring을 중심으로 백엔드 시스템의 동작과 설계 과정을 꾸준히 기록합니다.
     </p>
     <div class="archive-hero__actions">
       <a href="#home-latest-posts">최근 글 읽기</a>
       <a href="/about/">소개</a>
     </div>
+    <nav class="archive-hero__stack" aria-label="핵심 기술 분야">
+      {mainTracks.map((track) => (
+        <a href={getTagHref(track.tag)}><span aria-hidden="true">{track.code}</span>{track.name}</a>
+      ))}
+    </nav>
   </div>
   {topics.length > 0 && (
     <nav class="archive-hero__topics" aria-label="주제 바로가기">
