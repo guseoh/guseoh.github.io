@@ -5,7 +5,7 @@ html.left-sidebar-collapsed .post-view,
 html.left-sidebar-collapsed .post-view--single,
 .site-shell.sidebar-collapsed .post-view,
 .site-shell.sidebar-collapsed .post-view--single {
-  --post-reading-width: 57rem;
+  --post-reading-width: 51.5rem;
   --post-toc-width: 14rem;
   width: 100%;
   max-width: none;
@@ -28,6 +28,7 @@ html.left-sidebar-collapsed .post-view > .post-column,
 .post {
   --post-content-width: 100%;
   --post-text-width: 100%;
+  --post-image-max: 40rem;
   width: 100%;
   padding: 0.55rem 0 0;
 }
@@ -80,37 +81,37 @@ html.left-sidebar-collapsed .post-view > .post-column,
 
 /* Prose gets more breathing room, while code remains intentionally denser. */
 .post__content > :where(p, ul, ol, blockquote) {
-  font-size: clamp(1rem, 0.99rem + 0.08vw, 1.02rem);
-  line-height: 1.79;
+  font-size: clamp(0.92rem, 0.91rem + 0.04vw, 0.94rem);
+  line-height: 1.74;
 }
 
 .post__content p {
-  margin-top: 1rem;
+  margin-top: 0.88rem;
 }
 
 .post > :where(p, ul, ol, blockquote, .markdown-alert),
 .post__content > :where(p, ul, ol, blockquote, .markdown-alert),
 .post > :where(ul, ol) :where(li),
 .post__content > :where(ul, ol) :where(li) {
-  line-height: 1.79;
+  line-height: 1.74;
 }
 
 .post > h2,
 .post__content h2 {
-  margin-top: clamp(2.35rem, 3.7vw, 2.8rem);
-  margin-bottom: 0.85rem;
+  margin-top: clamp(2.05rem, 3.2vw, 2.4rem);
+  margin-bottom: 0.74rem;
 }
 
 .post > h3,
 .post__content h3 {
-  margin-top: clamp(1.95rem, 3vw, 2.35rem);
-  margin-bottom: 0.75rem;
+  margin-top: clamp(1.7rem, 2.7vw, 2.05rem);
+  margin-bottom: 0.65rem;
 }
 
 .post > h4,
 .post__content h4 {
-  margin-top: clamp(1.8rem, 2.8vw, 2.2rem);
-  margin-bottom: 0.72rem;
+  margin-top: clamp(1.58rem, 2.4vw, 1.9rem);
+  margin-bottom: 0.63rem;
 }
 
 .post__content > .code-block,
@@ -128,13 +129,13 @@ html.left-sidebar-collapsed .post-view > .post-column,
 
 .post__content > .code-block,
 .post > .code-block {
-  margin-top: 1.3rem;
-  margin-bottom: 1.5rem;
+  margin-top: 1.12rem;
+  margin-bottom: 1.3rem;
 }
 
 .post pre,
 .post .code-block pre {
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 /* Language is metadata, not a heading. Keep the header compact and quiet. */
@@ -167,36 +168,60 @@ html.left-sidebar-collapsed .post-view > .post-column,
   max-width: 100%;
 }
 
-/* Standalone article images share the prose width. Preserve proportions, not intrinsic size.
- * Keep {full-width} compatible; it is no longer required to fill the article.
- * Scope these rules to content images so link icons and the lightbox stay unchanged. */
-.post__content > p:has(> img:only-child),
-.post__content > p:has(> a:only-child > img:only-child),
-.post__content > figure:has(img) {
+/* Ordinary diagrams do not fill the prose column. Small source images
+ * keep intrinsic width, while all images preserve their aspect ratio.
+ * Explicit {full-width} stays opt-in. The lightbox is outside .post__content. */
+.post__content > :is(
+  p:has(> img:only-child),
+  p:has(> a:only-child > img:only-child),
+  figure:has(img)
+) {
   width: 100%;
-  max-width: 100%;
-  margin-inline: 0;
+  max-width: min(100%, var(--post-image-max));
+  margin-inline: auto;
 }
 
 .post__content > p:has(> a:only-child > img:only-child) > a,
 .post__content > figure > a:has(> img:only-child) {
   display: block;
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
-  margin-inline: 0;
+  margin-inline: auto;
 }
 
 .post__content > p > img:only-child,
 .post__content > p > a:only-child > img:only-child,
-.post__content > figure img,
-.post__content img.full-width {
+.post__content > figure img {
   display: block;
   box-sizing: border-box;
-  width: 100% !important;
+  width: auto !important;
   max-width: 100% !important;
   max-height: none;
   height: auto !important;
-  margin-inline: 0;
+  margin-inline: auto;
+}
+
+/* Explicitly wide diagrams win over the very specific normal-image
+ * wrapper selector above. The important flag is opt-in, not a global override. */
+.post__content > p:has(img.full-width),
+.post__content > figure:has(img.full-width) {
+  max-width: 100% !important;
+}
+.post__content > p:has(img.full-width) > a:only-child,
+.post__content > figure:has(img.full-width) > a:has(> img) {
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
+}
+.post__content img.full-width {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+/* The normal standalone and linked-image selectors are more specific.
+ * Full-width must win for either structure, even for small source images. */
+.post__content > p > img.full-width:only-child,
+.post__content > p > a:only-child > img.full-width:only-child {
+  width: 100% !important;
 }
 
 .post-footer {
@@ -335,31 +360,38 @@ html.left-sidebar-collapsed .post-toc,
   }
 
   .post__content > :where(p, ul, ol, blockquote) {
-    font-size: 1rem;
-    line-height: 1.8;
+    font-size: 0.98rem;
+    line-height: 1.74;
   }
 
   .post > :where(p, ul, ol, blockquote, .markdown-alert),
   .post__content > :where(p, ul, ol, blockquote, .markdown-alert),
   .post > :where(ul, ol) :where(li),
   .post__content > :where(ul, ol) :where(li) {
-    line-height: 1.8;
+    line-height: 1.74;
   }
 
   .post__content p {
-    margin-top: 0.98rem;
+    margin-top: 0.88rem;
   }
 
   .post__content > .code-block,
   .post > .code-block {
-    margin-top: 1.2rem;
-    margin-bottom: 1.45rem;
+    margin-top: 1.08rem;
+    margin-bottom: 1.24rem;
   }
 
   .code-block__header {
     padding: 0.3rem 0.5rem;
   }
 
+}
+
+/* Preserve mobile/tablet legibility without undoing the desktop 90% density. */
+@media (min-width: 761px) and (max-width: 980px) {
+  .post__content > :where(p, ul, ol, blockquote) {
+    font-size: 0.98rem;
+  }
 }
 
 /* Explicit reading resume; no automatic scroll or global settings. */
