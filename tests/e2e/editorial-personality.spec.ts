@@ -13,7 +13,7 @@ test("홈은 백엔드 핵심 기술 허브와 읽기 동선을 제공한다", a
   const links = page.locator(".archive-hero__stack a");
   await expect(links).toHaveCount(4);
   await expect(links).toHaveText(["01Java", "02Spring", "03Database", "04Security"]);
-  await expect(links).toHaveAttribute("href", "/tags/java/");
+  await expect(links.first()).toHaveAttribute("href", "/tags/java/");
   await expect(page.locator(".home-featured-card").first()).toBeVisible();
   await expect(page.locator(".home-post-list .post-card--featured")).toHaveCount(1);
   const first = page.locator(".archive-hero__stack a").first();
