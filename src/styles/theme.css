@@ -84,7 +84,7 @@
   --alert-text: #1e2632;
 }
 
-/* Deep neutral black with warm-gray detail; Planner remains independently blue. */
+/* Neutral deep-black dark mode; Sunset Orange is reserved for blog activity grass. */
 html[data-theme="dark"] {
   color-scheme: dark;
   --bg: #101010;
@@ -92,23 +92,23 @@ html[data-theme="dark"] {
   --surface: #161616;
   --surface-2: #202020;
   --surface-hover: #2a2a2a;
-  --ink: #dedbd8;
-  --heading: #f4f1ed;
-  --strong-text: #f4f1ed;
+  --ink: #dedede;
+  --heading: #f2f2f2;
+  --strong-text: #f2f2f2;
   --strong-bg: transparent;
   --strong-outline: transparent;
-  --article-strong-color: #f4f1ed;
+  --article-strong-color: #f2f2f2;
   --article-strong-weight: 760;
-  --muted: #99938d;
-  --muted-readable: #b5b0ab;
-  --accent: #bdafa0;
-  --accent-strong: #e3c7a9;
-  --accent-soft: rgba(189, 175, 160, 0.1);
+  --muted: #989898;
+  --muted-readable: #b3b3b3;
+  --accent: #a8a8a8;
+  --accent-strong: #d2d2d2;
+  --accent-soft: rgba(175, 175, 175, 0.1);
   --page-glow: transparent;
-  --home-glow: rgba(226, 137, 55, 0.075);
+  --home-glow: rgba(255, 255, 255, 0.035);
   --home-hero-surface-mix: 35%;
-  --activity-cell-border: rgba(184, 161, 141, 0.18);
-  --blog-grass-0: #292522;
+  --activity-cell-border: rgba(160, 160, 160, 0.2);
+  --blog-grass-0: #252525;
   --blog-grass-1: #604028;
   --blog-grass-2: #a45b24;
   --blog-grass-3: #e47718;
@@ -118,29 +118,29 @@ html[data-theme="dark"] {
   --github-grass-2: #2b7253;
   --github-grass-3: #3aa273;
   --github-grass-4: #78d9a5;
-  --link: #d5c7b9;
-  --link-hover: #f0ddc7;
-  --post-link: #ddcbbb;
-  --post-link-hover: #fff0dd;
-  --post-link-focus: #e3c7a9;
-  --border: #34302e;
-  --control-border: #736b63;
+  --link: #c4c4c4;
+  --link-hover: #f0f0f0;
+  --post-link: #cecece;
+  --post-link-hover: #f4f4f4;
+  --post-link-focus: #d2d2d2;
+  --border: #343434;
+  --control-border: #737373;
   --shadow: rgba(0, 0, 0, 0.55);
   --header-bg: rgba(15, 15, 15, 0.96);
   --card-bg: #1a1a1a;
   --post-bg: #101010;
-  --tag-bg: #24211f;
-  --tag-border: #494038;
-  --tag-text: #e3d6c8;
-  --code-inline-bg: #252423;
-  --code-inline-border: #34312f;
-  --code-inline-text: #dfdbd6;
-  --code-card-header-bg: #1c1b1a;
+  --tag-bg: #242424;
+  --tag-border: #494949;
+  --tag-text: #e2e2e2;
+  --code-inline-bg: #252525;
+  --code-inline-border: #343434;
+  --code-inline-text: #dedede;
+  --code-card-header-bg: #1c1c1c;
   --code-block-bg: #181818;
-  --code-block-border: #37332f;
-  --code-language-text: #b5ada4;
-  --code-copy-text: #d0c4b7;
-  --table-head-bg: #22201e;
+  --code-block-border: #373737;
+  --code-language-text: #b5b5b5;
+  --code-copy-text: #cfcfcf;
+  --table-head-bg: #222222;
   --alert-note: #b7c9dc;
   --alert-tip: #abd6b4;
   --alert-important: #d2bfeb;
@@ -152,6 +152,6 @@ html[data-theme="dark"] {
   --alert-warning-bg: #2b2823;
   --alert-caution-bg: #2b2323;
   --alert-surface: #191919;
-  --alert-border-base: #46403c;
-  --alert-text: #dedbd8;
+  --alert-border-base: #464646;
+  --alert-text: #dedede;
 }
