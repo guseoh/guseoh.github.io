@@ -8,9 +8,9 @@
 .post .post__content {
   --article-paragraph-leading: 1.7;
   --article-list-leading: 1.58;
-  --article-paragraph-gap: 1em;
+  --article-paragraph-gap: 0.9em;
   --article-paragraph-list-gap: 0.2em;
-  --article-list-paragraph-gap: 0.9em;
+  --article-list-paragraph-gap: 0.82em;
   --article-list-item-gap: 0.16em;
 }
 
@@ -63,26 +63,27 @@
 }
 
 .post .post__content h2 {
-  margin-top: 34px;
-  margin-bottom: 14px;
+  margin-top: 30px;
+  margin-bottom: 12px;
 }
 
 .post .post__content h3 {
-  margin-top: 28px;
-  margin-bottom: 10px;
+  margin-top: 25px;
+  margin-bottom: 9px;
 }
 
 /* Inline expressions should read like quiet annotations, not colored badges. */
 .post .post__content :not(pre) > code {
-  border: 1px solid var(--code-inline-border);
-  border-radius: 4px;
+  border: 0;
+  border-radius: 3px;
   background: var(--code-inline-bg);
+  box-shadow: none;
   color: var(--code-inline-text);
   font-family: var(--font-mono);
-  font-size: 0.9em;
-  font-weight: 500;
+  font-size: 0.94em;
+  font-weight: 400;
   font-feature-settings: "calt" 1, "liga" 1;
-  padding: 0.06em 0.34em;
+  padding: 0.04em 0.27em;
 }
 
 /* The fenced-code renderer is Shiki, not Obsidian's Prism.
@@ -114,7 +115,7 @@
 
 .post .post__content :is(.code-block, pre) pre {
   line-height: 1.55;
-  padding-block: 0.8rem 0.9rem;
+  padding-block: 0.72rem 0.8rem;
 }
 
 .post .post__content .code-block pre > code {
@@ -174,7 +175,7 @@
 }
 
 .post .post__content .table-scroll thead th {
-  padding: 8px 10px;
+  padding: 7px 9px;
   background: var(--table-head-bg);
   color: var(--heading);
   font-weight: 650;
@@ -182,7 +183,7 @@
 }
 
 .post .post__content .table-scroll tbody td {
-  padding: 8px 10px;
+  padding: 7px 9px;
   line-height: 1.45;
 }
 
@@ -244,14 +245,14 @@
 
 /* Obsidian's low-contrast callouts without losing Note/Tip/Warning semantics. */
 .post .post__content > .markdown-alert {
-  margin-top: 0.85rem;
-  margin-bottom: 0.85rem;
+  margin-top: 0.78rem;
+  margin-bottom: 0.78rem;
   border: 1px solid color-mix(in srgb, var(--alert-color) 18%, var(--alert-border-base));
   border-left: 2px solid color-mix(in srgb, var(--alert-color) 55%, var(--alert-border-base));
   border-radius: 6px;
   background: color-mix(in srgb, var(--alert-background) 56%, var(--post-bg));
   box-shadow: none;
-  padding: 0.65rem 0.78rem;
+  padding: 0.59rem 0.71rem;
 }
 
 .post .post__content .markdown-alert-title {
