@@ -8,6 +8,8 @@ tags:
     - JPA
     - Java
     - Learning
+aliases:
+    - "/blog/ui-preview/01-typography-and-toc/"
 draft: false
 ---
 
