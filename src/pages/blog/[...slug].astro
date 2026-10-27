@@ -19,9 +19,10 @@ import PostKnowledgePreview from "../../components/post/PostKnowledgePreview.ast
 import PostSearchJump from "../../components/post/PostSearchJump.astro";
 import PostTableEnhancer from "../../components/post/PostTableEnhancer.astro";
 import PostToc from "../../components/post/PostToc.astro";
+import SecurityExample from "../../components/post/SecurityExample.astro";
 import { SITE } from "../../config/site";
 import { normalizeCategory } from "../../utils/categories";
-import { getPublishedPostsSorted } from "../../utils/content/posts";
+import { getPublishedPostsSorted, getRenderablePosts } from "../../utils/content/posts";
 import { getAdjacentPosts, getLearningPathPosts } from "../../utils/postNavigation";
 import { buildPostTocHeadings } from "../../utils/postToc";
 import { getRelatedPosts } from "../../utils/relatedPosts";
@@ -61,7 +62,7 @@ type BlogStaticPath = {
 };
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPostsSorted();
+  const posts = await getRenderablePosts();
 
   return posts.flatMap((post) => {
     const canonicalSlug = getPostSlug(post);
@@ -214,6 +215,7 @@ const breadcrumbStructuredData = {
   </BaseLayout>
 ) : (
 <BaseLayout
+  robots={getPostSlug(post).startsWith("ui-preview/") ? "noindex,follow" : undefined}
   title={`${post.data.title} | devjune.dev`}
   description={description || SITE_DESCRIPTION}
   image={postImagePath}
@@ -314,6 +316,8 @@ const breadcrumbStructuredData = {
       <div class="post__content">
         <Content />
       </div>
+
+      {getPostSlug(post) === "security/basic1" && <SecurityExample />}
 
       <footer class="post-footer">
         {showLearningPath ? (

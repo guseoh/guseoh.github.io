@@ -258,7 +258,7 @@ function renderPost(post: SearchIndexItem, reasons: string[], query: string) {
     const reasonList = document.createElement("ul");
     reasonList.className = "search-match-reasons";
     reasonList.setAttribute("aria-label", "검색 일치 이유");
-    for (const reason of reasons.slice(0, 3)) {
+    for (const reason of reasons.slice(0, 2)) {
       const reasonItem = document.createElement("li");
       reasonItem.textContent = reason;
       reasonList.append(reasonItem);

@@ -1,0 +1,27 @@
+---
+---
+<section class="security-example" aria-labelledby="security-example-title">
+  <h2 id="security-example-title">인증과 인가 직접 살펴보기</h2>
+  <p>회원 전용 API를 요청하는 예시에서 사용자 상태를 선택해 보세요.</p>
+  <label for="security-example-state">사용자 상태</label>
+  <select id="security-example-state">
+    <option value="anonymous">로그인하지 않은 사용자</option>
+    <option value="member">로그인한 회원</option>
+    <option value="admin">로그인한 관리자</option>
+  </select>
+  <p class="security-example__result" role="status" aria-live="polite">인증 정보가 없으므로 예시 API는 인증을 요구합니다. 일반적으로 401 응답을 사용할 수 있습니다.</p>
+  <small>실제 응답은 인증 방식과 서버 설정에 따라 달라질 수 있습니다.</small>
+</section>
+<script is:inline>
+  (() => {
+    const select = document.getElementById("security-example-state");
+    const result = document.querySelector(".security-example__result");
+    if (!(select instanceof HTMLSelectElement) || !(result instanceof HTMLElement)) return;
+    const messages = {
+      anonymous: "인증 정보가 없으므로 예시 API는 인증을 요구합니다. 일반적으로 401 응답을 사용할 수 있습니다.",
+      member: "인증된 회원이므로 회원 전용 API에 접근할 수 있습니다. 관리자 전용 기능은 권한이 없으면 403으로 거부될 수 있습니다.",
+      admin: "인증된 관리자이므로 예시의 회원 전용 API와 관리자 전용 기능에 접근할 수 있습니다."
+    };
+    select.addEventListener("change", () => { result.textContent = messages[select.value] ?? "상태를 선택해 주세요."; });
+  })();
+</script>

@@ -50,7 +50,7 @@ const isChildActive = (child: CategoryTreeGroup["children"][number]) =>
 
   {groups.map((group, index) => {
     const hasChildren = group.children.length > 0;
-    const isGroupPathActive = group.href ? normalizePath(group.href) === normalizedCurrentPath : false;
+    const isGroupPathActive = (group.href ? normalizePath(group.href) === normalizedCurrentPath : false) || (variant === "sidebar" && currentCategory === group.slug);
     const isActiveGroup = currentCategory === group.slug || isGroupPathActive || group.children.some(isChildActive);
     const isExpanded = isActiveGroup || (variant === "page" && index === 0);
     const panelId = `${idPrefix}-${group.slug}-panel`;
@@ -88,6 +88,7 @@ const isChildActive = (child: CategoryTreeGroup["children"][number]) =>
 
         {hasChildren && (
           <div id={panelId} class="category-menu__children" hidden={!isExpanded}>
+            <p class="category-menu__children-label">관련 태그</p>
             {group.children.map((child) => {
               const isActive = isChildActive(child);
               const currentType = currentCategory === child.slug ? "category" : "page";

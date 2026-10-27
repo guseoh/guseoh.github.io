@@ -17,7 +17,7 @@ const normalizedCurrentPath = currentPath.replace(/\/+$/, "") || "/";
 const isCategoriesPage = normalizedCurrentPath === "/categories";
 ---
 
-<button id="sidebar-open" class="sidebar-open" type="button" aria-label="사이드바 열기" aria-controls="site-sidebar" aria-expanded="false">
+<button id="sidebar-open" class="sidebar-open" type="button" aria-label="사이드바 열기" title="주제 탐색 열기" aria-controls="site-sidebar" aria-expanded="false">
   <span class="sidebar-open__line"></span>
   <span class="sidebar-open__line"></span>
   <span class="sidebar-open__line"></span>
@@ -69,7 +69,7 @@ const isCategoriesPage = normalizedCurrentPath === "/categories";
 
   <section class="category-panel" aria-label="분류 탐색">
     <div class="category-panel__header">
-      <h2>주제별 탐색</h2>
+      <h2>카테고리별 탐색</h2>
       <a
         href="/categories/"
         aria-current={isCategoriesPage ? "page" : undefined}

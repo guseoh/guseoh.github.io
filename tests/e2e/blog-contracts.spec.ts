@@ -27,6 +27,7 @@ test("공개 글만 검색·RSS·sitemap에 등록되고 개별 canonical을 가
   const files = await collectMarkdown(path.resolve("src/content/blog"));
   const published: string[] = [];
   const drafts: string[] = [];
+  const fixtures: string[] = [];
   for (const file of files) {
     const markdown = await readFile(file, "utf8");
     const meta = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
@@ -34,7 +35,7 @@ test("공개 글만 검색·RSS·sitemap에 등록되고 개별 canonical을 가
     const draft = meta.match(/^draft:\s*(true|false)\s*$/m)?.[1];
     expect(slug, file).toBeTruthy();
     expect(draft, file).toMatch(/^(true|false)$/);
-    (draft === "true" ? drafts : published).push(`/blog/${slug}/`);
+    (draft === "true" ? drafts : slug?.startsWith("ui-preview/") ? fixtures : published).push(`/blog/${slug}/`);
   }
 
   expect(index.length).toBe(published.length);
@@ -46,6 +47,14 @@ test("공개 글만 검색·RSS·sitemap에 등록되고 개별 canonical을 가
     expect(html).toContain(`rel="canonical" href="https://guseoh.github.io${url}"`);
     expect(sitemap).toContain(`https://guseoh.github.io${url}`);
     expect(rss).toContain(`https://guseoh.github.io${url}`);
+  }
+  for (const url of fixtures) {
+    expect(paths.has(url)).toBe(false);
+    expect(sitemap).not.toContain(`https://guseoh.github.io${url}`);
+    expect(rss).not.toContain(`https://guseoh.github.io${url}`);
+    const response = await request.get(url);
+    expect(response.ok(), url).toBe(true);
+    expect(await response.text()).toContain('content="noindex,follow"');
   }
   for (const url of drafts) {
     expect(paths.has(url)).toBe(false);

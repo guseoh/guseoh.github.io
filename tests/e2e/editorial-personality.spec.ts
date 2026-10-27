@@ -8,12 +8,15 @@ async function useMode(page: import("@playwright/test").Page, mode: string) {
   await page.reload();
 }
 
-test("홈은 백엔드 핵심 기술 허브와 읽기 동선을 제공한다", async ({ page }) => {
+test("홈은 글이 있는 기술 허브와 읽기 동선을 제공한다", async ({ page, request }) => {
   await page.goto("/");
   const links = page.locator(".archive-hero__stack a");
-  await expect(links).toHaveCount(4);
-  await expect(links).toHaveText(["01Java", "02Spring", "03Database", "04Security"]);
-  await expect(links.first()).toHaveAttribute("href", "/tags/java/");
+  const index = await (await request.get("/search-index.json")).json() as Array<{ tags: string[] }>;
+  const tags = new Set(index.flatMap((post) => post.tags));
+  const tracks = [["Java", "Java"], ["Spring", "Spring"], ["Database", "Database"], ["Security", "Spring Security"]];
+  const visible = tracks.filter(([, tag]) => tags.has(tag));
+  await expect(links).toHaveCount(visible.length);
+  await expect(links).toHaveText(visible.map(([label], i) => `${String(i + 1).padStart(2, "0")}${label}`));
   await expect(page.locator(".home-featured-card").first()).toBeVisible();
   await expect(page.locator(".home-post-list .post-card--featured")).toHaveCount(1);
   const first = page.locator(".archive-hero__stack a").first();

@@ -10,6 +10,11 @@ interface Props {
 }
 
 const { headings } = Astro.props as Props;
+let parentSlug = "";
+const desktopHeadings = headings.map((heading) => {
+  if (heading.depth <= 2) parentSlug = heading.slug;
+  return { ...heading, parentSlug: heading.depth > 2 ? parentSlug : heading.slug };
+});
 ---
 
 {
@@ -39,9 +44,10 @@ const { headings } = Astro.props as Props;
 
       <aside class="post-toc" aria-label="Document table of contents">
         <p class="post-toc__title">이 글의 목차</p>
+        <button type="button" class="post-toc__expand" aria-expanded="false" hidden>하위 목차 모두 보기</button>
         <ul class="post-toc__list">
-          {headings.map((heading) => (
-            <li class:list={["post-toc__item", `depth-${heading.depth}`]}>
+          {desktopHeadings.map((heading) => (
+            <li data-toc-parent={heading.parentSlug} class:list={["post-toc__item", `depth-${heading.depth}`]}>
               <a href={`#${heading.slug}`}>{heading.text}</a>
             </li>
           ))}
@@ -84,6 +90,27 @@ const { headings } = Astro.props as Props;
             const desktopToc = document.querySelector(".post-toc");
             const motionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
             let activeSection = null;
+            let showAllSubheadings = false;
+            const expandButton = desktopToc?.querySelector(".post-toc__expand");
+            const subheadings = Array.from(desktopToc?.querySelectorAll(".post-toc__item.depth-3") ?? []);
+            const updateSubheadings = () => {
+              if (!(desktopToc instanceof HTMLElement)) return;
+              const activeItem = entries.find((entry) => entry.section === activeSection && entry.link.closest(".post-toc"))?.link.closest(".post-toc__item");
+              const parent = activeItem instanceof HTMLElement ? activeItem.dataset.tocParent : "";
+              for (const item of subheadings) {
+                if (!(item instanceof HTMLElement)) continue;
+                item.hidden = !showAllSubheadings && Boolean(parent) && item.dataset.tocParent !== parent && !item.contains(document.activeElement);
+              }
+            };
+            if (expandButton instanceof HTMLButtonElement && subheadings.length > 0) {
+              expandButton.hidden = false;
+              expandButton.addEventListener("click", () => {
+                showAllSubheadings = !showAllSubheadings;
+                expandButton.setAttribute("aria-expanded", String(showAllSubheadings));
+                expandButton.textContent = showAllSubheadings ? "현재 섹션만 보기" : "하위 목차 모두 보기";
+                updateSubheadings();
+              });
+            }
             let tocInteractionUntil = 0;
 
             const markTocInteraction = () => {
@@ -153,6 +180,7 @@ const { headings } = Astro.props as Props;
                 }
               }
 
+              updateSubheadings();
               revealDesktopLink(activeSection);
             };
 

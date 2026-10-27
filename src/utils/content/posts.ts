@@ -1,8 +1,13 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { getPostAliases, getPostSlug, normalizePostSlug, sortPostsByDate } from "../posts";
 
-export async function getPublishedPosts() {
+export async function getRenderablePosts() {
   return getCollection("blog", ({ data }) => !data.draft);
+}
+
+// UI fixtures stay reachable for visual checks but do not appear in reader discovery.
+export async function getPublishedPosts() {
+  return (await getRenderablePosts()).filter((post) => !getPostSlug(post).startsWith("ui-preview/"));
 }
 
 export async function getPublishedPostsSorted() {
@@ -15,7 +20,7 @@ export async function getLatestPublishedPost() {
 
 export async function getPostBySlug(slug: string) {
   const normalizedSlug = normalizePostSlug(slug);
-  const posts = await getPublishedPosts();
+  const posts = await getRenderablePosts();
 
   return posts.find((post) => {
     if (getPostSlug(post) === normalizedSlug) return true;

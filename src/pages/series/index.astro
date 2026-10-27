@@ -24,8 +24,8 @@ const chapterPaths = buildCategorySummary(posts).flatMap(({ name, slug }) => {
   <div class="library-page">
     <section class="hero library-hero">
       <p class="library-hero__eyebrow">Library</p>
-      <h1>Series</h1>
-      <p>Book 안에서 더 작은 흐름으로 이어지는 학습 기록과 프로젝트 개선 과정을 모았습니다.</p>
+      <h1>학습 경로</h1>
+      <p>관련 글을 순서대로 읽으며 개념과 프로젝트 개선 과정을 살펴봅니다.</p>
     </section>
 
     {chapterPaths.length > 0 && (
@@ -52,7 +52,7 @@ const chapterPaths = buildCategorySummary(posts).flatMap(({ name, slug }) => {
     )}
     {
       seriesSummary.length === 0 ? (
-        <p class="section-empty library-empty">아직 공개된 시리즈가 없습니다.</p>
+        <p class="section-empty library-empty">아직 공개된 별도 시리즈가 없습니다. 위의 학습 경로에서 순서대로 읽을 수 있습니다.</p>
       ) : (
         <ul class="library-series-grid">
           {seriesSummary.map((series) => {

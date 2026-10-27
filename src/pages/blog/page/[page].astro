@@ -42,7 +42,7 @@ const { pagePosts, currentPage, totalPages, postCount } = Astro.props as {
       <div>
         <h1 class="blog-list-head__title">전체 글 ({postCount})</h1>
         <p class="blog-list-head__description">{SITE_DESCRIPTION}</p>
-        <p class="blog-list-head__sort">정렬 기준: 최근 수정일순</p>
+        <nav class="blog-sort" aria-label="글 정렬"><span aria-current="page">최근 수정순</span><a href="/blog/published/">최근 발행순</a><a href="/blog/archive/">발행 아카이브</a></nav>
       </div>
 
       <PostViewSwitch listId={`blog-post-list-${currentPage}`} storageKey="guseo:blog-list-view" />

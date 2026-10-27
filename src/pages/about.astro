@@ -1,6 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPublishedPostsSorted } from "../utils/content/posts";
+import { getPostPath } from "../utils/posts";
 import { CORE_TECH_TAGS, GITHUB_URL, SITE_AUTHOR, SITE_DESCRIPTION, SITE_URL } from "../utils/posts";
+
+const featuredPosts = (await getPublishedPostsSorted()).filter((post) => post.data.featured).slice(0, 2);
 
 const structuredData = [
   {
@@ -32,6 +36,13 @@ const structuredData = [
       테스트와 운영에서 무엇을 확인했는지 기록합니다.
     </p>
   </section>
+
+  {featuredPosts.length > 0 && (
+    <section class="about-panel about-featured" aria-labelledby="about-featured-title">
+      <h2 id="about-featured-title">처음 읽기 좋은 글</h2>
+      <ul>{featuredPosts.map((post) => <li><a href={getPostPath(post)}>{post.data.title}</a></li>)}</ul>
+    </section>
+  )}
 
   <div class="about-grid">
     <section class="about-panel">
