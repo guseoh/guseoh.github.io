@@ -1,14 +1,18 @@
 ---
 import { SITE_TITLE } from "../../utils/posts";
 import type { CategorySummary } from "../../utils/categories";
+import type { CollectionEntry } from "astro:content";
+import { resolveTagSlug } from "../../utils/tags";
 import { getTagHref } from "../../utils/tags";
 
 interface Props {
   title?: string;
   topics?: CategorySummary[];
+  posts?: CollectionEntry<"blog">[];
 }
 
-const { title = SITE_TITLE, topics = [] } = Astro.props as Props;
+const { title = SITE_TITLE, topics = [], posts = [] } = Astro.props as Props;
+const presentTags = new Set(posts.flatMap((post) => post.data.tags.map(resolveTagSlug)));
 const mainTracks = [
   { name: "Java", tag: "Java", code: "01" },
   { name: "Spring", tag: "Spring", code: "02" },
@@ -29,8 +33,8 @@ const mainTracks = [
       <a href="/about/">소개</a>
     </div>
     <nav class="archive-hero__stack" aria-label="핵심 기술 분야">
-      {mainTracks.map((track) => (
-        <a href={getTagHref(track.tag)}><span aria-hidden="true">{track.code}</span>{track.name}</a>
+      {mainTracks.filter((track) => presentTags.has(resolveTagSlug(track.tag))).map((track, index) => (
+        <a href={getTagHref(track.tag)}><span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>{track.name}</a>
       ))}
     </nav>
   </div>

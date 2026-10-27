@@ -149,6 +149,11 @@
           node.dataset.mermaidRendered = "true";
         } catch {
           node.dataset.mermaidFailed = "true";
+          const message = document.createElement("p");
+          message.className = "learning-mermaid-fallback";
+          message.setAttribute("role", "status");
+          message.textContent = "도식을 불러오지 못해 텍스트 원본을 표시합니다.";
+          node.prepend(message);
         }
       };
       const observer = "IntersectionObserver" in window

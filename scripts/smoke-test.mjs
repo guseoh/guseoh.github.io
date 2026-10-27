@@ -30,8 +30,10 @@ const deployCheck = expectedDeploySha || String(Math.floor(Date.now() / 1000));
 const failures = [];
 
 const localPosts = await readLocalPostContracts();
-const publishedPosts = localPosts
-  .filter((post) => !post.draft)
+const renderablePosts = localPosts.filter((post) => !post.draft);
+const previewPosts = renderablePosts.filter((post) => post.slug.startsWith("ui-preview/"));
+const publishedPosts = renderablePosts
+  .filter((post) => !post.slug.startsWith("ui-preview/"))
   .sort((a, b) => {
     const dateDifference = b.date.valueOf() - a.date.valueOf();
     if (dateDifference !== 0) return dateDifference;
@@ -39,10 +41,10 @@ const publishedPosts = localPosts
   });
 const draftPosts = localPosts.filter((post) => post.draft);
 
-// Check every published article in addition to the index routes. The explicit
+// Check every renderable article in addition to the index routes. The explicit
 // SMOKE_PATHS override still supports targeted checks when needed.
 const paths = configuredPaths ?? [
-  ...new Set([...DEFAULT_PATHS, ...publishedPosts.map((post) => post.path)])
+  ...new Set([...DEFAULT_PATHS, ...renderablePosts.map((post) => post.path)])
 ];
 
 for (const checkPath of paths) {
@@ -144,6 +146,12 @@ async function runContentConsistencyChecks() {
     assertNotIncludes(searchIndexResult.text, draft.path, searchIndexResult.url, `draft ${draft.path} absent from search index`);
     assertNotIncludesAny(sitemapResult.text, absoluteUrls(draft.path), sitemapResult.url, `draft ${draft.path} absent from sitemap`);
     assertNotIncludesAny(rssResult.text, absoluteUrls(draft.path), rssResult.url, `draft ${draft.path} absent from RSS`);
+  }
+
+  for (const preview of previewPosts) {
+    assertNotIncludes(searchIndexResult.text, preview.path, searchIndexResult.url, `preview ${preview.path} absent from search index`);
+    assertNotIncludesAny(sitemapResult.text, absoluteUrls(preview.path), sitemapResult.url, `preview ${preview.path} absent from sitemap`);
+    assertNotIncludesAny(rssResult.text, absoluteUrls(preview.path), rssResult.url, `preview ${preview.path} absent from RSS`);
   }
 
   await verifySocialImages(latestPost);

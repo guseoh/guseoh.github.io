@@ -10,6 +10,14 @@
       if (!(wrapper instanceof HTMLElement)) return;
 
       const isScrollable = wrapper.scrollWidth > wrapper.clientWidth + 1;
+      let hint = wrapper.previousElementSibling;
+      if (!(hint instanceof HTMLElement) || !hint.classList.contains("table-scroll-hint")) {
+        hint = document.createElement("p");
+        hint.className = "table-scroll-hint";
+        hint.textContent = "표를 좌우로 스크롤할 수 있습니다.";
+        wrapper.before(hint);
+      }
+      hint.hidden = !isScrollable;
       const caption = wrapper.querySelector("caption")?.textContent?.trim();
 
       if (isScrollable) {

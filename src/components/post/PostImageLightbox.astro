@@ -115,6 +115,16 @@
 
       if (!isEligibleImage(target)) continue;
 
+      const hint = document.createElement("span");
+      hint.className = "post-image-zoom-hint";
+      hint.setAttribute("aria-hidden", "true");
+      hint.textContent = "이미지 확대 ↗";
+      const container = target.parentElement;
+      if (container instanceof HTMLParagraphElement && container.childElementCount === 1) {
+        container.insertAdjacentElement("afterend", hint);
+      } else {
+        target.insertAdjacentElement("afterend", hint);
+      }
       target.classList.add("post-lightbox-trigger");
       target.tabIndex = 0;
       target.setAttribute("role", "button");

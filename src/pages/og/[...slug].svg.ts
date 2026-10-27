@@ -1,11 +1,11 @@
 import type { APIContext } from "astro";
 import type { CollectionEntry } from "astro:content";
-import { getPublishedPostsSorted } from "../../utils/content/posts";
+import { getRenderablePosts } from "../../utils/content/posts";
 import { renderPostOgSvg } from "../../utils/ogImage";
 import { getPostSlug } from "../../utils/posts";
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPostsSorted();
+  const posts = await getRenderablePosts();
   return posts.map((post) => ({
     params: { slug: getPostSlug(post) },
     props: { post }

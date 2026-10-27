@@ -140,7 +140,7 @@ test("글 목록과 기본 검색은 공개 색인의 정렬·수정일을 동�
   }
 
   await page.goto("/blog/");
-  await expect(page.locator(".blog-list-head__sort")).toHaveText("정렬 기준: 최근 수정일순");
+  await expect(page.getByRole("navigation", { name: "글 정렬" }).locator("[aria-current=page]")).toHaveText("최근 수정순");
   const blogCards = page.locator("#blog-post-list [data-post-slug]");
   const visible = await blogCards.evaluateAll((items) =>
     items.map((item) => item.getAttribute("data-post-slug"))

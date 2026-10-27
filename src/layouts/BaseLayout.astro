@@ -6,9 +6,8 @@ import LayoutScripts from "../components/layout/LayoutScripts.astro";
 import { SITE } from "../config/site";
 import { serializeInlineJson } from "../utils/serializeInlineJson";
 import { getPublishedPosts } from "../utils/content/posts";
-import { normalizeCategory } from "../utils/categories";
+import { normalizeCategory, buildCategoryHierarchy } from "../utils/categories";
 import { buildArchiveTagSummary } from "../utils/tags";
-import { buildSidebarNavigation } from "../utils/navigation";
 import {
   SIDEBAR_TAG_LIMIT,
   SITE_AUTHOR,
@@ -52,7 +51,7 @@ const {
 
 const posts = await getPublishedPosts();
 // The home layout does not render Sidebar. Avoid taxonomy aggregation there.
-const sidebarNavigation = minimalHome ? [] : buildSidebarNavigation(posts);
+const sidebarNavigation = minimalHome ? [] : buildCategoryHierarchy(posts);
 const tagSummary = minimalHome ? [] : buildArchiveTagSummary(posts).slice(0, SIDEBAR_TAG_LIMIT);
 // The header only needs to know whether published Book/Series content exists.
 const hasPublishedBooks = posts.some((post) => Boolean(post.data.book?.trim()));

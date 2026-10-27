@@ -3,31 +3,15 @@ import { expect, test } from "@playwright/test";
 const jpa = "/blog/jpa/persistence-context/";
 const security = "/blog/security/basic1/";
 
-test("V2 사이드바는 선택된 하위 분류만 강조하고 상위 그룹·태그는 보조로 표시한다", async ({ page }) => {
+test("사이드바는 현재 글의 카테고리를 강조하고 동일한 분류명을 사용한다", async ({ page }) => {
   await page.setViewportSize({ width: 1800, height: 950 });
-  for (const [route, category] of [[jpa, "Spring Data JPA"], [security, "Spring Security"]] as const) {
+  for (const [route, category] of [[jpa, "JPA"], [security, "Spring Security"]] as const) {
     await page.goto(route);
     await page.evaluate(() => localStorage.setItem("blog-left-sidebar-collapsed", "false"));
     await page.reload();
-
-    const child = page.locator(".category-menu--sidebar .category-menu__child[aria-current='page']");
-    await expect(child).toHaveCount(1);
-    await expect(child).toContainText(category);
-    const group = child.locator("xpath=ancestor::div[contains(@class, 'category-menu__group')]");
-    const parent = group.locator(".category-menu__parent-link");
-    await expect(parent).not.toHaveAttribute("aria-current", "page");
-    const backgrounds = await page.evaluate(() => {
-      const selected = document.querySelector(".category-menu--sidebar .category-menu__child[aria-current='page']");
-      const ancestor = selected?.closest(".category-menu__group");
-      const parentLink = ancestor?.querySelector(".category-menu__parent-link");
-      if (!(selected instanceof HTMLElement) || !(parentLink instanceof HTMLElement)) throw new Error("Missing sidebar category");
-      return {
-        child: getComputedStyle(selected).backgroundColor,
-        parent: getComputedStyle(parentLink).backgroundColor,
-        border: getComputedStyle(selected).borderLeftColor
-      };
-    });
-    expect(backgrounds.child).not.toBe(backgrounds.parent);
+    const selected = page.locator(".category-menu--sidebar .category-menu__parent-link[aria-current='page']");
+    await expect(selected).toHaveCount(1);
+    await expect(selected).toContainText(category);
     await expect(page.locator("#sidebar-search-input")).toBeAttached();
     await expect(page.getByRole("navigation", { name: "태그 탐색" })).toBeVisible();
   }

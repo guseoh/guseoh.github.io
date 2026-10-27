@@ -98,13 +98,13 @@ const readingPath = readingPathCandidate
   )}
 
   {posts.length > 0 ? (
-    <ul class="post-list" style="margin-top: 1rem;">
+    <><p class="category-list-sort">전체 글 · 최근 수정일순</p><ul class="post-list">
       {posts.map((post) => (
         <li>
           <PostCard post={post} variant="updated" />
         </li>
       ))}
-    </ul>
+    </ul></>
   ) : (
     <p class="section-empty archive-empty">아직 등록된 게시글이 없습니다. <a href="/categories/">다른 카테고리 보기</a></p>
   )}

@@ -258,7 +258,15 @@
         const copied = typeof execCopy === "function" && execCopy.call(document, "copy");
         textarea.remove();
 
-        return copied ? "copied" : "selected";
+        if (copied) return "copied";
+        const selection = window.getSelection();
+        if (selection) {
+          const range = document.createRange();
+          range.selectNodeContents(code ?? pre);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+        return "selected";
       };
 
       const getCodeText = () => {
