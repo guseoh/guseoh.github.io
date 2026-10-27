@@ -130,6 +130,15 @@ html[data-theme="dark"] .post img.light-bg {
   filter: none;
 }
 
+/* Explicit light canvases are preserved when a diagram opens in the lightbox. */
+.post-lightbox[data-light-background="true"] .post-lightbox__frame,
+.post-lightbox[data-light-background="true"] .post-lightbox__frame img {
+  background-color: #fff;
+}
+.post-lightbox[data-light-background="true"] .post-lightbox__frame img {
+  filter: none;
+}
+
 .post img.full-width {
   width: 100%;
   max-width: 100%;

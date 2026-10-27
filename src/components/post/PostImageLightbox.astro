@@ -84,6 +84,7 @@
       const targetBounds = target.getBoundingClientRect();
       setAspectMode(target.naturalWidth || targetBounds.width, target.naturalHeight || targetBounds.height);
 
+      dialog.dataset.lightBackground = String(target.classList.contains("light-bg"));
       image.src = src;
       image.alt = target.alt || "";
       image.style.width = target.naturalWidth ? `${target.naturalWidth}px` : "";
@@ -138,6 +139,7 @@
       unlockScroll();
       image.removeAttribute("src");
       dialog.removeAttribute("data-aspect");
+      dialog.removeAttribute("data-light-background");
       if (opener instanceof HTMLElement) {
         opener.focus();
       }

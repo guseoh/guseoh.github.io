@@ -2,7 +2,7 @@
 title: "인증과 인가는 무엇일까?"
 description: "인증은 사용자의 신원을 확인하는 과정이고, 인가는 확인된 사용자가 어떤 리소스와 동작에 접근할 수 있는지 판단하는 과정이다."
 date: 2026-08-04
-updated: 2026-10-17
+updated: 2026-10-27
 lastVerified: 2026-10-17
 slug: "security/basic1"
 aliases:
@@ -123,7 +123,7 @@ Authentication
 - SecurityContextHolder: 현재 실행 흐름의 SecurityContext에 접근할 수 있게 한다.
 - AuthorizationManager: 인증 정보와 접근 규칙을 사용해 인가 여부를 판단한다.
 
-![Spring Security 인증과 인가 흐름](adadada.png)
+![Spring Security 인증과 인가 흐름 {light-bg} {no-dark-filter}](adadada.png)
 
 ### 4.1 401 Unauthorized
 

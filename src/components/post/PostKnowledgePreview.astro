@@ -72,7 +72,7 @@ const { entries } = Astro.props as Props;
       }, 250);
     };
     const anchors = document.querySelectorAll(
-      ".post__content a[href], .post-learning-path a[href], .post-knowledge a[href]"
+      ".post__content a[href], .post-learning-path a[href], .post-knowledge__backlinks a[href]"
     );
     for (const anchor of anchors) {
       if (!(anchor instanceof HTMLAnchorElement)) continue;
