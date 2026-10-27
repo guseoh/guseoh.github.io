@@ -31,7 +31,7 @@ test("콘텐츠가 없는 Books·Series는 메뉴에서 제외하되 페이지�
   await page.goto("/series/");
   const hasSeries = await page.locator(".library-series-grid .library-series-card").count() > 0;
   await expect(page.locator("#top-nav a[href='/series/']")).toHaveCount(hasSeries ? 1 : 0);
-  await expect(page.locator("main h1")).toHaveText("Series");
+  await expect(page.locator("main h1")).toHaveText("학습 경로");
 
   await expect(page.locator("#top-nav a[href='/blog/']")).toHaveCount(1);
   await expect(page.locator("#top-nav a[href='/search/']")).toHaveCount(1);

@@ -59,8 +59,8 @@ test("desktop article uses narrower text, restrained inline code and normal font
   });
   expect(articleMetrics.width).toBeGreaterThan(680);
   expect(articleMetrics.width).toBeLessThan(820);
-  expect(articleMetrics.textSize).toBeGreaterThan(13);
-  expect(articleMetrics.textSize).toBeLessThan(15);
+  expect(articleMetrics.textSize).toBeGreaterThanOrEqual(16);
+  expect(articleMetrics.textSize).toBeLessThan(18);
   expect(articleMetrics.inlineWeight).toBe("400");
   expect(articleMetrics.inlineBorder).toBe(0);
   expect(articleMetrics.inlineBackground).toBe("rgb(37, 37, 37)");

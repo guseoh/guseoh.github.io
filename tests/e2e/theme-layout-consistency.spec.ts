@@ -32,7 +32,7 @@ test("카테고리 내비게이션 구조는 모든 색상 테마에서 동일�
         await page.locator("#sidebar-open").click();
       }
       await expect(sidebar).toBeVisible();
-      await expect(page.getByRole("heading", { name: "카테고리" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "카테고리", exact: true })).toBeVisible();
       await page.waitForTimeout(250);
 
       const geometry = await page.evaluate(() => {
